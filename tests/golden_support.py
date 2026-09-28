@@ -14,6 +14,9 @@ _SPECIAL_VALUES = {
     "Infinity": float("inf"),
     "-Infinity": float("-inf"),
 }
+POUNDS_TOLERANCE_KEYS = frozenset(
+    ("ten_thousand_at_trough", "ten_thousand_lost")
+)
 
 
 def load_golden(filename):
@@ -65,6 +68,65 @@ def assert_exact_value(test_case, actual, expected):
         return
     test_case.fail(
         "Unsupported exact comparison type: {}".format(type(expected).__name__)
+    )
+
+
+def assert_result_equal(
+    test_case,
+    actual,
+    expected,
+    tolerance,
+    pounds_keys=frozenset(),
+    pounds_tolerance=None,
+    _key=None,
+):
+    """Compare a nested golden result with exact structure and typed values."""
+    if type(expected) is dict:
+        test_case.assertIs(type(actual), dict)
+        test_case.assertEqual(set(actual), set(expected))
+        for key, expected_value in expected.items():
+            assert_result_equal(
+                test_case,
+                actual[key],
+                expected_value,
+                tolerance,
+                pounds_keys,
+                pounds_tolerance,
+                key,
+            )
+        return
+
+    if type(expected) is list:
+        test_case.assertIs(type(actual), list)
+        test_case.assertEqual(len(actual), len(expected))
+        for actual_value, expected_value in zip(actual, expected):
+            assert_result_equal(
+                test_case,
+                actual_value,
+                expected_value,
+                tolerance,
+                pounds_keys,
+                pounds_tolerance,
+                _key,
+            )
+        return
+
+    if expected is None or type(expected) in (str, bool, int):
+        assert_exact_value(test_case, actual, expected)
+        return
+
+    if isinstance(expected, Real):
+        if _key in pounds_keys:
+            if pounds_tolerance is None:
+                test_case.fail("A pounds tolerance is required for pounds keys.")
+            numeric_tolerance = pounds_tolerance
+        else:
+            numeric_tolerance = tolerance
+        assert_numeric_equal(test_case, actual, expected, numeric_tolerance)
+        return
+
+    test_case.fail(
+        "Unsupported result comparison type: {}".format(type(expected).__name__)
     )
 
 
