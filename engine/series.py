@@ -10,11 +10,11 @@ _CURRENCY_PATTERN = re.compile(r"^[A-Z]{3}$")
 _BASES = frozenset(("total_return", "price", "fx_rate"))
 
 
-class SeriesError(ValueError):
+class SeriesError(Exception):
     """Raised when monthly series input is invalid or incomplete."""
 
 
-class CoverageError(ValueError):
+class CoverageError(Exception):
     """Raised when a requested calculation lacks enough covered months."""
 
 

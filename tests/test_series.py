@@ -71,6 +71,7 @@ class FoundationGoldenTests(unittest.TestCase):
         error_type = _ERRORS[case["expected_error"]]
         with self.assertRaises(error_type) as raised:
             callable_under_test()
+        self.assertIs(type(raised.exception), error_type)
         message = str(raised.exception)
         for required_text in case.get("message_must_contain", []):
             self.assertIn(required_text, message)
