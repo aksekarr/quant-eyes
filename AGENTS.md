@@ -87,6 +87,9 @@ Data pipeline
   the task says so.
 - Tests never use real provider data and never make network requests. Where fetch code
   must be tested, the test supplies a fake provider in memory.
+- `pipeline/instruments.json` holds hand-checked facts committed by Avi. Treat it like
+  `tests/golden/`: never create, edit, rename or delete it. If you think a fact in it is
+  wrong, stop and report.
 
 Site
 - The website makes zero runtime API calls. It only reads precomputed JSON.

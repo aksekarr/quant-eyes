@@ -1,0 +1,178 @@
+{
+  "about": "The v1 universe: identity facts taken from each issuer's own pages (plus a broker page for the London quote unit), checked by Avi against the source links, and where each instrument's data comes from. Written by Claude, committed by Avi. Codex never edits this file. See docs/METHODOLOGY.md section 8.",
+  "facts_checked": "2026-09-28",
+  "providers": {
+    "tiingo": {"name": "Tiingo", "url": "https://www.tiingo.com"},
+    "alphavantage": {"name": "Alpha Vantage", "url": "https://www.alphavantage.co"}
+  },
+  "fx": {
+    "label": "US dollars per pound",
+    "data": {"provider": "alphavantage", "kind": "fx", "symbol": "GBP/USD", "field": "4. close", "currency": "USD", "basis": "fx_rate", "start": null}
+  },
+  "instruments": [
+    {
+      "id": "swda",
+      "role": "benchmark",
+      "label": "Developed-world tracker",
+      "identity": {
+        "name": "iShares Core MSCI World UCITS ETF",
+        "share_class": "USD (Accumulating)",
+        "type": "etf",
+        "isin": "IE00B4L5Y983",
+        "ticker": "SWDA",
+        "exchange": "London Stock Exchange",
+        "trading_currency": "GBP",
+        "quote_unit": "pence",
+        "income": "accumulating",
+        "currency_hedged": false,
+        "sources": [
+          "https://www.ishares.com/uk/individual/en/products/251882/ishares-msci-world-ucits-etf-acc-fund",
+          "https://www.hl.co.uk/shares/shares-search-results/i/ishares-core-msci-world-ucits-etf-usd-acc"
+        ]
+      },
+      "data": {"provider": "alphavantage", "kind": "equity", "symbol": "SWDA.LON", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": null}
+    },
+    {
+      "id": "msft",
+      "role": "asset",
+      "label": "Microsoft",
+      "identity": {
+        "name": "Microsoft Corporation",
+        "share_class": "Common stock",
+        "type": "share",
+        "isin": "US5949181045",
+        "ticker": "MSFT",
+        "exchange": "Nasdaq",
+        "trading_currency": "USD",
+        "quote_unit": "dollars",
+        "income": "dividends",
+        "currency_hedged": null,
+        "sources": ["https://etp.morganstanley.com/fr/en/underlying-details/msft_us_equity"]
+      },
+      "data": {"provider": "tiingo", "kind": "equity", "symbol": "MSFT", "field": "adjClose", "currency": "USD", "basis": "total_return", "start": null}
+    },
+    {
+      "id": "aapl",
+      "role": "asset",
+      "label": "Apple",
+      "identity": {
+        "name": "Apple Inc.",
+        "share_class": "Common stock",
+        "type": "share",
+        "isin": "US0378331005",
+        "ticker": "AAPL",
+        "exchange": "Nasdaq",
+        "trading_currency": "USD",
+        "quote_unit": "dollars",
+        "income": "dividends",
+        "currency_hedged": null,
+        "sources": ["https://etp.morganstanley.com/fr/en/underlying-details/aapl_us_equity"]
+      },
+      "data": {"provider": "tiingo", "kind": "equity", "symbol": "AAPL", "field": "adjClose", "currency": "USD", "basis": "total_return", "start": null}
+    },
+    {
+      "id": "nvda",
+      "role": "asset",
+      "label": "Nvidia",
+      "identity": {
+        "name": "NVIDIA Corporation",
+        "share_class": "Common stock",
+        "type": "share",
+        "isin": "US67066G1040",
+        "ticker": "NVDA",
+        "exchange": "Nasdaq",
+        "trading_currency": "USD",
+        "quote_unit": "dollars",
+        "income": "dividends",
+        "currency_hedged": null,
+        "sources": ["https://etp.morganstanley.com/fr/en/underlying-details/nvda_us_equity"]
+      },
+      "data": {"provider": "tiingo", "kind": "equity", "symbol": "NVDA", "field": "adjClose", "currency": "USD", "basis": "total_return", "start": null}
+    },
+    {
+      "id": "sgln",
+      "role": "asset",
+      "label": "Physical gold fund",
+      "identity": {
+        "name": "iShares Physical Gold ETC",
+        "share_class": null,
+        "type": "etc",
+        "isin": "IE00B4ND3602",
+        "ticker": "SGLN",
+        "exchange": "London Stock Exchange",
+        "trading_currency": "GBP",
+        "quote_unit": "pence",
+        "income": "none",
+        "currency_hedged": false,
+        "sources": [
+          "https://www.ishares.com/uk/individual/en/products/258441/ishares-physical-gold-etc-fund",
+          "https://www.hl.co.uk/shares/shares-search-results/i/ishares-physical-metals-physical-gold-etc"
+        ]
+      },
+      "data": {"provider": "alphavantage", "kind": "equity", "symbol": "SGLN.LON", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": null}
+    },
+    {
+      "id": "iglt",
+      "role": "asset",
+      "label": "UK government bond fund",
+      "identity": {
+        "name": "iShares Core UK Gilts UCITS ETF",
+        "share_class": "GBP (Distributing)",
+        "type": "etf",
+        "isin": "IE00B1FZSB30",
+        "ticker": "IGLT",
+        "exchange": "London Stock Exchange",
+        "trading_currency": "GBP",
+        "quote_unit": "pounds",
+        "income": "distributing",
+        "currency_hedged": false,
+        "sources": [
+          "https://www.ishares.com/uk/individual/en/products/251806/ishares-uk-gilts-ucits-etf",
+          "https://www.hl.co.uk/shares/shares-search-results/i/ishares-ii-plc-core-uk-gilts-ucits-etf"
+        ]
+      },
+      "data": {"provider": "alphavantage", "kind": "equity", "symbol": "IGLT.LON", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": null}
+    },
+    {
+      "id": "azn",
+      "role": "asset",
+      "label": "AstraZeneca",
+      "identity": {
+        "name": "AstraZeneca PLC",
+        "share_class": "Ordinary shares of US$0.25",
+        "type": "share",
+        "isin": "GB0009895292",
+        "ticker": "AZN",
+        "exchange": "London Stock Exchange",
+        "trading_currency": "GBP",
+        "quote_unit": "pence",
+        "income": "dividends",
+        "currency_hedged": null,
+        "sources": [
+          "https://www.astrazeneca.com/investor-relations/faqs.html",
+          "https://www.hl.co.uk/shares/shares-search-results/a/astrazeneca-plc-ordinary-us$0.25"
+        ]
+      },
+      "data": {"provider": "alphavantage", "kind": "equity", "symbol": "AZN.LON", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": null}
+    },
+    {
+      "id": "btc",
+      "role": "asset",
+      "label": "Bitcoin",
+      "identity": {
+        "name": "Bitcoin",
+        "share_class": null,
+        "type": "cryptocurrency",
+        "isin": null,
+        "ticker": "BTC",
+        "exchange": null,
+        "trading_currency": "USD",
+        "quote_unit": "dollars",
+        "income": "none",
+        "currency_hedged": null,
+        "sources": ["https://www.tiingo.com/documentation/crypto"]
+      },
+      "data": {"provider": "tiingo", "kind": "crypto", "symbol": "btcusd", "field": "close", "currency": "USD", "basis": "total_return", "start": "2014-12"}
+    }
+  ]
+}

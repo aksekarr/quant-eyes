@@ -14,6 +14,31 @@ This is a product assessment, not legal advice.
 - Before public release, ask the chosen provider to confirm: retention, the actual
   displayed outputs, and sending derived figures to an AI provider.
 
+## What a published file contains (METHODOLOGY.md section 8)
+
+- Public identity facts (name, ISIN, ticker, share class) with links to where they came
+  from; the data-as-of month; who supplied the data; and the engine's derived results.
+- Every result is either a ratio between two month-ends (a return over a stated period, a
+  fall from a high) or a statistic over many months (volatility, correlation, a median).
+  There are no price levels, and no run of consecutive values: the engine's output rule
+  allows no list except the three stress windows.
+- The tracker's figures appear in every asset's file, over each asset's common window
+  (from Dec 2009 for most, from Dec 2014 for bitcoin). Across all seven files that gives a
+  few dozen point-to-point ratios for the tracker out of about 200 months: not enough to
+  rebuild the series or stand in for it.
+- No URL in a published file may carry a query string, so an API key cannot reach one by
+  that route.
+
+## Handling rules for pipeline code
+
+- Error messages and printed output name the month, row number or instrument, never a
+  value, and never a response body. A provider's error is reported only through its known
+  message fields (Alpha Vantage: Information, Note, Error Message) or the exception's type.
+  `scripts/data_check.py` prints up to 80 characters of an unexpected response, which
+  could include prices; the pipeline does not copy that, and the data check is to be
+  fixed or retired before any further live run.
+- Before public release, confirm each provider's attribution wording.
+
 ## Sources
 
 | Source | What it could supply | Terms (summary) | Status |

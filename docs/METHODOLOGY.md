@@ -17,6 +17,7 @@ section is written here only once its conventions are confirmed.
 | 5. Correlation and the 90/10 comparison | 5 | `portfolio.json` | Written |
 | 6. Engine output | 6 | `output.json` | Written |
 | 7. From provider rows to month-end values | Pipeline 1 | `monthly.json` | Written |
+| 8. Instruments and published files | Pipeline 2 | `publish.json` | Written |
 
 ## General rules
 
@@ -363,8 +364,9 @@ whatever order the provider sent them. Alpha Vantage sends newest first.
 
 - **Date.** Text that begins with a real calendar date written `YYYY-MM-DD`. It is either
   exactly that, or that followed by `T` and a time (`2020-01-31T00:00:00.000Z`). The date
-  is taken as written: the time and any time zone are ignored, never converted. Crypto
-  rows are labelled by their UTC day, which is what is written.
+  is taken as written: the time and any time zone are ignored, never converted. For
+  crypto, Tiingo's documentation does not say whether a daily bar is labelled by the day
+  it starts or ends; this is checked in the first live run, and the finding recorded here.
 - **Value.** A number, or text holding a number (Alpha Vantage sends `"105.2500"`).
   True/false, empty text, nothing, and text that isn't a number are not values. A value
   must be finite.
@@ -428,3 +430,119 @@ Checks run in this order, and the first problem stops the run:
 
 Messages name the row number, date or month and the problem, never a value: a value is
 raw provider data.
+
+## 8. Instruments and published files
+
+In `pipeline/publish.py`. Pure, like section 7: no network, no files, no printing. The
+runner (a later task) reads the instrument list, fetches, calls `analyse()`, and hands
+the result here; this section decides what one published file contains and checks it.
+
+### 8.1 The instrument list (`pipeline/instruments.json`)
+
+Hand-written facts, taken from each issuer's own pages (and a broker page for how the
+London line is quoted), checked by Avi against the links, committed by Avi. Codex never
+edits it. `check_registry` refuses the whole list (`RegistryError`) if any rule below is
+broken. It runs before any data is fetched.
+
+- **Top level:** exactly `about` (text), `facts_checked` (a `YYYY-MM-DD` date),
+  `providers`, `fx`, `instruments`.
+- **Providers:** at least one. Each id (see ids below) maps to exactly `name` (text) and
+  `url`.
+- **Every URL** (provider and identity sources) starts `https://`, has something after it,
+  and contains no `?`, no `#` and no spaces. A query string could carry an API key into a
+  public file.
+- **fx:** exactly `label` (text) and `data`. Its data has kind `fx`, currency `USD`, basis
+  `fx_rate` (section 2.1).
+- **Instruments:** at least one. Each has exactly `id`, `role`, `label`, `identity`,
+  `data`.
+  - `id`: 2 to 20 characters, lower-case letters and digits, starting with a letter,
+    unique. It becomes a file name, so nothing else is allowed.
+  - `role`: `benchmark` or `asset`. Exactly one benchmark, and it trades in `GBP`
+    (section 6.1). The benchmark has no page of its own.
+  - `label`: the short display name (text).
+- **Identity:** exactly these keys.
+
+  | Key | Rule |
+  |---|---|
+  | `name`, `ticker` | Text, not empty. |
+  | `type` | `etf`, `etc`, `share` or `cryptocurrency`. |
+  | `isin` | 2 capital letters, 9 capital letters or digits, 1 digit. Null for a cryptocurrency, and only then. |
+  | `exchange` | Text. Null for a cryptocurrency (its price comes from a feed across many exchanges), and only then. |
+  | `share_class` | Text for an ETF. Null for a cryptocurrency. Either for a share or an ETC. |
+  | `trading_currency` | `GBP` or `USD`. |
+  | `quote_unit` | `pence` or `pounds` for GBP; `dollars` for USD. |
+  | `income` | ETF: `accumulating` or `distributing`. ETC: `none`. Share: `dividends` or `none`. Cryptocurrency: `none`. |
+  | `currency_hedged` | True or false (an actual true/false, not 0 or 1) for an ETF or ETC. Null for a share or cryptocurrency. |
+  | `sources` | A list of at least one URL. |
+
+- **Data** (for fetching): exactly `provider` (one of the providers), `kind`, `symbol`
+  and `field` (text), `currency`, `basis`, `start`.
+  - `kind`: `crypto` for a cryptocurrency, `equity` for everything else. (`fx` is for the
+    exchange rate only.)
+  - `currency` equals the identity's `trading_currency`: it is the engine label, so a
+    pound fund labelled USD would be divided by the exchange rate.
+  - `basis` is `total_return`. Instruments that pay no income (the gold ETC, bitcoin) are
+    total return by definition: their price is their total return.
+  - `start`: null, or a `YYYY-MM` month (section 7.4).
+- **Messages** name the instrument by its id whenever the id itself is valid (otherwise
+  by position, counted from 1), or `fx`, or the provider id, plus the field. They never
+  repeat a URL.
+
+### 8.2 One published file (`build_document`)
+
+`build_document(registry, instrument_id, results, as_of_month, generated_on)`:
+
+1. Checks the instrument list (8.1).
+2. Checks its arguments (`ValueError`): the instrument is an **asset** in the list (the
+   benchmark gets no file); `as_of_month` is a valid `YYYY-MM`; `generated_on` is a date
+   (not a date-and-time, not text) in a month **after** the as-of month, because data as
+   of a month can't be complete before that month has ended (section 7.2).
+3. Builds the document:
+
+| Key | Contents |
+|---|---|
+| `document_version` | `"1"`. |
+| `instrument` | `id`, `label` and `identity` of the instrument, copied from the list. |
+| `benchmark` | The same three for the benchmark. |
+| `data_as_of` | The as-of month, `YYYY-MM`. The site shows it as "data to the end of [month]". |
+| `generated_on` | `YYYY-MM-DD`. |
+| `sources` | Who supplied what (below). |
+| `results` | The `analyse()` output, unchanged. |
+
+- **Sources.** The data used for this file, in order: the instrument's, the benchmark's,
+  then the exchange rate's (only for a `USD` instrument). Each provider appears once, at
+  its first use, as `provider` (its name), `url`, and `used_for`: the labels it supplied,
+  in that order.
+- **Copies.** Everything taken from the list is a full copy, all the way down. Changing
+  the list after a document is built must not change the document.
+4. Checks the finished document (8.3) before returning it.
+
+### 8.3 Checking a published file (`check_document`)
+
+`check_document(document, registry)` is run by `build_document`, and again by the runner
+on the file as read back from disk. It raises `PublishError`, naming the part that
+failed and never repeating a URL or a value, at the first of these problems, in order:
+
+1. The top-level keys are not exactly the seven in 8.2.
+2. `document_version` is not `"1"`.
+3. `instrument` is not an asset in the list, or is not exactly its copy.
+4. `benchmark` is not exactly the list's benchmark.
+5. `data_as_of` is not a valid `YYYY-MM`.
+6. `generated_on` is not a valid `YYYY-MM-DD`, or its month is not after `data_as_of`.
+7. `sources` is not exactly what 8.2 builds for this instrument.
+8. The results:
+   - the engine's own output rule (section 6.3) is applied first; its `OutputError` is
+     passed on unchanged, never wrapped;
+   - the keys are exactly `method_version`, `asset_currency`, `own`, `side_by_side`,
+     `currency`;
+   - `method_version` is the engine's current one;
+   - `asset_currency` is the instrument's data currency (catches the wrong asset's
+     results);
+   - `own` is present and ends at `data_as_of`; if the instrument has a start month,
+     `own` starts there;
+   - `side_by_side` is present, and its `asset` and `tracker` both end at `data_as_of`;
+   - `currency` is present for a `USD` instrument and empty for a `GBP` one.
+
+Every instrument reaching the same as-of month, and carrying results from the current
+method, is what lets one "data as of" date and one method version stand for the whole
+site.
