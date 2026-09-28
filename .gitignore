@@ -1,0 +1,11 @@
+# Secrets: keys never live in this folder, but guard anyway
+.env
+*.env
+*.key
+# Raw provider data must never be stored (see docs/DATA-RIGHTS.md)
+data/raw/
+# Python and OS clutter
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
