@@ -1,0 +1,547 @@
+{
+ "file": "portfolio",
+ "spec": "docs/METHODOLOGY.md section 5",
+ "authorship": "Expected values written by Claude (architect): round values by hand, the rest with exact fractions or 40-digit decimals (never the engine), each with its formula; re-derived a second way before commit; committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+ "tolerance_abs": 1e-12,
+ "tolerance_abs_pounds": 1e-08,
+ "comparison_rules": "As risk.json: numbers within tolerance_abs, except the ten_thousand_at_trough and ten_thousand_lost keys, within tolerance_abs_pounds; strings, None, real booleans and real integers exactly; results must have exactly the keys shown at every level.",
+ "interface": {
+  "module": "engine.portfolio",
+  "errors": "Uses SeriesError and CoverageError from engine.series. Bad arguments raise the built-in ValueError. Check order: labels (SeriesError), then arguments (ValueError), then coverage (CoverageError), then undefined correlation (SeriesError).",
+  "correlation(asset, tracker)": "Pearson correlation of the common monthly returns. Float.",
+  "rolling_correlation(asset, tracker, months)": "Dict with exactly the keys windows, lowest, lowest_end, highest, highest_end.",
+  "blend_comparison(tracker, asset, asset_weight)": "Dict with exactly the keys start, end, months, asset_weight, rebalance (always the string \"december\"), tracker and blend. tracker and blend are each a dict with exactly the keys total_return, annualised_return (None under 12 months), volatility and largest_fall (the dict engine.risk.largest_fall returns)."
+ },
+ "series": {
+  "CX": {
+   "name": "Asset X",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 101],
+    ["2020-03", 103.02],
+    ["2020-04", 106.1106]
+   ]
+  },
+  "CY": {
+   "name": "Tracker Y",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 101],
+    ["2020-03", 104.03],
+    ["2020-04", 106.1106]
+   ]
+  },
+  "CY_double": {
+   "name": "Tracker, double moves",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 102],
+    ["2020-03", 106.08],
+    ["2020-04", 112.4448]
+   ]
+  },
+  "CY_mirror": {
+   "name": "Tracker, mirror moves",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 99],
+    ["2020-03", 97.02],
+    ["2020-04", 94.1094]
+   ]
+  },
+  "CY_long": {
+   "name": "Tracker, longer history",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-10", 90],
+    ["2019-11", 95],
+    ["2019-12", 98],
+    ["2020-01", 100],
+    ["2020-02", 101],
+    ["2020-03", 104.03],
+    ["2020-04", 106.1106]
+   ]
+  },
+  "CY_flat": {
+   "name": "Tracker, flat",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 100],
+    ["2020-03", 100],
+    ["2020-04", 100]
+   ]
+  },
+  "CY_short": {
+   "name": "Tracker, two returns",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-02", 101],
+    ["2020-03", 104.03],
+    ["2020-04", 106.1106]
+   ]
+  },
+  "CY_usd": {
+   "name": "Tracker in dollars",
+   "currency": "USD",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 101],
+    ["2020-03", 104.03],
+    ["2020-04", 106.1106]
+   ]
+  },
+  "CY_price": {
+   "name": "Tracker, price only",
+   "currency": "GBP",
+   "basis": "price",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 101],
+    ["2020-03", 104.03],
+    ["2020-04", 106.1106]
+   ]
+  },
+  "FX": {
+   "name": "GBP/USD",
+   "currency": "USD",
+   "basis": "fx_rate",
+   "pairs": [
+    ["2020-01", 1.25],
+    ["2020-02", 1.2],
+    ["2020-03", 1.3],
+    ["2020-04", 1.28]
+   ]
+  },
+  "RX": {
+   "name": "Asset X, six months",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 101],
+    ["2020-03", 103.02],
+    ["2020-04", 106.1106],
+    ["2020-05", 108.232812],
+    ["2020-06", 109.31514012]
+   ]
+  },
+  "RY": {
+   "name": "Tracker Y, six months",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2020-01", 100],
+    ["2020-02", 101],
+    ["2020-03", 104.03],
+    ["2020-04", 106.1106],
+    ["2020-05", 108.232812],
+    ["2020-06", 111.47979636]
+   ]
+  },
+  "B1_tracker": {
+   "name": "Flat tracker",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-11", 100],
+    ["2019-12", 100],
+    ["2020-01", 100],
+    ["2020-02", 100],
+    ["2020-03", 100],
+    ["2020-04", 100],
+    ["2020-05", 100],
+    ["2020-06", 100],
+    ["2020-07", 100],
+    ["2020-08", 100],
+    ["2020-09", 100],
+    ["2020-10", 100],
+    ["2020-11", 100],
+    ["2020-12", 100],
+    ["2021-01", 100],
+    ["2021-02", 100]
+   ]
+  },
+  "B1_asset": {
+   "name": "Asset that doubles then halves",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-11", 100],
+    ["2019-12", 200],
+    ["2020-01", 100],
+    ["2020-02", 100],
+    ["2020-03", 100],
+    ["2020-04", 100],
+    ["2020-05", 100],
+    ["2020-06", 100],
+    ["2020-07", 100],
+    ["2020-08", 100],
+    ["2020-09", 100],
+    ["2020-10", 100],
+    ["2020-11", 100],
+    ["2020-12", 100],
+    ["2021-01", 100],
+    ["2021-02", 100]
+   ]
+  },
+  "T2_tracker": {
+   "name": "Moving tracker",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-12", 100],
+    ["2020-01", 110],
+    ["2020-02", 99],
+    ["2020-03", 99]
+   ]
+  },
+  "T2_asset": {
+   "name": "Asset with an earlier start",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-11", 50],
+    ["2019-12", 50],
+    ["2020-01", 50],
+    ["2020-02", 60],
+    ["2020-03", 60]
+   ]
+  },
+  "T2_asset_usd": {
+   "name": "Asset in dollars",
+   "currency": "USD",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-12", 50],
+    ["2020-01", 50],
+    ["2020-02", 60],
+    ["2020-03", 60]
+   ]
+  },
+  "T3_asset_later": {
+   "name": "Asset with no overlap",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2021-01", 50],
+    ["2021-02", 51],
+    ["2021-03", 52]
+   ]
+  }
+ },
+ "cases": [
+  {
+   "id": "K01",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "CY",
+   "expected": 0.5,
+   "derivation": "Monthly returns: X +1%, +2%, +3%; Y +1%, +3%, +2%. Deviations from the mean (2%): X -1, 0, +1; Y -1, +1, 0 (in %). Sum of products = 1. Sums of squares = 2 and 2. Correlation = 1 / sqrt(2 x 2) = 0.5."
+  },
+  {
+   "id": "K02",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "CY_double",
+   "expected": 1.0,
+   "derivation": "Y's returns are exactly double X's (+2%, +4%, +6%): perfectly lined up, correlation +1. Correlation ignores size."
+  },
+  {
+   "id": "K03",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "CY_mirror",
+   "expected": -1.0,
+   "derivation": "Y's returns are X's with the sign flipped (-1%, -2%, -3%): correlation -1."
+  },
+  {
+   "id": "K04",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "CY_long",
+   "expected": 0.5,
+   "derivation": "The tracker has extra history before 2020-01; only the common months count, so the answer is K01's."
+  },
+  {
+   "id": "K05",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "CY_flat",
+   "expected_error": "SeriesError",
+   "derivation": "The tracker never moves: correlation is undefined."
+  },
+  {
+   "id": "K06",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "CY_short",
+   "expected_error": "CoverageError",
+   "derivation": "Common months 2020-02 to 2020-04 give only 2 common returns; at least 3 are needed."
+  },
+  {
+   "id": "K07",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "CY_usd",
+   "expected_error": "SeriesError",
+   "derivation": "A pound series against a dollar series: different currencies are never compared."
+  },
+  {
+   "id": "K08",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "CY_price",
+   "expected_error": "SeriesError",
+   "derivation": "Total return against price only: bases are never mixed."
+  },
+  {
+   "id": "K09",
+   "check": "correlation",
+   "asset": "CX",
+   "tracker": "FX",
+   "expected_error": "SeriesError",
+   "derivation": "An exchange rate is not an investment."
+  },
+  {
+   "id": "K10",
+   "check": "rolling_correlation",
+   "asset": "RX",
+   "tracker": "RY",
+   "months": 3,
+   "expected": {
+    "windows": 3,
+    "lowest": -0.8660254037844386,
+    "lowest_end": "2020-06",
+    "highest": 0.5,
+    "highest_end": "2020-04"
+   },
+   "derivation": "Returns X +1, +2, +3, +2, +1%; Y +1, +3, +2, +2, +3% (Feb to Jun). Five returns, window 3: 5 - 3 + 1 = 3 runs. Run ending Apr: 0.5 (as K01). Run ending May: X 2,3,2 vs Y 3,2,2: sum of products -1/3, sums of squares 2/3 and 2/3, so -0.5. Run ending Jun: X 3,2,1 vs Y 2,2,3: sum of products -1, sums of squares 2 and 2/3, so -1 / sqrt(4/3) = -sqrt(3)/2 = -0.866."
+  },
+  {
+   "id": "K11",
+   "check": "rolling_correlation",
+   "asset": "RX",
+   "tracker": "RY",
+   "months": 6,
+   "expected_error": "CoverageError",
+   "derivation": "Only 5 common returns: no 6-month run exists."
+  },
+  {
+   "id": "K12",
+   "check": "rolling_correlation",
+   "asset": "RX",
+   "tracker": "RY",
+   "months": 2,
+   "expected_error": "ValueError",
+   "derivation": "A run of 2 returns always gives +1 or -1; runs must be at least 3."
+  },
+  {
+   "id": "K13",
+   "check": "rolling_correlation",
+   "asset": "RX",
+   "tracker": "RY",
+   "months": 5,
+   "expected": {
+    "windows": 1,
+    "lowest": 0.07142857142857142,
+    "lowest_end": "2020-06",
+    "highest": 0.07142857142857142,
+    "highest_end": "2020-06"
+   },
+   "derivation": "One run covering all 5 returns, so lowest = highest = the full-period correlation. X 1,2,3,2,1 (mean 1.8), Y 1,3,2,2,3 (mean 2.2), in %. Deviations X -0.8, 0.2, 1.2, 0.2, -0.8; Y -1.2, 0.8, -0.2, -0.2, 0.8. Sum of products 0.96 + 0.16 - 0.24 - 0.04 - 0.64 = 0.2. Sums of squares 2.8 and 2.8. Correlation = 0.2 / 2.8 = 1/14 = 0.0714."
+  },
+  {
+   "id": "N01",
+   "check": "blend_comparison",
+   "tracker": "B1_tracker",
+   "asset": "B1_asset",
+   "asset_weight": 0.1,
+   "expected": {
+    "start": "2019-11",
+    "end": "2021-02",
+    "months": 15,
+    "asset_weight": 0.1,
+    "rebalance": "december",
+    "tracker": {
+     "total_return": 0.0,
+     "annualised_return": 0.0,
+     "volatility": 0.0,
+     "largest_fall": {
+      "max_drawdown": 0.0,
+      "peak_month": null,
+      "trough_month": null,
+      "recovery_month": null,
+      "recovered": null,
+      "months_peak_to_trough": null,
+      "months_trough_to_recovery": null,
+      "months_underwater": null,
+      "ten_thousand_at_trough": 10000.0,
+      "ten_thousand_lost": 0.0,
+      "drawdown_at_end": 0.0
+     }
+    },
+    "blend": {
+     "total_return": 0.045,
+     "annualised_return": 0.035840845844166275,
+     "volatility": 0.10281745265969475,
+     "largest_fall": {
+      "max_drawdown": -0.05,
+      "peak_month": "2019-12",
+      "trough_month": "2020-01",
+      "recovery_month": null,
+      "recovered": false,
+      "months_peak_to_trough": 1,
+      "months_trough_to_recovery": null,
+      "months_underwater": 14,
+      "ten_thousand_at_trough": 9500.0,
+      "ten_thousand_lost": 500.0,
+      "drawdown_at_end": -0.05
+     }
+    }
+   },
+   "derivation": "Start Nov 2019 at 90/10 of 1: tracker 0.9, asset 0.1. Dec 2019: asset doubles to 0.2, total 1.1; it is December, so reset to 90/10: 0.99 and 0.11. Jan 2020: asset halves to 0.055, total 1.045. Flat after (the Dec 2020 reset changes nothing). Total +4.5% over 15 months; per year 1.045^(12/15) - 1. Without rebalancing the mix would end at 0.9 + 0.1 = 1.0 (0%); rebalancing on the anniversary (Nov 2020) would also give 0%, so this case catches the wrong rule or the wrong timing. Mix volatility: monthly returns +10%, -5%, then thirteen 0%; sample variance x 12 = 37/3500, volatility sqrt(37/3500). Mix largest fall: 1.1 to 1.045 = -5%, Dec 2019 to Jan 2020, not recovered by Feb 2021, 14 months underwater. The tracker is flat: 0% everywhere, no fall."
+  },
+  {
+   "id": "N02",
+   "check": "blend_comparison",
+   "tracker": "T2_tracker",
+   "asset": "T2_asset",
+   "asset_weight": 0.1,
+   "expected": {
+    "start": "2019-12",
+    "end": "2020-03",
+    "months": 3,
+    "asset_weight": 0.1,
+    "rebalance": "december",
+    "tracker": {
+     "total_return": -0.01,
+     "annualised_return": null,
+     "volatility": 0.34641016151377546,
+     "largest_fall": {
+      "max_drawdown": -0.1,
+      "peak_month": "2020-01",
+      "trough_month": "2020-02",
+      "recovery_month": null,
+      "recovered": false,
+      "months_peak_to_trough": 1,
+      "months_trough_to_recovery": null,
+      "months_underwater": 2,
+      "ten_thousand_at_trough": 9000.0,
+      "ten_thousand_lost": 1000.0,
+      "drawdown_at_end": -0.1
+     }
+    },
+    "blend": {
+     "total_return": 0.011,
+     "annualised_return": null,
+     "volatility": 0.28196354812488167,
+     "largest_fall": {
+      "max_drawdown": -0.07247706422018349,
+      "peak_month": "2020-01",
+      "trough_month": "2020-02",
+      "recovery_month": null,
+      "recovered": false,
+      "months_peak_to_trough": 1,
+      "months_trough_to_recovery": null,
+      "months_underwater": 2,
+      "ten_thousand_at_trough": 9275.229357798165,
+      "ten_thousand_lost": 724.7706422018349,
+      "drawdown_at_end": -0.07247706422018349
+     }
+    }
+   },
+   "derivation": "Common window Dec 2019 to Mar 2020 (the asset's Nov 2019 is dropped). Start Dec 2019 at 0.9 / 0.1; a December that is the first month needs no reset. Jan: tracker +10% to 0.99, asset flat 0.1, total 1.09. Feb: tracker -10% to 0.891, asset +20% to 0.12, total 1.011. Mar flat. Mix total +1.1%; tracker 100 to 99, -1%. Under 12 months, so no per-year figures. Tracker volatility: returns +10%, -10%, 0%, sample variance x 12 = 0.12, sqrt 0.12. Mix returns +9%, 1.011/1.09 - 1 = -79/1090, 0%, computed with exact fractions. Mix largest fall -79/1090 from Jan to Feb, not recovered; tracker's -10%, not recovered."
+  },
+  {
+   "id": "N03",
+   "check": "blend_comparison",
+   "tracker": "T2_tracker",
+   "asset": "T2_asset",
+   "asset_weight": 0.0,
+   "expected": {
+    "start": "2019-12",
+    "end": "2020-03",
+    "months": 3,
+    "asset_weight": 0.0,
+    "rebalance": "december",
+    "tracker": {
+     "total_return": -0.01,
+     "annualised_return": null,
+     "volatility": 0.34641016151377546,
+     "largest_fall": {
+      "max_drawdown": -0.1,
+      "peak_month": "2020-01",
+      "trough_month": "2020-02",
+      "recovery_month": null,
+      "recovered": false,
+      "months_peak_to_trough": 1,
+      "months_trough_to_recovery": null,
+      "months_underwater": 2,
+      "ten_thousand_at_trough": 9000.0,
+      "ten_thousand_lost": 1000.0,
+      "drawdown_at_end": -0.1
+     }
+    },
+    "blend": {
+     "total_return": -0.01,
+     "annualised_return": null,
+     "volatility": 0.34641016151377546,
+     "largest_fall": {
+      "max_drawdown": -0.1,
+      "peak_month": "2020-01",
+      "trough_month": "2020-02",
+      "recovery_month": null,
+      "recovered": false,
+      "months_peak_to_trough": 1,
+      "months_trough_to_recovery": null,
+      "months_underwater": 2,
+      "ten_thousand_at_trough": 9000.0,
+      "ten_thousand_lost": 1000.0,
+      "drawdown_at_end": -0.1
+     }
+    }
+   },
+   "derivation": "With a 0% share the mix is exactly the tracker."
+  },
+  {
+   "id": "N04",
+   "check": "blend_comparison",
+   "tracker": "T2_tracker",
+   "asset": "T2_asset_usd",
+   "asset_weight": 0.1,
+   "expected_error": "SeriesError",
+   "derivation": "Dollar asset against a pound tracker: convert first (section 2)."
+  },
+  {
+   "id": "N05",
+   "check": "blend_comparison",
+   "tracker": "T2_tracker",
+   "asset": "T2_asset",
+   "asset_weight": 1.5,
+   "expected_error": "ValueError",
+   "derivation": "The asset's share must be from 0 to 1."
+  },
+  {
+   "id": "N06",
+   "check": "blend_comparison",
+   "tracker": "T2_tracker",
+   "asset": "T3_asset_later",
+   "asset_weight": 0.1,
+   "expected_error": "CoverageError",
+   "derivation": "No common months."
+  }
+ ]
+}

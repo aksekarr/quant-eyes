@@ -29,13 +29,13 @@ Only Avi confirms decisions. Anything under Proposed is not approved.
 | 2026-09-28 | Every comparison with the tracker uses identical months (the common window). The asset's own full-history figures are shown separately where relevant. | Comparing an asset measured through 2008 with a tracker that skipped it would flatter the tracker. SWDA starts Dec 2009, so US assets' side-by-side starts Jan 2010 and no tracker figure exists for the GFC window. |
 | 2026-09-28 | Largest-fall conventions (METHODOLOGY.md section 3.2): measured at month-end; the first month counts as a high; on a tie the earliest trough; the peak is the last month at the high; recovery means back at or above the peak; underwater is elapsed months from peak to recovery; the £ figure applies only to £10,000 invested at the high; an unrecovered fall is stated as "not recovered by [month], still X% below its high", never as a forecast. | Each is a place where a plausible-looking number could mislead; fixing them in writing makes the card checkable. |
 | 2026-09-28 | Stress-window and holding-period conventions (METHODOLOGY.md section 4): a window is covered only if both its end months exist, never shortened; a window's return is described as "over the period", not as a fall; N month-end values give N − h holding periods of h months, of which (N − 1) ÷ h (rounded down) do not overlap; horizons are whole years; ties go to the earliest start; "lost money" means below zero; totals and per-year figures are both computed and the display choice is made later. | Fence-post and overlap errors are the easiest way to overstate the evidence; fixing the definitions makes the card checkable. |
+| 2026-09-28 | 90/10 comparison: starts at 90% tracker / 10% asset in the first month of the common window, rebalanced to 90/10 at the end of every December, before fees, no trading costs or tax. Correlation and 90/10 conventions as METHODOLOGY.md section 5 (same currency and basis required; Pearson on monthly returns; rolling 36-month range; the mix's value line is internal only). | Every December is the easiest rule to state in plain English and gives every asset the same rebalancing dates. |
 
 ## Proposed (not approved)
 
 | Proposal | Notes |
 |---|---|
 | Show a holding-period horizon only if history covers at least 3 non-overlapping periods of that length (e.g. 15 years for 5-year periods). | Bitcoin would show 1- and 3-year only. |
-| 90/10 comparison rebalanced annually, before fees. | Needs a stated rule; annual is simple and realistic. |
 | AI provider and model for the headline read. | Unresolved. |
 | Ethereum deferred to after v1. | Adds little the bitcoin card doesn't already show; shorter history; 2022 proof-of-stake switch and staking yield complicate what 'total return' means. Adding it later is one config line once the pipeline exists. |
 | Product name. | Working title only. |

@@ -14,7 +14,7 @@ section is written here only once its conventions are confirmed.
 | 2. Currency | 2 | `currency.json` | Written |
 | 3. Volatility and largest fall | 3 | `risk.json` | Written |
 | 4. Stress windows and holding periods | 4 | `windows.json` | Written |
-| 5. Correlation and the 90/10 comparison | 5 | `portfolio.json` | To come |
+| 5. Correlation and the 90/10 comparison | 5 | `portfolio.json` | Written |
 | 6. Engine output | 6 | `output.json` | To come |
 
 ## General rules
@@ -252,3 +252,53 @@ For a horizon of *h* months (12, 36 or 60), a **holding period** starts at any m
   figures is decided in the claims layer.
 - **Date range:** the first start month and the last end month.
 - The historical worst is not the worst possible result. Text must say so.
+
+## 5. Correlation and the 90/10 comparison
+
+Both compare an asset with the tracker. The two series must have the **same currency**
+and the **same basis**, and neither may be an exchange rate; anything else is a
+`SeriesError`. Both are cut to their common window first (section 1.5), so they always
+cover identical months.
+
+### 5.1 Correlation ("does it move with the tracker?")
+
+The Pearson correlation of the two series' monthly returns (section 1.2):
+
+    correlation = Σ (a − mean a)(t − mean t) / √( Σ (a − mean a)² × Σ (t − mean t)² )
+
+- It runs from −1 (always moving in opposite directions relative to their averages) to
+  +1 (always moving together). It measures how consistently the monthly moves line up,
+  **not their size**, and it is an average over all months, calm and stressed.
+- At least 3 common monthly returns are needed, otherwise `CoverageError`. If either
+  series has no variation at all, correlation is undefined: `SeriesError`.
+- **Rolling correlation.** The same calculation over every run of *w* consecutive
+  common monthly returns (the site uses *w* = 36). With *n* common returns there are
+  *n − w + 1* runs. Reported: the number of runs, the lowest and highest values, and the
+  month each of those runs ends. On a tie, the earliest run. *w* must be at least 3
+  (`ValueError`); fewer than *w* common returns is `CoverageError`.
+- **For the words layer:** a low or negative correlation is not a claim that the asset
+  protects a portfolio. What the mix actually did is shown by section 5.2, not inferred
+  from correlation.
+
+### 5.2 The 90/10 comparison ("what does it do next to a tracker?")
+
+An illustration over the common window: 100% tracker, against 90% tracker and 10% the
+asset.
+
+- **Start.** At the first month of the common window, the mix is 90% tracker and 10%
+  asset.
+- **Each month,** each part grows or shrinks by its own monthly return, so the weights
+  drift.
+- **Rebalancing:** at the end of **every December**, after that month's returns, the
+  mix is reset to 90/10. A December that is the first month needs no reset. Before
+  fees, with no trading costs and no tax.
+- The asset's share is a parameter (the site uses 10%); it must be from 0 to 1
+  (`ValueError`). With 0%, the mix is exactly the tracker.
+- **Reported for both** the tracker and the mix, over the same months: total return,
+  per-year return (section 1.4; empty if the window is shorter than 12 months),
+  volatility (section 3.1) and the largest fall (section 3.2). Also the window's first
+  and last month, the number of months, the asset's share and the rebalancing rule.
+- The mix's month-by-month values are a rebased growth line. They are used inside the
+  calculation only and are **never** returned or published (`DATA-RIGHTS.md`).
+- Labelled illustrative, not recommended. For large caps already inside the tracker,
+  text must say the 10% adds to something already held.
