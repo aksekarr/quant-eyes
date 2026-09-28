@@ -3,17 +3,12 @@
 import math
 import statistics
 
-from engine.series import CoverageError, SeriesError, monthly_returns
-
-
-def _reject_fx_rate(series):
-    if series.basis == "fx_rate":
-        raise SeriesError("Exchange-rate series cannot be used for investment risk.")
+from engine.series import CoverageError, monthly_returns, reject_fx_rate
 
 
 def volatility(series):
     """Return annualised sample volatility of monthly returns."""
-    _reject_fx_rate(series)
+    reject_fx_rate(series)
     returns = [value for _, value in monthly_returns(series)]
     if len(returns) < 2:
         raise CoverageError("At least two monthly returns are required.")
@@ -22,7 +17,7 @@ def volatility(series):
 
 def largest_fall(series):
     """Return details of the largest month-end fall."""
-    _reject_fx_rate(series)
+    reject_fx_rate(series)
 
     highest_value = series.values[0]
     highest_index = 0

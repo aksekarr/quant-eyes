@@ -2,7 +2,7 @@
 
 import statistics
 
-from engine.series import CoverageError, SeriesError, annualise, period_return
+from engine.series import CoverageError, annualise, period_return, reject_fx_rate
 
 
 STRESS_WINDOWS = (
@@ -12,14 +12,9 @@ STRESS_WINDOWS = (
 )
 
 
-def _reject_fx_rate(series):
-    if series.basis == "fx_rate":
-        raise SeriesError("Exchange-rate series cannot be used for investment returns.")
-
-
 def stress_windows(series):
     """Return total returns for the three fixed stress windows."""
-    _reject_fx_rate(series)
+    reject_fx_rate(series)
 
     results = []
     for window, start, end in STRESS_WINDOWS:
@@ -38,7 +33,7 @@ def stress_windows(series):
 
 def holding_periods(series, months):
     """Summarise every covered holding period for a whole-year horizon."""
-    _reject_fx_rate(series)
+    reject_fx_rate(series)
 
     if isinstance(months, bool) or not isinstance(months, int):
         raise ValueError("Horizon must be a positive whole number of years in months.")

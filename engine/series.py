@@ -18,6 +18,14 @@ class CoverageError(Exception):
     """Raised when a requested calculation lacks enough covered months."""
 
 
+def reject_fx_rate(series):
+    """Reject an exchange-rate series for an investment calculation."""
+    if series.basis == "fx_rate":
+        raise SeriesError(
+            "Exchange-rate series cannot be used for investment calculations."
+        )
+
+
 def _month_parts(month):
     if not isinstance(month, str) or _MONTH_PATTERN.fullmatch(month) is None:
         raise ValueError("Month must use YYYY-MM with a month from 01 to 12.")
