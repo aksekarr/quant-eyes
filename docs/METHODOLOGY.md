@@ -19,6 +19,7 @@ section is written here only once its conventions are confirmed.
 | 7. From provider rows to month-end values | Pipeline 1 | `monthly.json` | Written |
 | 8. Instruments and published files | Pipeline 2 | `publish.json` | Written |
 | 9. Fetching provider data | Pipeline 3a | `providers.json` | Written |
+| 10. Running the pipeline | Pipeline 3b | `runner.json` | Written |
 
 ## General rules
 
@@ -632,3 +633,89 @@ switched off. Errors are `ProviderError`, never showing the URL:
 | A timeout (on Python 3.9, `socket.timeout` is separate from `TimeoutError`; both count) | `timed out` |
 | Any other connection failure | `connection problem (<error type>)` |
 | A body that isn't JSON | `response was not JSON` (the body is never shown: it may hold prices) |
+
+## 10. Running the pipeline
+
+### 10.1 Where the code lives
+
+- `pipeline/runner.py` is **the writer**: it writes files in the output folder and
+  nowhere else. No network, no environment variables, no printing. The fetch is passed
+  in.
+- `scripts/build_data.py` is **the command Avi runs**. It reads the keys from the
+  environment, prints a summary, and is the only place the real fetch (section 9, with
+  `pipeline/network.py` and real pauses) is wired in. Its `main()` has no default fetch:
+  only the script's own entry point passes the real one, so a test that forgets its fake
+  fails instead of reaching the network.
+
+### 10.2 `run(registry, fetch, today, out_dir)`
+
+`fetch(data, as_of_month)` returns the rows for one data entry. In order:
+
+1. `today` must be a date, not a date-and-time (`ValueError`).
+2. **Instrument list:** `check_registry` (section 8.1).
+3. **As-of month:** `last_complete_month(today)` (section 7.2).
+4. **Output folder**, before anything is fetched. It must exist (`run` never creates it).
+   Apart from names starting with `.` (macOS writes `.DS_Store`), which are left alone,
+   it may hold only `<id>.json` for assets in the list. Anything else (a file from a
+   removed instrument, the benchmark, a leftover `.tmp`, a subfolder) stops the run,
+   naming the first such name in alphabetical order. A stale file could otherwise go on
+   being published.
+5. **Series**, in this order: the exchange rate, the benchmark, then each asset in list
+   order. For each: `fetch`, then `build_monthly_series(label, currency, basis, rows,
+   as_of, start)` from its data entry (section 7). For each asset, straight after its
+   series: `analyse(asset, tracker, fx)`, with `fx` only for a `USD` asset (section 6),
+   then `build_document(registry, id, results, as_of, today)` (section 8). The first
+   failure stops the run: nothing more is fetched.
+6. **Write, all or nothing**, only once every document is built. Each document becomes
+   `json.dumps(document, indent=2, sort_keys=True, allow_nan=False) + "\n"` in UTF-8,
+   written to `<id>.json.tmp`. Every temporary file is then read back, parsed and checked
+   again with `check_document` (section 8.3). Only then is each renamed to `<id>.json`,
+   replacing last run's. If anything fails before the first rename, every temporary file
+   created is removed and the folder is exactly as it was. (A failure during the renames
+   themselves, a disk or permissions error, is the one case that can leave a mix;
+   `git status --short` shows it.)
+7. **Return a summary:** `{"as_of": ..., "series": [...], "written": [...]}`. Each series
+   entry is `{"id", "first", "last", "month_ends"}`, in fetch order, with the exchange
+   rate's id written as `fx`. `month_ends` counts month-end values (4 for May to August),
+   not months elapsed (3). `written` lists the file names in asset order.
+
+**Errors** are a `RunError` whose message names who and which step:
+`<who>: <step>: <ErrorType>: <message>`. Who is `registry`, `fx` or an instrument id;
+step is `check`, `fetch`, `series`, `analyse`, `document` or `write`. The message is
+included only for the pipeline's own error types (`RegistryError`, `ProviderError`,
+`ProviderDataError`, `CoverageError`, `SeriesError`, `PublishError`, `OutputError`),
+whose messages are value-free by design. Any other type is named alone (`gbf: fetch:
+RuntimeError`): its message could hold anything, including a value or a key.
+Output-folder problems are `output folder: does not exist` or `output folder: unexpected
+<name>`.
+
+### 10.3 The command: `python3 scripts/build_data.py [--list]`
+
+`main(argv, environ, today, out, root, make_fetch)` returns the exit code and writes
+lines to `out`. It never prints a traceback, a key, a URL or a value. The instrument
+list is `root/pipeline/instruments.json`; the output folder is `root/data/derived`.
+
+- **Arguments:** none, or `--list`. Anything else prints
+  `Usage: python3 scripts/build_data.py [--list]` and returns 2.
+- **Both modes first** load the instrument list (`FAILED: registry: load: <ErrorType>`)
+  and check it (`FAILED: registry: check: RegistryError: <message>`), each followed by
+  `Nothing was fetched or written.` and exit code 1.
+- **`--list`** needs no keys and makes no requests. It prints
+  `Plan: data as of <as_of> (run on <today>).`, then one line per series in run order,
+  `<id>: <provider> <kind> <symbol>, <n> request(s)` (from `build_requests`, section 9.3,
+  with a placeholder key), then `<total> request(s), <seconds> seconds of pauses. No
+  requests made.` and returns 0. The pauses are the section 9.6 pause for each request.
+- **A full run:**
+  1. **Keys.** For each provider used by the exchange rate or any instrument, in the order
+     the providers are listed, the key is the environment variable `<PROVIDER ID IN
+     CAPITALS>_API_KEY` (`TIINGO_API_KEY`, `ALPHAVANTAGE_API_KEY`). Each one missing or
+     empty prints `FAILED: <NAME> is not set in this terminal.`; if any is missing, then
+     `Nothing was fetched or written.` and exit code 1.
+  2. Create `data/derived` if it doesn't exist.
+  3. `fetch = make_fetch(keys)`, where keys maps provider id to key.
+  4. `run(...)`. On success it prints `Data as of <as_of> (run on <today>).`, then one line
+     per series, `<id>: <first> to <last> (<n> month-ends)`, then `Wrote <n> files to
+     data/derived. No prices were printed or saved.`, and returns 0.
+  5. On a `RunError`: `FAILED: <message>`. On anything else: `FAILED: unexpected
+     <ErrorType>.` Either way, then `Check git status --short before committing
+     anything.` and exit code 1.

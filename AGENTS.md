@@ -90,6 +90,9 @@ Data pipeline
 - `pipeline/network.py` is the only module that may open a network connection. You write
   it but never call it for real: tests replace its `urlopen`. The live fetch is run by
   Avi.
+- `pipeline/runner.py` is the only module that writes files, and only in the output
+  folder it is given. `scripts/build_data.py` is the command Avi runs; you may run it
+  with `--list` (no keys, no requests) but never without it.
 - `pipeline/instruments.json` holds hand-checked facts committed by Avi. Treat it like
   `tests/golden/`: never create, edit, rename or delete it. If you think a fact in it is
   wrong, stop and report.
