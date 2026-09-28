@@ -236,13 +236,20 @@ class InvarianceTests(unittest.TestCase):
         # New standard-library imports need explicit review of this allowlist.
         allowed_imports = {"math", "numbers", "re", "statistics", "engine"}
         allowed_imports.update("engine." + path.stem for path in source_paths)
-        allowed_by_package = {
-            "engine": allowed_imports,
-            "pipeline": {"calendar", "datetime", "math", "numbers", "re", "engine.series"},
+        allowed_pipeline_imports = {
+            "monthly.py": {"calendar", "datetime", "math", "numbers", "re", "engine.series"},
+            "publish.py": {
+                "copy", "datetime", "math", "numbers", "re",
+                "engine.output", "engine.series",
+            },
         }
-        source_paths.append(root / "pipeline" / "monthly.py")
+        source_paths.extend(root / "pipeline" / name for name in allowed_pipeline_imports)
         for path in source_paths:
             package = path.parent.name
+            module_allowlist = (
+                allowed_imports if package == "engine"
+                else allowed_pipeline_imports[path.name]
+            )
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
             for node in ast.walk(tree):
                 with self.subTest(module=path.name, line=getattr(node, "lineno", None)):
@@ -257,7 +264,7 @@ class InvarianceTests(unittest.TestCase):
                         imports = [module]
                     for module in imports:
                         self.assertNotIn(module.split(".")[0], forbidden_imports)
-                        self.assertIn(module, allowed_by_package[package])
+                        self.assertIn(module, module_allowlist)
                     if isinstance(node, ast.Call):
                         function = node.func
                         if isinstance(function, ast.Name):

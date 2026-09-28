@@ -26,6 +26,34 @@ def load_golden(filename):
         return json.load(golden_file)
 
 
+def edit_in_place(value, edits):
+    """Apply ordered golden path edits, appending at a list's next index."""
+    from copy import deepcopy
+
+    for edit in edits:
+        target = value
+        for part in edit["path"][:-1]:
+            target = target[part]
+        key = edit["path"][-1]
+        if edit.get("delete") is True:
+            del target[key]
+        else:
+            replacement = deepcopy(edit["set"])
+            if isinstance(target, list) and key == len(target):
+                target.append(replacement)
+            else:
+                target[key] = replacement
+
+
+def apply_edits(value, edits):
+    """Return an edited deep copy without changing the source fixture."""
+    from copy import deepcopy
+
+    edited = deepcopy(value)
+    edit_in_place(edited, edits)
+    return edited
+
+
 def decode_pairs(pairs):
     """Decode named non-finite values in golden observation pairs."""
     return [[month, _SPECIAL_VALUES.get(value, value)] for month, value in pairs]
