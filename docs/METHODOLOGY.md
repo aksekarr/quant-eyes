@@ -11,7 +11,7 @@ section is written here only once its conventions are confirmed.
 | Section | Engine task | Golden file | Status |
 |---|---|---|---|
 | 1. Monthly series and returns | 1 | `foundation.json` | Written |
-| 2. Currency | 2 | `currency.json` | To come |
+| 2. Currency | 2 | `currency.json` | Written |
 | 3. Volatility and largest fall | 3 | `risk.json` | To come |
 | 4. Stress windows and holding periods | 4 | `windows.json` | To come |
 | 5. Correlation and the 90/10 comparison | 5 | `portfolio.json` | To come |
@@ -102,3 +102,53 @@ from the later of the two first months to the earlier of the two last months. Bo
 series are cut to that window, keeping their labels, and returned in the order given.
 If the two series share fewer than 2 months (so no common return exists), a
 `CoverageError` is raised.
+
+## 2. Currency
+
+Applies to assets priced in US dollars (the US stocks and bitcoin). Assets priced in
+pounds are not converted and have no currency split.
+
+### 2.1 The exchange rate
+
+The GBP/USD series is the number of **US dollars per one pound**, at month-end, matched
+by calendar month (section 1.1). It is labelled `basis` = `fx_rate`, `currency` = `USD`.
+A higher number means a stronger pound.
+
+### 2.2 Converting to pounds
+
+    V_GBP(m) = V_USD(m) / rate(m)
+
+- The asset must be labelled `USD` and must not itself be an exchange rate; the rate
+  series must be labelled `fx_rate` and `USD`. Anything else is a `SeriesError`.
+- The converted series covers only the months both series cover (section 1.5), so a
+  US asset's history in pounds starts when the exchange-rate history starts. If they share
+  fewer than 2 months, `CoverageError`.
+- The converted series keeps the asset's name and basis and is labelled `GBP`.
+
+### 2.3 Splitting a pound return into its two parts
+
+For a period from month-end *s* to month-end *e* (section 1.3):
+
+    local return     R_L = V_USD(e) / V_USD(s) − 1           (what the asset did in dollars)
+    currency return  R_C = rate(s) / rate(e) − 1             (what the dollar did against the pound)
+    pound return     R_G = V_GBP(e) / V_GBP(s) − 1           (what a UK investor experienced)
+
+and these **compound**, they do not add:
+
+    1 + R_G = (1 + R_L) × (1 + R_C)
+
+- The currency return uses rate(s) / rate(e), not the other way round: when the pound
+  falls, the dollar a UK investor holds is worth more pounds.
+- A fall in the pound is not the same size as the dollar's rise. The pound falling from
+  1.25 to 1.00 dollars is −20% for the pound but +25% for the dollar, and +25% is what a UK
+  holder of dollar assets gains.
+- Both *s* and *e* must be covered by the asset and the rate, otherwise `CoverageError`.
+  *s* must be earlier than *e*, otherwise `ValueError`.
+- **For the words layer:** because the parts compound, R_L + R_C is not R_G. Text must
+  never say the two parts "add up to" the pound return.
+
+### 2.4 What this cannot separate
+
+Funds priced in pounds that hold dollar assets without hedging (the tracker, the gold
+fund) carry a currency effect inside their pound price. With a single pound price, that
+effect cannot be separated from the fund's own return, so no split is shown for them.

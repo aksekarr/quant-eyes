@@ -1,0 +1,98 @@
+{
+  "file": "currency",
+  "spec": "docs/METHODOLOGY.md section 2",
+  "authorship": "Expected values written by hand by Claude (architect), checked independently with exact fractions, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+  "tolerance_abs": 1e-12,
+  "interface": {
+    "module": "engine.currency",
+    "errors": "Uses SeriesError and CoverageError from engine.series. Bad arguments raise the built-in ValueError.",
+    "to_gbp(asset, fx)": "Returns a new MonthlySeries: asset values divided by the dollars-per-pound rate for each month both cover, labelled GBP, asset name and basis kept.",
+    "currency_split(asset, fx, start, end)": "Returns a dict with exactly the keys local_return, currency_return, gbp_return for the period from month-end start to month-end end."
+  },
+  "series": {
+    "U1": {"name": "Synthetic US stock", "currency": "USD", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 100], ["2020-03", 110], ["2020-04", 121]]},
+    "U2": {"name": "Synthetic US stock, longer", "currency": "USD", "basis": "total_return",
+           "pairs": [["2019-11", 90], ["2019-12", 95], ["2020-01", 100], ["2020-02", 100], ["2020-03", 110], ["2020-04", 121]]},
+    "U3": {"name": "Synthetic US stock, later", "currency": "USD", "basis": "total_return",
+           "pairs": [["2021-01", 100], ["2021-02", 101], ["2021-03", 102]]},
+    "U4": {"name": "Synthetic US stock, price only", "currency": "USD", "basis": "price",
+           "pairs": [["2020-01", 100], ["2020-02", 100], ["2020-03", 110], ["2020-04", 121]]},
+    "G1": {"name": "Synthetic UK fund", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 101], ["2020-03", 102], ["2020-04", 103]]},
+    "X1": {"name": "GBP/USD, dollars per pound", "currency": "USD", "basis": "fx_rate",
+           "pairs": [["2020-01", 1.25], ["2020-02", 1.0], ["2020-03", 1.0], ["2020-04", 1.1]]},
+    "X_price": {"name": "Rate mislabelled as a price", "currency": "USD", "basis": "price",
+           "pairs": [["2020-01", 1.25], ["2020-02", 1.0], ["2020-03", 1.0], ["2020-04", 1.1]]},
+    "X_eur": {"name": "EUR rate", "currency": "EUR", "basis": "fx_rate",
+           "pairs": [["2020-01", 1.1], ["2020-02", 1.1], ["2020-03", 1.1], ["2020-04", 1.1]]}
+  },
+  "cases": [
+    {"id": "C01", "check": "to_gbp", "asset": "U1", "fx": "X1",
+     "expected": {"name": "Synthetic US stock", "currency": "GBP", "basis": "total_return",
+                  "months": ["2020-01", "2020-02", "2020-03", "2020-04"], "values": [80, 100, 110, 110]},
+     "derivation": "Divide dollars by dollars-per-pound: 100/1.25 = 80, 100/1.00 = 100, 110/1.00 = 110, 121/1.10 = 110. Name and basis kept, labelled GBP."},
+
+    {"id": "C02", "check": "currency_split", "asset": "U1", "fx": "X1", "start": "2020-01", "end": "2020-02",
+     "expected": {"local_return": 0.0, "currency_return": 0.25, "gbp_return": 0.25},
+     "derivation": "The stock is flat in dollars (100 to 100). The pound falls from 1.25 to 1.00 dollars: -20% for the pound, but the dollar gains 1.25/1.00 - 1 = +25% against the pound. $100 was worth 80 pounds and is now worth 100 pounds: +25%. Check: 1.00 x 1.25 = 1.25."},
+
+    {"id": "C03", "check": "currency_split", "asset": "U1", "fx": "X1", "start": "2020-02", "end": "2020-03",
+     "expected": {"local_return": 0.1, "currency_return": 0.0, "gbp_return": 0.1},
+     "derivation": "Stock +10% in dollars (100 to 110), rate unchanged at 1.00, so +10% in pounds too."},
+
+    {"id": "C04", "check": "currency_split", "asset": "U1", "fx": "X1", "start": "2020-03", "end": "2020-04",
+     "expected": {"local_return": 0.1, "currency_return": -0.09090909090909091, "gbp_return": 0.0},
+     "derivation": "Stock +10% in dollars (110 to 121). The pound strengthens from 1.00 to 1.10, so the dollar loses 1.00/1.10 - 1 = -1/11 = -9.0909...%. In pounds: 110 to 110, flat. Check: 1.10 x 10/11 = 1. The stock's gain was wiped out by the stronger pound."},
+
+    {"id": "C05", "check": "currency_split", "asset": "U1", "fx": "X1", "start": "2020-01", "end": "2020-04",
+     "expected": {"local_return": 0.21, "currency_return": 0.13636363636363635, "gbp_return": 0.375},
+     "derivation": "Dollars: 121/100 - 1 = +21%. Currency: 1.25/1.10 - 1 = 3/22 = +13.636...%. Pounds: 110/80 - 1 = +37.5%. Check: 1.21 x 25/22 = 1.375. Note 21% + 13.6% = 34.6%, not 37.5%: the parts compound, they do not add."},
+
+    {"id": "C06", "check": "to_gbp", "asset": "U2", "fx": "X1",
+     "expected": {"name": "Synthetic US stock, longer", "currency": "GBP", "basis": "total_return",
+                  "months": ["2020-01", "2020-02", "2020-03", "2020-04"], "values": [80, 100, 110, 110]},
+     "derivation": "U2 starts in 2019-11 but the rate starts in 2020-01, so the pound series starts in 2020-01. Same values as C01. Earlier dollar history is dropped, never converted at a guessed rate."},
+
+    {"id": "C07", "check": "currency_split", "asset": "U2", "fx": "X1", "start": "2019-12", "end": "2020-02",
+     "expected_error": "CoverageError",
+     "derivation": "The asset covers 2019-12 but the rate does not. Not covered."},
+
+    {"id": "C08", "check": "currency_split", "asset": "U2", "fx": "X1", "start": "2020-01", "end": "2020-04",
+     "expected": {"local_return": 0.21, "currency_return": 0.13636363636363635, "gbp_return": 0.375},
+     "derivation": "Same period and values as C05; the extra dollar history before 2020-01 changes nothing."},
+
+    {"id": "C09", "check": "to_gbp", "asset": "U4", "fx": "X1",
+     "expected": {"name": "Synthetic US stock, price only", "currency": "GBP", "basis": "price",
+                  "months": ["2020-01", "2020-02", "2020-03", "2020-04"], "values": [80, 100, 110, 110]},
+     "derivation": "Conversion keeps the asset's basis: a price-only series stays price-only."},
+
+    {"id": "C10", "check": "to_gbp", "asset": "G1", "fx": "X1",
+     "expected_error": "SeriesError",
+     "derivation": "The asset is already in pounds. Only USD assets are converted."},
+
+    {"id": "C11", "check": "to_gbp", "asset": "U1", "fx": "X_price",
+     "expected_error": "SeriesError",
+     "derivation": "The rate series must be labelled fx_rate."},
+
+    {"id": "C12", "check": "to_gbp", "asset": "U1", "fx": "X_eur",
+     "expected_error": "SeriesError",
+     "derivation": "The rate series must be dollars per pound, labelled USD."},
+
+    {"id": "C13", "check": "to_gbp", "asset": "X1", "fx": "X1",
+     "expected_error": "SeriesError",
+     "derivation": "An exchange rate is not an asset to convert."},
+
+    {"id": "C14", "check": "to_gbp", "asset": "U3", "fx": "X1",
+     "expected_error": "CoverageError",
+     "derivation": "The asset (2021) and the rate (2020) share no months."},
+
+    {"id": "C15", "check": "currency_split", "asset": "U1", "fx": "X1", "start": "2020-03", "end": "2020-03",
+     "expected_error": "ValueError",
+     "derivation": "Start must be earlier than end."},
+
+    {"id": "C16", "check": "currency_split", "asset": "G1", "fx": "X1", "start": "2020-01", "end": "2020-04",
+     "expected_error": "SeriesError",
+     "derivation": "No split for an asset already priced in pounds."}
+  ]
+}
