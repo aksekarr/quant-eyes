@@ -15,7 +15,7 @@ section is written here only once its conventions are confirmed.
 | 3. Volatility and largest fall | 3 | `risk.json` | Written |
 | 4. Stress windows and holding periods | 4 | `windows.json` | Written |
 | 5. Correlation and the 90/10 comparison | 5 | `portfolio.json` | Written |
-| 6. Engine output | 6 | `output.json` | To come |
+| 6. Engine output | 6 | `output.json` | Written |
 
 ## General rules
 
@@ -302,3 +302,48 @@ asset.
   calculation only and are **never** returned or published (`DATA-RIGHTS.md`).
 - Labelled illustrative, not recommended. For large caps already inside the tracker,
   text must say the 10% adds to something already held.
+
+## 6. Engine output
+
+One function, `analyse(asset, tracker, fx)`, produces everything the cards need. Nothing
+else leaves the engine.
+
+### 6.1 Inputs
+
+- **Tracker:** labelled `GBP` and `total_return`, otherwise `SeriesError`.
+- **Asset:** `total_return` only. A price-only series is refused (`SeriesError`), not
+  labelled; everything in the v1 universe has total-return data.
+  - Priced in `USD`: a GBP/USD series (section 2.1) must be given, and the asset is
+    converted to pounds (section 2.2) before anything is measured. Missing `fx` is a
+    `ValueError`.
+  - Priced in `GBP`: `fx` must not be given (`ValueError`), so a rate is never silently
+    ignored.
+  - Any other currency: `SeriesError`.
+
+### 6.2 What is measured
+
+A **profile** of a series is: its first and last month and number of months, total
+return (section 1.3) and per-year return (section 1.4, empty under 12 months),
+volatility (3.1), largest fall (3.2), the three stress windows (4.1) and the 1-, 3- and
+5-year holding periods (4.2).
+
+- **Own:** the asset's profile over its full history in pounds.
+- **Side by side:** the asset's and the tracker's profiles over their common months
+  (1.5), plus correlation (5.1), the 36-month rolling correlation range (5.1) and the
+  90/10 comparison with a 10% share (5.2).
+- **Currency** (dollar assets only; empty for pound assets): the split (2.3) over the
+  full history in pounds, and for each stress window.
+- **Not covered is not an error.** Any part whose history is too short (a
+  `CoverageError`) is reported as empty and the rest is still produced. Any other error
+  stops the analysis.
+
+### 6.3 What may leave
+
+- Every output carries a **method version** (currently `1.0`), raised whenever this
+  document changes a calculation.
+- The output has a fixed shape. Every value is a single number (finite), text,
+  true/false or empty. The **only** list allowed is the three stress windows, each a
+  set of named values. Nothing shaped like a series can leave. The engine checks its own
+  output against these rules before returning it and refuses (`OutputError`) if they are
+  broken.
+- Numbers are never rounded (general rules).

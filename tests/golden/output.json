@@ -1,0 +1,918 @@
+{
+ "file": "output",
+ "spec": "docs/METHODOLOGY.md section 6",
+ "authorship": "Written by Claude (architect). Structure, coverage and the hand-worked facts in each derivation are by hand; the remaining figures come from Claude's independent reference implementation, which was checked against every earlier golden file and against the hand-worked facts before this file was written. Never produced by the engine. Committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+ "tolerance_abs": 1e-12,
+ "tolerance_abs_pounds": 1e-08,
+ "comparison_rules": "As risk.json and portfolio.json, at every level of nesting: exactly the keys shown, lists compared in order, numbers within tolerance_abs except ten_thousand_at_trough and ten_thousand_lost within tolerance_abs_pounds, strings, None, real booleans and real integers exactly.",
+ "interface": {
+  "module": "engine.output",
+  "errors": "OutputError is defined in engine.output. Uses SeriesError and CoverageError from engine.series. Bad arguments raise the built-in ValueError. Check order: tracker labels, asset labels and currency (SeriesError), then the fx argument (ValueError), then fx labels (SeriesError).",
+  "METHOD_VERSION": "Module constant, the string \"1.0\".",
+  "analyse(asset, tracker, fx=None)": "Returns a dict with exactly the keys method_version, asset_currency, own, side_by_side and currency, shaped exactly as the expected values in this file. Calls check_output on its result before returning it.",
+  "check_output(value)": "Returns None if value obeys METHODOLOGY 6.3, otherwise raises OutputError. A check_output case with expected \"accepted\" must not raise."
+ },
+ "series": {
+  "US_asset": {
+   "name": "Synthetic US stock",
+   "currency": "USD",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-11", 100],
+    ["2019-12", 100],
+    ["2020-01", 100],
+    ["2020-02", 100],
+    ["2020-03", 80],
+    ["2020-04", 80],
+    ["2020-05", 80],
+    ["2020-06", 80],
+    ["2020-07", 80],
+    ["2020-08", 80],
+    ["2020-09", 80],
+    ["2020-10", 80],
+    ["2020-11", 80],
+    ["2020-12", 88],
+    ["2021-01", 88]
+   ]
+  },
+  "FX": {
+   "name": "GBP/USD, dollars per pound",
+   "currency": "USD",
+   "basis": "fx_rate",
+   "pairs": [
+    ["2019-11", 1.25],
+    ["2019-12", 1.25],
+    ["2020-01", 1.25],
+    ["2020-02", 1.25],
+    ["2020-03", 1.0],
+    ["2020-04", 1.0],
+    ["2020-05", 1.0],
+    ["2020-06", 1.0],
+    ["2020-07", 1.0],
+    ["2020-08", 1.0],
+    ["2020-09", 1.0],
+    ["2020-10", 1.0],
+    ["2020-11", 1.0],
+    ["2020-12", 1.0],
+    ["2021-01", 1.0]
+   ]
+  },
+  "Tracker": {
+   "name": "Synthetic tracker",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-12", 100],
+    ["2020-01", 100],
+    ["2020-02", 90],
+    ["2020-03", 75],
+    ["2020-04", 90],
+    ["2020-05", 100],
+    ["2020-06", 100],
+    ["2020-07", 100],
+    ["2020-08", 100],
+    ["2020-09", 100],
+    ["2020-10", 100],
+    ["2020-11", 100],
+    ["2020-12", 110],
+    ["2021-01", 110]
+   ]
+  },
+  "UK_asset": {
+   "name": "Synthetic UK fund",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-12", 200],
+    ["2020-01", 200],
+    ["2020-02", 200],
+    ["2020-03", 180],
+    ["2020-04", 200],
+    ["2020-05", 200],
+    ["2020-06", 200],
+    ["2020-07", 200],
+    ["2020-08", 200],
+    ["2020-09", 200],
+    ["2020-10", 200],
+    ["2020-11", 200],
+    ["2020-12", 220],
+    ["2021-01", 220]
+   ]
+  },
+  "US_asset_price": {
+   "name": "US stock, price only",
+   "currency": "USD",
+   "basis": "price",
+   "pairs": [
+    ["2019-11", 100],
+    ["2019-12", 100],
+    ["2020-01", 100],
+    ["2020-02", 100],
+    ["2020-03", 80],
+    ["2020-04", 80],
+    ["2020-05", 80],
+    ["2020-06", 80],
+    ["2020-07", 80],
+    ["2020-08", 80],
+    ["2020-09", 80],
+    ["2020-10", 80],
+    ["2020-11", 80],
+    ["2020-12", 88],
+    ["2021-01", 88]
+   ]
+  },
+  "Tracker_usd": {
+   "name": "Tracker in dollars",
+   "currency": "USD",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-12", 100],
+    ["2020-01", 100],
+    ["2020-02", 90],
+    ["2020-03", 75],
+    ["2020-04", 90],
+    ["2020-05", 100],
+    ["2020-06", 100],
+    ["2020-07", 100],
+    ["2020-08", 100],
+    ["2020-09", 100],
+    ["2020-10", 100],
+    ["2020-11", 100],
+    ["2020-12", 110],
+    ["2021-01", 110]
+   ]
+  },
+  "Tracker_price": {
+   "name": "Tracker, price only",
+   "currency": "GBP",
+   "basis": "price",
+   "pairs": [
+    ["2019-12", 100],
+    ["2020-01", 100],
+    ["2020-02", 90],
+    ["2020-03", 75],
+    ["2020-04", 90],
+    ["2020-05", 100],
+    ["2020-06", 100],
+    ["2020-07", 100],
+    ["2020-08", 100],
+    ["2020-09", 100],
+    ["2020-10", 100],
+    ["2020-11", 100],
+    ["2020-12", 110],
+    ["2021-01", 110]
+   ]
+  },
+  "EUR_asset": {
+   "name": "Euro asset",
+   "currency": "EUR",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-12", 200],
+    ["2020-01", 200],
+    ["2020-02", 200],
+    ["2020-03", 180],
+    ["2020-04", 200],
+    ["2020-05", 200],
+    ["2020-06", 200],
+    ["2020-07", 200],
+    ["2020-08", 200],
+    ["2020-09", 200],
+    ["2020-10", 200],
+    ["2020-11", 200],
+    ["2020-12", 220],
+    ["2021-01", 220]
+   ]
+  }
+ },
+ "cases": [
+  {
+   "id": "A01",
+   "check": "analyse",
+   "asset": "US_asset",
+   "tracker": "Tracker",
+   "fx": "FX",
+   "expected": {
+    "method_version": "1.0",
+    "asset_currency": "USD",
+    "own": {
+     "start": "2019-11",
+     "end": "2021-01",
+     "months": 14,
+     "total_return": 0.10000000000000009,
+     "annualised_return": 0.08512418843796743,
+     "volatility": 0.09258200997725523,
+     "largest_fall": {
+      "max_drawdown": 0.0,
+      "peak_month": null,
+      "trough_month": null,
+      "recovery_month": null,
+      "recovered": null,
+      "months_peak_to_trough": null,
+      "months_trough_to_recovery": null,
+      "months_underwater": null,
+      "ten_thousand_at_trough": 10000.0,
+      "ten_thousand_lost": 0.0,
+      "drawdown_at_end": 0.0
+     },
+     "stress_windows": [
+      {
+       "window": "gfc",
+       "start": "2007-09",
+       "end": "2009-03",
+       "covered": false,
+       "return": null
+      },
+      {
+       "window": "covid",
+       "start": "2020-01",
+       "end": "2020-03",
+       "covered": true,
+       "return": 0.0
+      },
+      {
+       "window": "rate_shock",
+       "start": "2021-12",
+       "end": "2022-10",
+       "covered": false,
+       "return": null
+      }
+     ],
+     "holding_periods": {
+      "1_year": {
+       "horizon_months": 12,
+       "periods": 3,
+       "non_overlapping_periods": 1,
+       "first_start": "2019-11",
+       "last_end": "2021-01",
+       "worst": 0.0,
+       "worst_start": "2019-11",
+       "worst_end": "2020-11",
+       "median": 0.10000000000000009,
+       "best": 0.10000000000000009,
+       "best_start": "2019-12",
+       "best_end": "2020-12",
+       "periods_lost_money": 0,
+       "share_lost_money": 0.0,
+       "worst_annualised": 0.0,
+       "median_annualised": 0.10000000000000009,
+       "best_annualised": 0.10000000000000009
+      },
+      "3_years": null,
+      "5_years": null
+     }
+    },
+    "side_by_side": {
+     "asset": {
+      "start": "2019-12",
+      "end": "2021-01",
+      "months": 13,
+      "total_return": 0.10000000000000009,
+      "annualised_return": 0.0919647837742179,
+      "volatility": 0.09607689228305236,
+      "largest_fall": {
+       "max_drawdown": 0.0,
+       "peak_month": null,
+       "trough_month": null,
+       "recovery_month": null,
+       "recovered": null,
+       "months_peak_to_trough": null,
+       "months_trough_to_recovery": null,
+       "months_underwater": null,
+       "ten_thousand_at_trough": 10000.0,
+       "ten_thousand_lost": 0.0,
+       "drawdown_at_end": 0.0
+      },
+      "stress_windows": [
+       {
+        "window": "gfc",
+        "start": "2007-09",
+        "end": "2009-03",
+        "covered": false,
+        "return": null
+       },
+       {
+        "window": "covid",
+        "start": "2020-01",
+        "end": "2020-03",
+        "covered": true,
+        "return": 0.0
+       },
+       {
+        "window": "rate_shock",
+        "start": "2021-12",
+        "end": "2022-10",
+        "covered": false,
+        "return": null
+       }
+      ],
+      "holding_periods": {
+       "1_year": {
+        "horizon_months": 12,
+        "periods": 2,
+        "non_overlapping_periods": 1,
+        "first_start": "2019-12",
+        "last_end": "2021-01",
+        "worst": 0.10000000000000009,
+        "worst_start": "2019-12",
+        "worst_end": "2020-12",
+        "median": 0.10000000000000009,
+        "best": 0.10000000000000009,
+        "best_start": "2019-12",
+        "best_end": "2020-12",
+        "periods_lost_money": 0,
+        "share_lost_money": 0.0,
+        "worst_annualised": 0.10000000000000009,
+        "median_annualised": 0.10000000000000009,
+        "best_annualised": 0.10000000000000009
+       },
+       "3_years": null,
+       "5_years": null
+      }
+     },
+     "tracker": {
+      "start": "2019-12",
+      "end": "2021-01",
+      "months": 13,
+      "total_return": 0.10000000000000009,
+      "annualised_return": 0.0919647837742179,
+      "volatility": 0.31387659759612296,
+      "largest_fall": {
+       "max_drawdown": -0.25,
+       "peak_month": "2020-01",
+       "trough_month": "2020-03",
+       "recovery_month": "2020-05",
+       "recovered": true,
+       "months_peak_to_trough": 2,
+       "months_trough_to_recovery": 2,
+       "months_underwater": 4,
+       "ten_thousand_at_trough": 7500.0,
+       "ten_thousand_lost": 2500.0,
+       "drawdown_at_end": 0.0
+      },
+      "stress_windows": [
+       {
+        "window": "gfc",
+        "start": "2007-09",
+        "end": "2009-03",
+        "covered": false,
+        "return": null
+       },
+       {
+        "window": "covid",
+        "start": "2020-01",
+        "end": "2020-03",
+        "covered": true,
+        "return": -0.25
+       },
+       {
+        "window": "rate_shock",
+        "start": "2021-12",
+        "end": "2022-10",
+        "covered": false,
+        "return": null
+       }
+      ],
+      "holding_periods": {
+       "1_year": {
+        "horizon_months": 12,
+        "periods": 2,
+        "non_overlapping_periods": 1,
+        "first_start": "2019-12",
+        "last_end": "2021-01",
+        "worst": 0.10000000000000009,
+        "worst_start": "2019-12",
+        "worst_end": "2020-12",
+        "median": 0.10000000000000009,
+        "best": 0.10000000000000009,
+        "best_start": "2019-12",
+        "best_end": "2020-12",
+        "periods_lost_money": 0,
+        "share_lost_money": 0.0,
+        "worst_annualised": 0.10000000000000009,
+        "median_annualised": 0.10000000000000009,
+        "best_annualised": 0.10000000000000009
+       },
+       "3_years": null,
+       "5_years": null
+      }
+     },
+     "correlation": 0.29476071033562246,
+     "rolling_correlation_36": null,
+     "blend_90_10": {
+      "start": "2019-12",
+      "end": "2021-01",
+      "months": 13,
+      "asset_weight": 0.1,
+      "rebalance": "december",
+      "tracker": {
+       "total_return": 0.10000000000000009,
+       "annualised_return": 0.0919647837742179,
+       "volatility": 0.31387659759612296,
+       "largest_fall": {
+        "max_drawdown": -0.25,
+        "peak_month": "2020-01",
+        "trough_month": "2020-03",
+        "recovery_month": "2020-05",
+        "recovered": true,
+        "months_peak_to_trough": 2,
+        "months_trough_to_recovery": 2,
+        "months_underwater": 4,
+        "ten_thousand_at_trough": 7500.0,
+        "ten_thousand_lost": 2500.0,
+        "drawdown_at_end": 0.0
+       }
+      },
+      "blend": {
+       "total_return": 0.10000000000000031,
+       "annualised_return": 0.09196478377421813,
+       "volatility": 0.2807782769177868,
+       "largest_fall": {
+        "max_drawdown": -0.22499999999999998,
+        "peak_month": "2020-01",
+        "trough_month": "2020-03",
+        "recovery_month": "2020-05",
+        "recovered": true,
+        "months_peak_to_trough": 2,
+        "months_trough_to_recovery": 2,
+        "months_underwater": 4,
+        "ten_thousand_at_trough": 7750.0,
+        "ten_thousand_lost": 2250.0,
+        "drawdown_at_end": 0.0
+       }
+      }
+     }
+    },
+    "currency": {
+     "full_history": {
+      "start": "2019-11",
+      "end": "2021-01",
+      "local_return": -0.12,
+      "currency_return": 0.25,
+      "gbp_return": 0.10000000000000009
+     },
+     "stress_windows": [
+      {
+       "window": "gfc",
+       "start": "2007-09",
+       "end": "2009-03",
+       "covered": false,
+       "local_return": null,
+       "currency_return": null,
+       "gbp_return": null
+      },
+      {
+       "window": "covid",
+       "start": "2020-01",
+       "end": "2020-03",
+       "covered": true,
+       "local_return": -0.19999999999999996,
+       "currency_return": 0.25,
+       "gbp_return": 0.0
+      },
+      {
+       "window": "rate_shock",
+       "start": "2021-12",
+       "end": "2022-10",
+       "covered": false,
+       "local_return": null,
+       "currency_return": null,
+       "gbp_return": null
+      }
+     ]
+    }
+   },
+   "derivation": "Dollar stock: 100 until Feb 2020, 80 from Mar 2020, 88 from Dec 2020. The pound falls from 1.25 to 1.00 dollars in Mar 2020. In pounds the stock is 80 throughout (100/1.25, then 80/1.00) until 88 in Dec 2020, so it never falls in pounds, and the Covid window (Jan to Mar 2020) is exactly flat: -20% in dollars, +25% currency, 0.8 x 1.25 = 1. Own view: Nov 2019 to Jan 2021, 14 months, +10% total, three 1-year periods (0%, +10%, +10%), no 3- or 5-year periods, GFC and rate shock not covered. Side by side: the tracker starts Dec 2019, so both are cut to Dec 2019 to Jan 2021 (13 months); the tracker falls 25% from Jan to Mar 2020 (100 to 75, peak is the later of the two 100s) and recovers in May, 4 months underwater; too short for any 36-month rolling correlation. Currency, full history: -12% in dollars (100 to 88), +25% currency, +10% in pounds (0.88 x 1.25 = 1.1). Correlation, volatilities, per-year figures and the 90/10 are produced by Claude's independent reference implementation (validated against every earlier golden file), not hand-worked; the hand-worked facts above were asserted against it."
+  },
+  {
+   "id": "A02",
+   "check": "analyse",
+   "asset": "UK_asset",
+   "tracker": "Tracker",
+   "fx": null,
+   "expected": {
+    "method_version": "1.0",
+    "asset_currency": "GBP",
+    "own": {
+     "start": "2019-12",
+     "end": "2021-01",
+     "months": 13,
+     "total_return": 0.10000000000000009,
+     "annualised_return": 0.0919647837742179,
+     "volatility": 0.1771891966120153,
+     "largest_fall": {
+      "max_drawdown": -0.09999999999999998,
+      "peak_month": "2020-02",
+      "trough_month": "2020-03",
+      "recovery_month": "2020-04",
+      "recovered": true,
+      "months_peak_to_trough": 1,
+      "months_trough_to_recovery": 1,
+      "months_underwater": 2,
+      "ten_thousand_at_trough": 9000.0,
+      "ten_thousand_lost": 999.9999999999998,
+      "drawdown_at_end": 0.0
+     },
+     "stress_windows": [
+      {
+       "window": "gfc",
+       "start": "2007-09",
+       "end": "2009-03",
+       "covered": false,
+       "return": null
+      },
+      {
+       "window": "covid",
+       "start": "2020-01",
+       "end": "2020-03",
+       "covered": true,
+       "return": -0.09999999999999998
+      },
+      {
+       "window": "rate_shock",
+       "start": "2021-12",
+       "end": "2022-10",
+       "covered": false,
+       "return": null
+      }
+     ],
+     "holding_periods": {
+      "1_year": {
+       "horizon_months": 12,
+       "periods": 2,
+       "non_overlapping_periods": 1,
+       "first_start": "2019-12",
+       "last_end": "2021-01",
+       "worst": 0.10000000000000009,
+       "worst_start": "2019-12",
+       "worst_end": "2020-12",
+       "median": 0.10000000000000009,
+       "best": 0.10000000000000009,
+       "best_start": "2019-12",
+       "best_end": "2020-12",
+       "periods_lost_money": 0,
+       "share_lost_money": 0.0,
+       "worst_annualised": 0.10000000000000009,
+       "median_annualised": 0.10000000000000009,
+       "best_annualised": 0.10000000000000009
+      },
+      "3_years": null,
+      "5_years": null
+     }
+    },
+    "side_by_side": {
+     "asset": {
+      "start": "2019-12",
+      "end": "2021-01",
+      "months": 13,
+      "total_return": 0.10000000000000009,
+      "annualised_return": 0.0919647837742179,
+      "volatility": 0.1771891966120153,
+      "largest_fall": {
+       "max_drawdown": -0.09999999999999998,
+       "peak_month": "2020-02",
+       "trough_month": "2020-03",
+       "recovery_month": "2020-04",
+       "recovered": true,
+       "months_peak_to_trough": 1,
+       "months_trough_to_recovery": 1,
+       "months_underwater": 2,
+       "ten_thousand_at_trough": 9000.0,
+       "ten_thousand_lost": 999.9999999999998,
+       "drawdown_at_end": 0.0
+      },
+      "stress_windows": [
+       {
+        "window": "gfc",
+        "start": "2007-09",
+        "end": "2009-03",
+        "covered": false,
+        "return": null
+       },
+       {
+        "window": "covid",
+        "start": "2020-01",
+        "end": "2020-03",
+        "covered": true,
+        "return": -0.09999999999999998
+       },
+       {
+        "window": "rate_shock",
+        "start": "2021-12",
+        "end": "2022-10",
+        "covered": false,
+        "return": null
+       }
+      ],
+      "holding_periods": {
+       "1_year": {
+        "horizon_months": 12,
+        "periods": 2,
+        "non_overlapping_periods": 1,
+        "first_start": "2019-12",
+        "last_end": "2021-01",
+        "worst": 0.10000000000000009,
+        "worst_start": "2019-12",
+        "worst_end": "2020-12",
+        "median": 0.10000000000000009,
+        "best": 0.10000000000000009,
+        "best_start": "2019-12",
+        "best_end": "2020-12",
+        "periods_lost_money": 0,
+        "share_lost_money": 0.0,
+        "worst_annualised": 0.10000000000000009,
+        "median_annualised": 0.10000000000000009,
+        "best_annualised": 0.10000000000000009
+       },
+       "3_years": null,
+       "5_years": null
+      }
+     },
+     "tracker": {
+      "start": "2019-12",
+      "end": "2021-01",
+      "months": 13,
+      "total_return": 0.10000000000000009,
+      "annualised_return": 0.0919647837742179,
+      "volatility": 0.31387659759612296,
+      "largest_fall": {
+       "max_drawdown": -0.25,
+       "peak_month": "2020-01",
+       "trough_month": "2020-03",
+       "recovery_month": "2020-05",
+       "recovered": true,
+       "months_peak_to_trough": 2,
+       "months_trough_to_recovery": 2,
+       "months_underwater": 4,
+       "ten_thousand_at_trough": 7500.0,
+       "ten_thousand_lost": 2500.0,
+       "drawdown_at_end": 0.0
+      },
+      "stress_windows": [
+       {
+        "window": "gfc",
+        "start": "2007-09",
+        "end": "2009-03",
+        "covered": false,
+        "return": null
+       },
+       {
+        "window": "covid",
+        "start": "2020-01",
+        "end": "2020-03",
+        "covered": true,
+        "return": -0.25
+       },
+       {
+        "window": "rate_shock",
+        "start": "2021-12",
+        "end": "2022-10",
+        "covered": false,
+        "return": null
+       }
+      ],
+      "holding_periods": {
+       "1_year": {
+        "horizon_months": 12,
+        "periods": 2,
+        "non_overlapping_periods": 1,
+        "first_start": "2019-12",
+        "last_end": "2021-01",
+        "worst": 0.10000000000000009,
+        "worst_start": "2019-12",
+        "worst_end": "2020-12",
+        "median": 0.10000000000000009,
+        "best": 0.10000000000000009,
+        "best_start": "2019-12",
+        "best_end": "2020-12",
+        "periods_lost_money": 0,
+        "share_lost_money": 0.0,
+        "worst_annualised": 0.10000000000000009,
+        "median_annualised": 0.10000000000000009,
+        "best_annualised": 0.10000000000000009
+       },
+       "3_years": null,
+       "5_years": null
+      }
+     },
+     "correlation": 0.8568525835398755,
+     "rolling_correlation_36": null,
+     "blend_90_10": {
+      "start": "2019-12",
+      "end": "2021-01",
+      "months": 13,
+      "asset_weight": 0.1,
+      "rebalance": "december",
+      "tracker": {
+       "total_return": 0.10000000000000009,
+       "annualised_return": 0.0919647837742179,
+       "volatility": 0.31387659759612296,
+       "largest_fall": {
+        "max_drawdown": -0.25,
+        "peak_month": "2020-01",
+        "trough_month": "2020-03",
+        "recovery_month": "2020-05",
+        "recovered": true,
+        "months_peak_to_trough": 2,
+        "months_trough_to_recovery": 2,
+        "months_underwater": 4,
+        "ten_thousand_at_trough": 7500.0,
+        "ten_thousand_lost": 2500.0,
+        "drawdown_at_end": 0.0
+       }
+      },
+      "blend": {
+       "total_return": 0.10000000000000031,
+       "annualised_return": 0.09196478377421813,
+       "volatility": 0.29615670452892745,
+       "largest_fall": {
+        "max_drawdown": -0.235,
+        "peak_month": "2020-01",
+        "trough_month": "2020-03",
+        "recovery_month": "2020-05",
+        "recovered": true,
+        "months_peak_to_trough": 2,
+        "months_trough_to_recovery": 2,
+        "months_underwater": 4,
+        "ten_thousand_at_trough": 7650.0,
+        "ten_thousand_lost": 2350.0,
+        "drawdown_at_end": 0.0
+       }
+      }
+     }
+    },
+    "currency": null
+   },
+   "derivation": "A pound asset: no conversion and currency is empty. Its history equals the tracker's (Dec 2019 to Jan 2021), so own and side-by-side asset profiles are identical. Largest fall 200 to 180 (-10%) in Mar 2020, back to 200 in Apr 2020. Non-hand-worked figures as A01."
+  },
+  {
+   "id": "A03",
+   "check": "analyse",
+   "asset": "US_asset",
+   "tracker": "Tracker",
+   "fx": null,
+   "expected_error": "ValueError",
+   "derivation": "A dollar asset needs the GBP/USD series."
+  },
+  {
+   "id": "A04",
+   "check": "analyse",
+   "asset": "UK_asset",
+   "tracker": "Tracker",
+   "fx": "FX",
+   "expected_error": "ValueError",
+   "derivation": "A pound asset must not be given a rate: it would be silently ignored."
+  },
+  {
+   "id": "A05",
+   "check": "analyse",
+   "asset": "US_asset_price",
+   "tracker": "Tracker",
+   "fx": "FX",
+   "expected_error": "SeriesError",
+   "derivation": "Price-only series are refused."
+  },
+  {
+   "id": "A06",
+   "check": "analyse",
+   "asset": "UK_asset",
+   "tracker": "Tracker_usd",
+   "fx": null,
+   "expected_error": "SeriesError",
+   "derivation": "The tracker must be in pounds."
+  },
+  {
+   "id": "A07",
+   "check": "analyse",
+   "asset": "UK_asset",
+   "tracker": "Tracker_price",
+   "fx": null,
+   "expected_error": "SeriesError",
+   "derivation": "The tracker must be total return."
+  },
+  {
+   "id": "A08",
+   "check": "analyse",
+   "asset": "EUR_asset",
+   "tracker": "Tracker",
+   "fx": null,
+   "expected_error": "SeriesError",
+   "derivation": "Only pound and dollar assets are supported."
+  },
+  {
+   "id": "O01",
+   "check": "check_output",
+   "value": {
+    "a": 1,
+    "b": "text",
+    "c": null,
+    "d": true,
+    "e": 0.5,
+    "f": {
+     "g": -2
+    }
+   },
+   "expected": "accepted",
+   "derivation": "Numbers, text, true/false and empty values, in nested named groups: allowed."
+  },
+  {
+   "id": "O02",
+   "check": "check_output",
+   "value": {
+    "values": [
+     100,
+     101,
+     102
+    ]
+   },
+   "expected_error": "OutputError",
+   "derivation": "A list of numbers is series-shaped: refused."
+  },
+  {
+   "id": "O03",
+   "check": "check_output",
+   "value": {
+    "stress_windows": [
+     {
+      "x": 1
+     },
+     {
+      "x": 2
+     },
+     {
+      "x": 3
+     }
+    ]
+   },
+   "expected": "accepted",
+   "derivation": "The one allowed list: three stress windows, each a set of named values."
+  },
+  {
+   "id": "O04",
+   "check": "check_output",
+   "value": {
+    "stress_windows": [
+     {
+      "x": 1
+     },
+     {
+      "x": 2
+     },
+     {
+      "x": 3
+     },
+     {
+      "x": 4
+     }
+    ]
+   },
+   "expected_error": "OutputError",
+   "derivation": "Stress windows must be exactly three."
+  },
+  {
+   "id": "O05",
+   "check": "check_output",
+   "value": {
+    "stress_windows": [
+     1,
+     2,
+     3
+    ]
+   },
+   "expected_error": "OutputError",
+   "derivation": "Stress-window entries must be named groups, not bare numbers."
+  },
+  {
+   "id": "O06",
+   "check": "check_output",
+   "value": {
+    "a": {
+     "history": [
+      {
+       "x": 1
+      },
+      {
+       "x": 2
+      },
+      {
+       "x": 3
+      }
+     ]
+    }
+   },
+   "expected_error": "OutputError",
+   "derivation": "A list anywhere other than under stress_windows is refused, even if shaped like the allowed one."
+  },
+  {
+   "id": "O07",
+   "check": "check_output",
+   "value": [
+    1,
+    2,
+    3
+   ],
+   "expected_error": "OutputError",
+   "derivation": "The output itself must be a named group, not a list."
+  }
+ ]
+}
