@@ -231,6 +231,30 @@
     ["2020-03", 60]
    ]
   },
+  "T2_tracker_long": {
+   "name": "Tracker with two extra early months",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-10", 50],
+    ["2019-11", 100],
+    ["2019-12", 100],
+    ["2020-01", 110],
+    ["2020-02", 99],
+    ["2020-03", 99]
+   ]
+  },
+  "T2_asset_short": {
+   "name": "Asset starting Dec 2019",
+   "currency": "GBP",
+   "basis": "total_return",
+   "pairs": [
+    ["2019-12", 50],
+    ["2020-01", 50],
+    ["2020-02", 60],
+    ["2020-03", 60]
+   ]
+  },
   "T3_asset_later": {
    "name": "Asset with no overlap",
    "currency": "GBP",
@@ -542,6 +566,57 @@
    "asset_weight": 0.1,
    "expected_error": "CoverageError",
    "derivation": "No common months."
+  },
+  {
+   "id": "N07",
+   "check": "blend_comparison",
+   "tracker": "T2_tracker_long",
+   "asset": "T2_asset_short",
+   "asset_weight": 0.1,
+   "expected": {
+    "start": "2019-12",
+    "end": "2020-03",
+    "months": 3,
+    "asset_weight": 0.1,
+    "rebalance": "december",
+    "tracker": {
+     "total_return": -0.01,
+     "annualised_return": null,
+     "volatility": 0.34641016151377546,
+     "largest_fall": {
+      "max_drawdown": -0.1,
+      "peak_month": "2020-01",
+      "trough_month": "2020-02",
+      "recovery_month": null,
+      "recovered": false,
+      "months_peak_to_trough": 1,
+      "months_trough_to_recovery": null,
+      "months_underwater": 2,
+      "ten_thousand_at_trough": 9000.0,
+      "ten_thousand_lost": 1000.0,
+      "drawdown_at_end": -0.1
+     }
+    },
+    "blend": {
+     "total_return": 0.011,
+     "annualised_return": null,
+     "volatility": 0.28196354812488167,
+     "largest_fall": {
+      "max_drawdown": -0.07247706422018349,
+      "peak_month": "2020-01",
+      "trough_month": "2020-02",
+      "recovery_month": null,
+      "recovered": false,
+      "months_peak_to_trough": 1,
+      "months_trough_to_recovery": null,
+      "months_underwater": 2,
+      "ten_thousand_at_trough": 9275.229357798165,
+      "ten_thousand_lost": 724.7706422018349,
+      "drawdown_at_end": -0.07247706422018349
+     }
+    }
+   },
+   "derivation": "The tracker starts in Oct 2019 and doubles (50 to 100) before the asset's history begins in Dec 2019. Both the tracker and the mix are measured only over the common months, Dec 2019 to Mar 2020, so every figure equals N02. Measuring the tracker over its own full history would show +98% (99/50 - 1) against a mix that never saw that move."
   }
  ]
 }
