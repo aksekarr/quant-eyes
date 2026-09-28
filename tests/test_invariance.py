@@ -242,6 +242,7 @@ class InvarianceTests(unittest.TestCase):
                 "copy", "datetime", "math", "numbers", "re",
                 "engine.output", "engine.series",
             },
+            "providers.py": {"re", "engine.series"},
         }
         source_paths.extend(root / "pipeline" / name for name in allowed_pipeline_imports)
         for path in source_paths:
@@ -271,6 +272,44 @@ class InvarianceTests(unittest.TestCase):
                             self.assertNotIn(function.id, {"open", "print", "__import__", "eval", "exec"})
                         elif isinstance(function, ast.Attribute):
                             self.assertNotIn(function.attr, {"open", "print", "__import__", "eval", "exec"})
+
+        self._check_network_source(root / "pipeline" / "network.py")
+
+    def _check_network_source(self, path):
+        """Check the connection module's separate, deliberately narrow boundary."""
+        source = path.read_text(encoding="utf-8")
+        allowed_imports = {
+            "json", "socket", "urllib.request", "urllib.error", "pipeline.providers",
+        }
+        forbidden_calls = {"open", "print", "eval", "exec", "__import__"}
+        with self.subTest(module=path.name):
+            for forbidden_text in (
+                "_create_unverified_context", "CERT_NONE", "check_hostname",
+            ):
+                self.assertNotIn(forbidden_text, source)
+        tree = ast.parse(source, filename=str(path))
+        for node in ast.walk(tree):
+            with self.subTest(module=path.name, line=getattr(node, "lineno", None)):
+                imports = []
+                if isinstance(node, ast.Import):
+                    imports = [alias.name for alias in node.names]
+                elif isinstance(node, ast.ImportFrom):
+                    module = node.module or ""
+                    if node.level:
+                        self.assertEqual(node.level, 1)
+                        module = "pipeline" + ("." + module if module else "")
+                    imports = [module]
+                for module in imports:
+                    self.assertIn(module, allowed_imports)
+                if isinstance(node, ast.Call):
+                    function = node.func
+                    if isinstance(function, ast.Name):
+                        self.assertNotIn(function.id, forbidden_calls)
+                    elif isinstance(function, ast.Attribute):
+                        self.assertNotIn(function.attr, forbidden_calls)
+                    self.assertTrue(
+                        all(keyword.arg != "context" for keyword in node.keywords)
+                    )
 
 
 if __name__ == "__main__":

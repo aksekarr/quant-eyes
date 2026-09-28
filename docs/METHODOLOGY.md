@@ -605,10 +605,11 @@ month-end.
 
 ### 9.5 Cleaning provider text
 
-Text from a provider goes into an error message only after: the key is replaced by
-`[key]`; anything after `apikey=` up to the next `&` or space is replaced by `[key]`;
-runs of whitespace become one space; the result is cut to 200 characters. Messages never
-contain a URL, a response body or a value.
+Text from a provider goes into an error message only after, in this order: the key is
+replaced by `[key]`; anything after `apikey=` up to the next `&` or space is replaced by
+`[key]`; runs of whitespace become one space; any web address (starting with a scheme
+such as `https://`, or with `www.`) becomes `[url]`; the result is cut to 200
+characters. Messages never contain a URL, a response body or a value.
 
 ### 9.6 The fetch loop
 
