@@ -296,6 +296,8 @@
      "derivation": "A pound asset's file credits a source for an exchange rate it didn't use."},
     {"id": "C15", "check": "check_document", "document": "DOC_USA", "registry": "REG", "document_edits": [{"path": ["data_as_of"], "set": "2026-13"}], "expected_error": "PublishError", "message_must_contain": ["data_as_of"],
      "derivation": "Month 13."},
+    {"id": "C16", "check": "check_document", "document": "DOC_USA", "registry": "REG", "document_edits": [{"path": ["benchmark", "identity", "currency_hedged"], "set": 0}], "expected_error": "PublishError", "message_must_contain": ["benchmark"],
+     "derivation": "'Exactly its copy' means the same types too. 0 is not false, even though Python's == says 0 == False; a comparison that allowed it would publish 0 where the list says false. The document-level twin of R29."},
 
     {"id": "I01", "check": "document_independent", "registry": "REG", "instrument_id": "usa", "results": "RES_USA", "as_of_month": "2026-08", "generated_on": "2026-09-28",
      "in_place_registry_edits": [{"path": ["instruments", 1, "identity", "name"], "set": "Changed"}, {"path": ["instruments", 0, "label"], "set": "Changed"}, {"path": ["providers", "prova", "name"], "set": "Changed"}],
