@@ -1,0 +1,122 @@
+{
+  "file": "risk",
+  "spec": "docs/METHODOLOGY.md section 3",
+  "authorship": "Expected values written by hand by Claude (architect), checked independently, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+  "tolerance_abs": 1e-12,
+  "tolerance_abs_pounds": 1e-8,
+  "comparison_rules": "Numbers compare within tolerance_abs, except ten_thousand_at_trough and ten_thousand_lost, which compare within tolerance_abs_pounds (they are about 10,000 times larger, so ordinary floating-point error is larger too). Months (strings), booleans, integers (month counts) and null compare exactly. A null expected value means the result must be None. The result of largest_fall must have exactly the keys listed in the interface, no more and no fewer.",
+  "interface": {
+    "module": "engine.risk",
+    "errors": "Uses SeriesError and CoverageError from engine.series.",
+    "volatility(series)": "Sample standard deviation (n - 1) of the monthly returns, times sqrt(12). Float.",
+    "largest_fall(series)": "Returns a dict with exactly these keys: max_drawdown (float, zero or negative), peak_month, trough_month, recovery_month (\"YYYY-MM\" or None), recovered (bool, or None when there was no fall), months_peak_to_trough, months_trough_to_recovery, months_underwater (int or None), ten_thousand_at_trough, ten_thousand_lost (floats, both zero or positive), drawdown_at_end (float, zero or negative)."
+  },
+  "series": {
+    "D1": {"name": "Fall and full recovery", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 120], ["2020-03", 90], ["2020-04", 60], ["2020-05", 90], ["2020-06", 120], ["2020-07", 130]]},
+    "D1_pence": {"name": "Fall and full recovery, in pence", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 10000], ["2020-02", 12000], ["2020-03", 9000], ["2020-04", 6000], ["2020-05", 9000], ["2020-06", 12000], ["2020-07", 13000]]},
+    "D2": {"name": "Fall, not recovered", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 120], ["2020-03", 90], ["2020-04", 60], ["2020-05", 90]]},
+    "D3": {"name": "Tied high before the fall", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 120], ["2020-03", 120], ["2020-04", 60], ["2020-05", 120]]},
+    "D4": {"name": "Long shallow fall, then short deep fall", "currency": "USD", "basis": "price",
+           "pairs": [["2020-01", 100], ["2020-02", 90], ["2020-03", 80], ["2020-04", 85], ["2020-05", 95], ["2020-06", 100], ["2020-07", 110], ["2020-08", 55], ["2020-09", 110]]},
+    "D5": {"name": "Two equal falls", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 50], ["2020-03", 100], ["2020-04", 50], ["2020-05", 100]]},
+    "D6": {"name": "Never falls", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 100], ["2020-03", 110], ["2020-04", 120]]},
+    "D7": {"name": "Falling from the first month", "currency": "USD", "basis": "total_return",
+           "pairs": [["2015-01", 100], ["2015-02", 80], ["2015-03", 60], ["2015-04", 70]]},
+    "D8": {"name": "Fall across a year end", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2021-11", 100], ["2021-12", 110], ["2022-01", 88], ["2022-02", 99], ["2022-03", 110]]},
+    "V1": {"name": "Alternating +1% and -1%", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 101], ["2020-03", 99.99], ["2020-04", 100.9899], ["2020-05", 99.980001]]},
+    "V1_pence": {"name": "Alternating +1% and -1%, in pence", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 10000], ["2020-02", 10100], ["2020-03", 9999], ["2020-04", 10098.99], ["2020-05", 9998.0001]]},
+    "V2": {"name": "+10% then -10%", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 110], ["2020-03", 99]]},
+    "V3": {"name": "Steady +1% a month", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 101], ["2020-03", 102.01], ["2020-04", 103.0301]]},
+    "V4": {"name": "Only one return", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 110]]},
+    "X1": {"name": "GBP/USD, dollars per pound", "currency": "USD", "basis": "fx_rate",
+           "pairs": [["2020-01", 1.25], ["2020-02", 1.0], ["2020-03", 1.1], ["2020-04", 1.2]]}
+  },
+  "cases": [
+    {"id": "R01", "check": "volatility", "series": "V1", "expected": 0.04,
+     "derivation": "Returns +1%, -1%, +1%, -1% (101/100, 99.99/101, 100.9899/99.99, 99.980001/100.9899). Mean 0. Squared deviations 4 x 0.0001 = 0.0004. Sample variance divides by n - 1 = 3: 0.0004/3. Times 12: 0.0016. Square root: 0.04 = 4.0%. Dividing by n = 4 instead would give sqrt(0.0012) = 3.46%, so this case catches the wrong standard deviation."},
+
+    {"id": "R02", "check": "volatility", "series": "V1_pence", "expected": 0.04,
+     "derivation": "Same series in pence: returns are ratios, so identical to R01."},
+
+    {"id": "R03", "check": "volatility", "series": "V2", "expected": 0.4898979485566356,
+     "derivation": "Returns +10%, -10%. Mean 0. Squared deviations 0.01 + 0.01 = 0.02, divided by n - 1 = 1: 0.02. Times 12: 0.24. Square root of 0.24 = 0.489897948..., about 49.0%."},
+
+    {"id": "R04", "check": "volatility", "series": "V3", "expected": 0.0,
+     "derivation": "Every return is +1%, so there is no variation: volatility 0. Volatility measures bumpiness, not direction."},
+
+    {"id": "R05", "check": "volatility", "series": "V4", "expected_error": "CoverageError",
+     "derivation": "Two values give one return. A sample standard deviation needs at least two."},
+
+    {"id": "R06", "check": "volatility", "series": "X1", "expected_error": "SeriesError",
+     "derivation": "An exchange-rate series is not an investment. Rejected."},
+
+    {"id": "R10", "check": "largest_fall", "series": "D1",
+     "expected": {"max_drawdown": -0.5, "peak_month": "2020-02", "trough_month": "2020-04", "recovery_month": "2020-06",
+                  "recovered": true, "months_peak_to_trough": 2, "months_trough_to_recovery": 2, "months_underwater": 4,
+                  "ten_thousand_at_trough": 5000.0, "ten_thousand_lost": 5000.0, "drawdown_at_end": 0.0},
+     "derivation": "High 120 at 2020-02, low 60 at 2020-04: 60/120 - 1 = -50%. Back to 120 at 2020-06. Peak to trough 2 months, trough to recovery 2, underwater 2 + 2 = 4 (elapsed time, not the 3 month-ends that sat below 120). 10,000 invested at the high: 5,000 at the low, 5,000 lost. Ends at 130, a new high, so drawdown at end is 0."},
+
+    {"id": "R11", "check": "largest_fall", "series": "D1_pence",
+     "expected": {"max_drawdown": -0.5, "peak_month": "2020-02", "trough_month": "2020-04", "recovery_month": "2020-06",
+                  "recovered": true, "months_peak_to_trough": 2, "months_trough_to_recovery": 2, "months_underwater": 4,
+                  "ten_thousand_at_trough": 5000.0, "ten_thousand_lost": 5000.0, "drawdown_at_end": 0.0},
+     "derivation": "Same series in pence. The 10,000 figures are pounds invested, not the series' units, so they are identical to R10."},
+
+    {"id": "R12", "check": "largest_fall", "series": "D2",
+     "expected": {"max_drawdown": -0.5, "peak_month": "2020-02", "trough_month": "2020-04", "recovery_month": null,
+                  "recovered": false, "months_peak_to_trough": 2, "months_trough_to_recovery": null, "months_underwater": 3,
+                  "ten_thousand_at_trough": 5000.0, "ten_thousand_lost": 5000.0, "drawdown_at_end": -0.25},
+     "derivation": "Same fall as R10 but the data stops at 90 in 2020-05. Not recovered by 2020-05. Underwater so far: 2020-02 to 2020-05 = 3 months. Still 90/120 - 1 = -25% below the high at the end."},
+
+    {"id": "R13", "check": "largest_fall", "series": "D3",
+     "expected": {"max_drawdown": -0.5, "peak_month": "2020-03", "trough_month": "2020-04", "recovery_month": "2020-05",
+                  "recovered": true, "months_peak_to_trough": 1, "months_trough_to_recovery": 1, "months_underwater": 2,
+                  "ten_thousand_at_trough": 5000.0, "ten_thousand_lost": 5000.0, "drawdown_at_end": 0.0},
+     "derivation": "The high of 120 is reached in 2020-02 and again in 2020-03. The peak is the last month at the high, 2020-03. Recovery at 2020-05, where the value equals the peak (at or above counts)."},
+
+    {"id": "R14", "check": "largest_fall", "series": "D4",
+     "expected": {"max_drawdown": -0.5, "peak_month": "2020-07", "trough_month": "2020-08", "recovery_month": "2020-09",
+                  "recovered": true, "months_peak_to_trough": 1, "months_trough_to_recovery": 1, "months_underwater": 2,
+                  "ten_thousand_at_trough": 5000.0, "ten_thousand_lost": 5000.0, "drawdown_at_end": 0.0},
+     "derivation": "First fall: 100 to 80 (-20%), five months underwater. Second: 110 to 55 (-50%), two months underwater. Largest means deepest, not longest, so the second one."},
+
+    {"id": "R15", "check": "largest_fall", "series": "D5",
+     "expected": {"max_drawdown": -0.5, "peak_month": "2020-01", "trough_month": "2020-02", "recovery_month": "2020-03",
+                  "recovered": true, "months_peak_to_trough": 1, "months_trough_to_recovery": 1, "months_underwater": 2,
+                  "ten_thousand_at_trough": 5000.0, "ten_thousand_lost": 5000.0, "drawdown_at_end": 0.0},
+     "derivation": "Two falls of exactly -50% (100 to 50, twice). On a tie the earliest trough is used: 2020-02. Its peak is 2020-01 and it recovers at 2020-03."},
+
+    {"id": "R16", "check": "largest_fall", "series": "D6",
+     "expected": {"max_drawdown": 0.0, "peak_month": null, "trough_month": null, "recovery_month": null,
+                  "recovered": null, "months_peak_to_trough": null, "months_trough_to_recovery": null, "months_underwater": null,
+                  "ten_thousand_at_trough": 10000.0, "ten_thousand_lost": 0.0, "drawdown_at_end": 0.0},
+     "derivation": "100, 100, 110, 120: never below the high so far (a flat month is not a fall). Largest fall 0; nothing to date."},
+
+    {"id": "R17", "check": "largest_fall", "series": "D7",
+     "expected": {"max_drawdown": -0.4, "peak_month": "2015-01", "trough_month": "2015-03", "recovery_month": null,
+                  "recovered": false, "months_peak_to_trough": 2, "months_trough_to_recovery": null, "months_underwater": 3,
+                  "ten_thousand_at_trough": 6000.0, "ten_thousand_lost": 4000.0, "drawdown_at_end": -0.3},
+     "derivation": "The first month counts as a high even though the fall may have begun earlier. 60/100 - 1 = -40%. Not recovered by 2015-04, 3 months underwater, still 70/100 - 1 = -30% below the high."},
+
+    {"id": "R18", "check": "largest_fall", "series": "D8",
+     "expected": {"max_drawdown": -0.2, "peak_month": "2021-12", "trough_month": "2022-01", "recovery_month": "2022-03",
+                  "recovered": true, "months_peak_to_trough": 1, "months_trough_to_recovery": 2, "months_underwater": 3,
+                  "ten_thousand_at_trough": 8000.0, "ten_thousand_lost": 2000.0, "drawdown_at_end": 0.0},
+     "derivation": "High 110 in Dec 2021, low 88 in Jan 2022: 88/110 - 1 = -20%. Back to 110 in Mar 2022. Month counts cross the year end: Dec to Jan is 1, Jan to Mar is 2, Dec to Mar is 3."},
+
+    {"id": "R19", "check": "largest_fall", "series": "X1", "expected_error": "SeriesError",
+     "derivation": "An exchange-rate series is rejected."}
+  ]
+}

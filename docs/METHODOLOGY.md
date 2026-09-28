@@ -12,7 +12,7 @@ section is written here only once its conventions are confirmed.
 |---|---|---|---|
 | 1. Monthly series and returns | 1 | `foundation.json` | Written |
 | 2. Currency | 2 | `currency.json` | Written |
-| 3. Volatility and largest fall | 3 | `risk.json` | To come |
+| 3. Volatility and largest fall | 3 | `risk.json` | Written |
 | 4. Stress windows and holding periods | 4 | `windows.json` | To come |
 | 5. Correlation and the 90/10 comparison | 5 | `portfolio.json` | To come |
 | 6. Engine output | 6 | `output.json` | To come |
@@ -152,3 +152,52 @@ and these **compound**, they do not add:
 Funds priced in pounds that hold dollar assets without hedging (the tracker, the gold
 fund) carry a currency effect inside their pound price. With a single pound price, that
 effect cannot be separated from the fund's own return, so no split is shown for them.
+
+## 3. Volatility and largest fall
+
+Both apply to a single series of values (`total_return` or `price`). An exchange-rate
+series is rejected with `SeriesError`. Both work on whatever months the series covers;
+to compare two assets, cut them to their common window first (section 1.5).
+
+### 3.1 Volatility ("how bumpy is the ride?")
+
+    volatility = sample standard deviation of the monthly returns × √12
+
+- Monthly returns as in section 1.2. The sample standard deviation divides by *n − 1*,
+  where *n* is the number of returns. At least 2 returns are needed (3 values), otherwise
+  `CoverageError`.
+- √12 turns monthly variability into a yearly figure. This is the standard convention;
+  it assumes months are independent, which is an approximation.
+- Volatility measures bumpiness, not direction. A series that rises by exactly 1% every
+  month has zero volatility.
+
+### 3.2 Largest fall ("what's the worst it's been?")
+
+Measured on month-end values, and labelled "measured at month-end": a fall that
+recovered within a month does not appear.
+
+- **High so far.** For each month, the highest value up to and including that month.
+  The first month counts as a high, so a fall that began before the series starts is
+  measured only from the first month (bitcoin's data starts partway down from its
+  2013 peak).
+- **Drawdown** in month *m* = V(m) / high so far(m) − 1 (zero or negative).
+- **Largest fall** = the most negative drawdown. If two months tie, the **earliest** is
+  the trough.
+- **Peak** = the last month, at or before the trough, whose value equals the high so far
+  at the trough. (With 100, 120, 120, 60 the peak is the second 120: the fall starts
+  from the last time the investor was at the high.)
+- **Recovery** = the first month after the trough whose value is **at or above** the
+  peak value. If there is none, the fall is **not recovered** by the last month.
+- **Months:** peak to trough, trough to recovery, and underwater = peak to recovery. Each
+  is the number of month-ends elapsed, so underwater = peak to trough + trough to
+  recovery. If not recovered, underwater runs from the peak to the last month, and trough
+  to recovery is empty.
+- **In pounds:** £10,000 invested **at the peak** would have been worth
+  £10,000 × (1 + largest fall) at the trough. Both that value and the amount lost are
+  reported as positive numbers. The £ figure applies only to money invested at the high,
+  and text must say so.
+- **Drawdown at the end** = V(last month) / highest value in the whole series − 1. If the
+  fall is not recovered, this is how far below its high the asset still was at the end
+  ("not recovered by May 2020, still 25% below its high"). Never phrased as a forecast.
+- **No fall.** If no month is below the high so far, the largest fall is 0, and the peak,
+  trough, recovery and month counts are empty.
