@@ -18,6 +18,10 @@ Only Avi confirms decisions. Anything under Proposed is not approved.
 | 2026-09-28 | Raw provider data never stored; only derived statistics published; no price or growth charts. | Provider terms (see DATA-RIGHTS.md). |
 | 2026-09-28 | Comprehension test with about five people is part of the build. | Evidence of understanding, not just design. |
 | 2026-09-28 | Codex never handles API keys or runs network scripts; Avi runs them. | Structural control, not a written request (lesson from BBB). |
+| 2026-09-28 | Benchmark: SWDA.LON (iShares Core MSCI World, accumulating, GBP line), labelled a developed-world tracker, not global. | Longest London tracker history (from Dec 2009); accumulating, so no reliance on the provider's dividend adjustment. Cost: excludes emerging markets. |
+| 2026-09-28 | Universe (8): SWDA.LON benchmark; MSFT, AAPL, NVDA; SGLN.LON (physical gold); IGLT.LON (UK gilts); AZN.LON (AstraZeneca); bitcoin. US-listed ETFs (VT, IAU, GLD) dropped. | Data check 28 Sept: all available with no quality flags. US-listed ETFs are generally not buyable by UK retail. AstraZeneca over Shell: one continuous share line (Shell's 2022 share unification means stitched history). |
+| 2026-09-28 | Bitcoin included, history from Jan 2015. The page never presents the four-year cycle as a pattern. | Shows the product handling a short, regime-dominated history honestly. Pre-2015 data is Mt Gox era. About three halving cycles is three observations, not evidence. |
+| 2026-09-28 | Data providers: Tiingo (US stocks, bitcoin) and Alpha Vantage (London funds and stocks, GBP/USD), free tiers. GBP/USD from Aug 2007, so GBP history of US assets starts there. | Both covered the universe in the data check. Alpha Vantage terms don't address public display: email them before any public release. |
 
 ## Proposed (not approved)
 
@@ -25,7 +29,6 @@ Only Avi confirms decisions. Anything under Proposed is not approved.
 |---|---|
 | Show a holding-period horizon only if history covers at least 3 non-overlapping periods of that length (e.g. 15 years for 5-year periods). | Bitcoin would show 1- and 3-year only. |
 | 90/10 comparison rebalanced annually, before fees. | Needs a stated rule; annual is simple and realistic. |
-| Data provider(s): Tiingo and/or Alpha Vantage free tiers. | Decide after the data check. |
 | AI provider and model for the headline read. | Unresolved. |
-| Exact 8-12 asset universe. | After the data check. |
+| Ethereum deferred to after v1. | Adds little the bitcoin card doesn't already show; shorter history; 2022 proof-of-stake switch and staking yield complicate what 'total return' means. Adding it later is one config line once the pipeline exists. |
 | Product name. | Working title only. |
