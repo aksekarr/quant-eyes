@@ -104,6 +104,23 @@ def assert_exact_error(test_case, case, callable_under_test, errors):
 def generate_golden_tests(test_case_class, cases, supported_checks):
     """Add one test per golden case and reject unknown check types."""
     generated_case_ids = set()
+    generated_test_names = set()
+
+    for case in cases:
+        case_id = case["id"]
+        if case_id in generated_case_ids:
+            raise ValueError("Duplicate golden case ID: {}.".format(case_id))
+
+        test_name = "test_{}_{}".format(case_id, case["check"])
+        if test_name in generated_test_names or hasattr(test_case_class, test_name):
+            raise ValueError(
+                "Generated test name already exists for golden case ID: {}.".format(
+                    case_id
+                )
+            )
+
+        generated_case_ids.add(case_id)
+        generated_test_names.add(test_name)
 
     def make_test(case):
         def test(test_case):
@@ -119,6 +136,5 @@ def generate_golden_tests(test_case_class, cases, supported_checks):
     for case in cases:
         test_name = "test_{}_{}".format(case["id"], case["check"])
         setattr(test_case_class, test_name, make_test(case))
-        generated_case_ids.add(case["id"])
 
     return generated_case_ids
