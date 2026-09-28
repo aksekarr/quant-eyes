@@ -18,6 +18,7 @@ section is written here only once its conventions are confirmed.
 | 6. Engine output | 6 | `output.json` | Written |
 | 7. From provider rows to month-end values | Pipeline 1 | `monthly.json` | Written |
 | 8. Instruments and published files | Pipeline 2 | `publish.json` | Written |
+| 9. Fetching provider data | Pipeline 3a | `providers.json` | Written |
 
 ## General rules
 
@@ -546,3 +547,87 @@ failed and never repeating a URL or a value, at the first of these problems, in 
 Every instrument reaching the same as-of month, and carrying results from the current
 method, is what lets one "data as of" date and one method version stand for the whole
 site.
+
+## 9. Fetching provider data
+
+### 9.1 Where the code lives
+
+- `pipeline/providers.py` is pure: it builds requests, reads responses and runs the fetch
+  loop, with the connection and the pause passed in. No network, files or printing.
+- `pipeline/network.py` is the **only** module that opens a connection. Codex writes it
+  but never calls it for real; tests replace its `urlopen`. Avi runs the live fetch.
+
+### 9.2 Keys and symbols
+
+- A key must be letters and digits only, and not empty (`ValueError`, never showing the
+  key). That keeps it from breaking into a URL.
+- An equity or crypto symbol is letters, digits and dots. An exchange-rate symbol is
+  three capitals, a slash, three capitals (`GBP/USD`). Anything else is a `ValueError`.
+- **Tiingo** takes the key in the `Authorization` header (`Token <key>`), with
+  `Content-Type: application/json`. **Alpha Vantage** takes it in the URL, as the last
+  parameter. Because of that, **no URL is ever printed, logged or put in an error
+  message.**
+
+### 9.3 Requests
+
+Exact URLs, parameters in the order written. Every request is built, and every argument
+checked, before anything is requested.
+
+| Provider, kind | Requests |
+|---|---|
+| Tiingo, equity | One: `https://api.tiingo.com/tiingo/daily/<symbol>/prices?startDate=1990-01-01`. Daily, full history (section 7 picks the month-ends). |
+| Tiingo, crypto | One per calendar year, from the start month's year to the as-of month's year: `https://api.tiingo.com/tiingo/crypto/prices?tickers=<symbol>&startDate=<Y>-01-01&endDate=<Y>-12-31&resampleFreq=1day`. The endpoint caps the rows one request returns (found in the 28 Sept data check). A crypto instrument must have a start month, not after the as-of month. |
+| Alpha Vantage, equity | One: `https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=<symbol>&apikey=<key>`. The documentation marks this premium; the free tier served it in the 28 Sept data check. If that changes, the run fails with Alpha Vantage's message. It **never** falls back to `TIME_SERIES_MONTHLY`, which is price only. |
+| Alpha Vantage, fx | One: `https://www.alphavantage.co/query?function=FX_MONTHLY&from_symbol=GBP&to_symbol=USD&apikey=<key>`. |
+
+Any other provider and kind is a `ValueError`.
+
+### 9.4 Reading a response
+
+Each response becomes rows of [date, value] for section 7, in the order given. The value
+is always the instrument's named `field`. If it is missing, the value is empty: **never
+another field in its place** (close for adjusted close would silently turn a
+total-return series into price only). Section 7 then fails closed if that row is a
+month-end.
+
+- **Tiingo, equity:** a list of objects; date from `date`. An object instead of a list
+  is a Tiingo message: `ProviderError` with its `detail` text, cleaned (9.5). Anything
+  else is a `ProviderError`.
+- **Tiingo, crypto:** a list of at most one object. An empty list means no data that
+  year: no rows, not an error. The object's `ticker`, if present, must equal the symbol
+  (otherwise it is another instrument's prices). Rows come from its `priceData` list.
+- **Alpha Vantage:** an object. If it has `Information`, `Note` or `Error Message`, that
+  is a `ProviderError` carrying the text, cleaned. Otherwise, apart from `Meta Data`, it
+  must have **exactly one** key, whose value is an object of date to entry. The series
+  key's name is not relied on (the documentation and live responses name it
+  differently); zero or several candidates is a `ProviderError`. An entry that isn't an
+  object gives an empty value.
+
+### 9.5 Cleaning provider text
+
+Text from a provider goes into an error message only after: the key is replaced by
+`[key]`; anything after `apikey=` up to the next `&` or space is replaced by `[key]`;
+runs of whitespace become one space; the result is cut to 200 characters. Messages never
+contain a URL, a response body or a value.
+
+### 9.6 The fetch loop
+
+`fetch_rows(data, key, as_of_month, http_get, wait)` builds all the requests (9.3), then
+for each in order: pauses, requests, reads (9.4), and adds the rows. The pause comes
+**before every request**: 1 second for Tiingo, 13 seconds for Alpha Vantage (its free
+tier limits requests per minute). A `ProviderError` from requesting or reading is raised
+again as `ProviderError("<provider> <symbol>: <message>")`, with the message cleaned
+again, and nothing further is requested.
+
+### 9.7 The connection
+
+`http_get_json(url, headers)` makes one GET with the headers and a 30-second timeout,
+and returns the parsed JSON. Certificate checking is Python's default and is **never**
+switched off. Errors are `ProviderError`, never showing the URL:
+
+| Problem | Message |
+|---|---|
+| An HTTP error status | `HTTP <code>` |
+| A timeout (on Python 3.9, `socket.timeout` is separate from `TimeoutError`; both count) | `timed out` |
+| Any other connection failure | `connection problem (<error type>)` |
+| A body that isn't JSON | `response was not JSON` (the body is never shown: it may hold prices) |

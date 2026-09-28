@@ -87,6 +87,9 @@ Data pipeline
   the task says so.
 - Tests never use real provider data and never make network requests. Where fetch code
   must be tested, the test supplies a fake provider in memory.
+- `pipeline/network.py` is the only module that may open a network connection. You write
+  it but never call it for real: tests replace its `urlopen`. The live fetch is run by
+  Avi.
 - `pipeline/instruments.json` holds hand-checked facts committed by Avi. Treat it like
   `tests/golden/`: never create, edit, rename or delete it. If you think a fact in it is
   wrong, stop and report.
