@@ -13,7 +13,7 @@ section is written here only once its conventions are confirmed.
 | 1. Monthly series and returns | 1 | `foundation.json` | Written |
 | 2. Currency | 2 | `currency.json` | Written |
 | 3. Volatility and largest fall | 3 | `risk.json` | Written |
-| 4. Stress windows and holding periods | 4 | `windows.json` | To come |
+| 4. Stress windows and holding periods | 4 | `windows.json` | Written |
 | 5. Correlation and the 90/10 comparison | 5 | `portfolio.json` | To come |
 | 6. Engine output | 6 | `output.json` | To come |
 
@@ -201,3 +201,54 @@ recovered within a month does not appear.
   ("not recovered by May 2020, still 25% below its high"). Never phrased as a forecast.
 - **No fall.** If no month is below the high so far, the largest fall is 0, and the peak,
   trough, recovery and month counts are empty.
+
+## 4. Stress windows and holding periods
+
+Both apply to a single series of values (`total_return` or `price`); an exchange-rate
+series is rejected with `SeriesError`. Both report **total returns over fixed periods**
+(section 1.3), so a pence-quoted series gives the same answers as one in pounds.
+
+### 4.1 Stress windows ("what happened when markets panicked?")
+
+Three fixed windows, each measured from the month-end before its first month:
+
+| Window | Start month-end | End month-end |
+|---|---|---|
+| `gfc` (global financial crisis) | 2007-09 | 2009-03 |
+| `covid` (Covid crash) | 2020-01 | 2020-03 |
+| `rate_shock` (2022 rate shock) | 2021-12 | 2022-10 |
+
+- The window's return is V(end) / V(start) − 1.
+- A window is **covered** only if the series has both its start and end month. A partly
+  covered window is not covered, and is never shortened to fit.
+- Because the dates are fixed, the asset and the tracker are always compared over
+  identical months.
+- A window's return is **not** its largest fall: an asset can fall further inside the
+  window and partly recover before it ends. Text must say "over the period", never
+  "fell by".
+- No window is annualised (section 1.4).
+
+### 4.2 Holding periods ("what did holding it for 1, 3 or 5 years look like?")
+
+For a horizon of *h* months (12, 36 or 60), a **holding period** starts at any month-end
+*i* and ends at month-end *i + h*. Its return is V(i + h) / V(i) − 1.
+
+- **How many.** A series of *N* month-end values spans *N − 1* months and has
+  **N − h** holding periods of length *h* (fence posts, not panels: 120 month-ends give
+  108 twelve-month periods). If there are none, `CoverageError`.
+- **They overlap.** Consecutive periods share all but one month, so they are not
+  independent observations. The number of **non-overlapping** periods is
+  (N − 1) ÷ h, rounded down (120 month-ends give 9 twelve-month periods). It is
+  reported so the claims layer can apply the minimum-history rule once it is confirmed.
+- *h* must be a whole number of years (12, 24, 36, ...), otherwise `ValueError`.
+- **Worst, median, best** of the period returns, with the start and end month of the
+  worst and best. If two periods tie, the **earliest** start is used. The median of an
+  even number of periods is the average of the two middle values.
+- **Lost money** means a return below zero. A period that ends exactly where it started
+  did not lose money. Reported as a count and as a share of all periods.
+- **Per year.** Each period's return is also annualised (section 1.4). The worst and best
+  per-year figures are those of the worst and best periods. The median per-year figure is
+  the median of all the per-year figures. Whether the site shows totals or per-year
+  figures is decided in the claims layer.
+- **Date range:** the first start month and the last end month.
+- The historical worst is not the worst possible result. Text must say so.
