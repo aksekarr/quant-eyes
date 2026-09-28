@@ -68,6 +68,11 @@ Calculation engine and tests
   think the expected value is wrong, stop and report the case ID and your reasoning. Do
   not bend the code to match, and do not skip the case.
 - Run the tests from the repo root with `python3 -m unittest discover -s tests -v`.
+- Code organisation: one engine module per methodology section, each with one test file
+  `tests/test_<module>.py` and one golden file. Golden tests use the shared helpers in
+  `tests/golden_support.py`; never copy them into a test file. If a new kind of check is
+  needed, add it there. A rule used by more than one engine module is written once
+  (shared rules live in `engine/series.py`) and imported, never re-written.
 
 Site
 - The website makes zero runtime API calls. It only reads precomputed JSON.
