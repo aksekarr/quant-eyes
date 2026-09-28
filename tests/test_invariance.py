@@ -274,6 +274,48 @@ class InvarianceTests(unittest.TestCase):
                             self.assertNotIn(function.attr, {"open", "print", "__import__", "eval", "exec"})
 
         self._check_network_source(root / "pipeline" / "network.py")
+        self._check_file_io_source(
+            root / "pipeline" / "runner.py",
+            {
+                "datetime", "json", "os", "engine.output", "engine.series",
+                "pipeline.monthly", "pipeline.providers", "pipeline.publish",
+            },
+            {"print", "eval", "exec", "__import__"},
+        )
+        self._check_file_io_source(
+            root / "scripts" / "build_data.py",
+            {
+                "datetime", "json", "os", "pathlib", "sys", "time",
+                "pipeline.monthly", "pipeline.network", "pipeline.providers",
+                "pipeline.publish", "pipeline.runner",
+            },
+            {"eval", "exec", "__import__"},
+        )
+
+    def _check_file_io_source(self, path, allowed_imports, forbidden_calls):
+        """Keep the writer and command within their explicit I/O boundaries."""
+        forbidden_imports = {"urllib", "socket", "http", "subprocess", "shutil"}
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            with self.subTest(module=path.name, line=getattr(node, "lineno", None)):
+                imports = []
+                if isinstance(node, ast.Import):
+                    imports = [alias.name for alias in node.names]
+                elif isinstance(node, ast.ImportFrom):
+                    module = node.module or ""
+                    if node.level:
+                        self.assertEqual(node.level, 1)
+                        module = path.parent.name + ("." + module if module else "")
+                    imports = [module]
+                for module in imports:
+                    self.assertNotIn(module.split(".")[0], forbidden_imports)
+                    self.assertIn(module, allowed_imports)
+                if isinstance(node, ast.Call):
+                    function = node.func
+                    if isinstance(function, ast.Name):
+                        self.assertNotIn(function.id, forbidden_calls)
+                    elif isinstance(function, ast.Attribute):
+                        self.assertNotIn(function.attr, forbidden_calls)
 
     def _check_network_source(self, path):
         """Check the connection module's separate, deliberately narrow boundary."""
