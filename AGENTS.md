@@ -7,7 +7,7 @@ often on a phone.
 
 Read before any task: `docs/BRIEF.md` (product and v1 scope), `docs/DECISIONS.md`
 (what Avi has confirmed vs what is only proposed), `docs/DATA-RIGHTS.md` (before any
-data-related work).
+data-related work), `docs/METHODOLOGY.md` (before any calculation-engine work).
 
 ## How we work
 
@@ -53,6 +53,21 @@ Numbers and words
 - No advice language anywhere: never "buy", "sell", "should", "attractive", "cheap",
   "safe", "guaranteed", "limited to", "will" (about future outcomes), "recommend".
   Historical results are described as what happened, with dates.
+
+Calculation engine and tests
+- `docs/METHODOLOGY.md` is the calculation spec. Code in `engine/` must match it exactly.
+  If the spec is unclear or seems wrong, stop and report; do not choose a convention.
+- Python standard library only, and code must run on Python 3.9 (Avi's `python3`): no
+  `match` statements, no `X | Y` type hints, no third-party packages, no pip installs.
+- `engine/` is pure calculation: no file reads or writes, no network, no environment
+  variables, no printing or logging of values. It never rounds.
+- `tests/golden/` holds expected answers written independently of the code and committed
+  by Avi. Never create, edit, rename or delete anything in it. Never produce an expected
+  value by running your own code: expected values come from the golden files, or are
+  written by hand with the arithmetic shown in a comment. If a golden case fails and you
+  think the expected value is wrong, stop and report the case ID and your reasoning. Do
+  not bend the code to match, and do not skip the case.
+- Run the tests from the repo root with `python3 -m unittest discover -s tests -v`.
 
 Site
 - The website makes zero runtime API calls. It only reads precomputed JSON.

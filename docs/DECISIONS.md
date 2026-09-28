@@ -22,6 +22,9 @@ Only Avi confirms decisions. Anything under Proposed is not approved.
 | 2026-09-28 | Universe (8): SWDA.LON benchmark; MSFT, AAPL, NVDA; SGLN.LON (physical gold); IGLT.LON (UK gilts); AZN.LON (AstraZeneca); bitcoin. US-listed ETFs (VT, IAU, GLD) dropped. | Data check 28 Sept: all available with no quality flags. US-listed ETFs are generally not buyable by UK retail. AstraZeneca over Shell: one continuous share line (Shell's 2022 share unification means stitched history). |
 | 2026-09-28 | Bitcoin included, history from Jan 2015. The page never presents the four-year cycle as a pattern. | Shows the product handling a short, regime-dominated history honestly. Pre-2015 data is Mt Gox era. About three halving cycles is three observations, not evidence. |
 | 2026-09-28 | Data providers: Tiingo (US stocks, bitcoin) and Alpha Vantage (London funds and stocks, GBP/USD), free tiers. GBP/USD from Aug 2007, so GBP history of US assets starts there. | Both covered the universe in the data check. Alpha Vantage terms don't address public display: email them before any public release. |
+| 2026-09-28 | Calculation engine uses the Python standard library only and runs on Python 3.9. | Nothing to install; no silent date-matching or blank-skipping; every formula explicit for "show the maths". An independent checker can use pandas later. |
+| 2026-09-28 | Expected test answers are written in `tests/golden/` independently of the code (by Claude), committed by Avi before Codex runs, and never edited by Codex. | Tests written by the code's author only prove the code agrees with itself. `git status --short` shows any edit. |
+| 2026-09-28 | Engine foundation conventions (METHODOLOGY.md section 1): series matched by calendar month; any gap, duplicate, zero, negative or non-numeric value rejects the series; nothing under 12 months is annualised; the engine never rounds; error messages never show a value. | Fail closed rather than guess; one rounding per displayed number; raw values never reach logs. |
 
 ## Proposed (not approved)
 
@@ -32,3 +35,5 @@ Only Avi confirms decisions. Anything under Proposed is not approved.
 | AI provider and model for the headline read. | Unresolved. |
 | Ethereum deferred to after v1. | Adds little the bitcoin card doesn't already show; shorter history; 2022 proof-of-stake switch and staking yield complicate what 'total return' means. Adding it later is one config line once the pipeline exists. |
 | Product name. | Working title only. |
+| Volatility uses the sample standard deviation (divide by n − 1). | The convention in Excel STDEV.S and pandas; needed before engine task 3. |
+| Every comparison with the tracker uses identical months (the common window). The asset's own full-history figures are shown separately where relevant. | SWDA starts Dec 2009, so the side-by-side for US assets starts Jan 2010 and no tracker figure exists for the GFC window. Needed before engine task 3. |

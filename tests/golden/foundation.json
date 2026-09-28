@@ -1,0 +1,231 @@
+{
+  "file": "foundation",
+  "spec": "docs/METHODOLOGY.md section 1",
+  "authorship": "Expected values written by hand by Claude (architect), checked independently with exact fractions, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+  "tolerance_abs": 1e-12,
+  "special_values": "In a series value position, the exact strings \"NaN\", \"Infinity\" and \"-Infinity\" mean float('nan'), float('inf') and float('-inf'). Any other string is a literal string and must be rejected.",
+  "interface": {
+    "module": "engine.series",
+    "errors": "SeriesError (bad input data) and CoverageError (months not in the series) are defined in engine.series. Bad arguments raise the built-in ValueError.",
+    "MonthlySeries.from_pairs(name, currency, basis, pairs)": "pairs is a list of [\"YYYY-MM\", value]. Returns an immutable series or raises SeriesError. Exposes .name, .currency, .basis, .months (tuple of \"YYYY-MM\" strings), .values (tuple of floats), .first_month, .last_month.",
+    "monthly_returns(series)": "Returns a list of (month, return) pairs, one per month after the first.",
+    "period_return(series, start, end)": "V(end) / V(start) - 1, start and end being \"YYYY-MM\" month-ends.",
+    "annualise(total_return, months)": "(1 + total_return) ** (12 / months) - 1. Raises ValueError if months < 12 or total_return <= -1.",
+    "common_window(a, b)": "Returns (a_cut, b_cut) over the months both cover, labels kept, in the order given."
+  },
+  "series": {
+    "S1": {"name": "Synthetic A", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2019-11", 100], ["2019-12", 110], ["2020-01", 99], ["2020-02", 118.8]]},
+    "S1_pence": {"name": "Synthetic A in pence", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2019-11", 10000], ["2019-12", 11000], ["2020-01", 9900], ["2020-02", 11880]]},
+    "S2": {"name": "Synthetic B", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 101], ["2020-03", 102], ["2020-04", 103], ["2020-05", 104], ["2020-06", 105]]},
+    "S3": {"name": "Synthetic C", "currency": "USD", "basis": "price",
+           "pairs": [["2020-03", 200], ["2020-04", 202], ["2020-05", 204], ["2020-06", 206], ["2020-07", 208], ["2020-08", 210], ["2020-09", 212]]},
+    "S4": {"name": "Synthetic D", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-01", 100], ["2020-02", 105]]},
+    "S5": {"name": "Synthetic E", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2020-02", 50], ["2020-03", 51], ["2020-04", 52], ["2020-05", 53]]},
+    "S6": {"name": "Synthetic F", "currency": "GBP", "basis": "total_return",
+           "pairs": [["2021-01", 100], ["2021-02", 90], ["2021-03", 95]]},
+    "S7": {"name": "Synthetic G", "currency": "USD", "basis": "fx_rate",
+           "pairs": [["2020-01", 1.25], ["2020-02", 1.2], ["2020-03", 1.3], ["2020-04", 1.28], ["2020-05", 1.24], ["2020-06", 1.22]]}
+  },
+  "cases": [
+    {"id": "F01", "check": "series_properties", "series": "S1",
+     "expected": {"name": "Synthetic A", "currency": "GBP", "basis": "total_return",
+                  "months": ["2019-11", "2019-12", "2020-01", "2020-02"], "values": [100, 110, 99, 118.8],
+                  "first_month": "2019-11", "last_month": "2020-02"},
+     "derivation": "A valid series is built as given. It crosses a year boundary (2019-12 to 2020-01), which counts as consecutive."},
+
+    {"id": "F02", "check": "monthly_returns", "series": "S1",
+     "expected": [["2019-12", 0.1], ["2020-01", -0.1], ["2020-02", 0.2]],
+     "derivation": "110/100 - 1 = +10%. 99/110 - 1 = -10%. 118.8/99 - 1 = +20%. Four values give three returns, each labelled with the month it ends in."},
+
+    {"id": "F03", "check": "monthly_returns", "series": "S1_pence",
+     "expected": [["2019-12", 0.1], ["2020-01", -0.1], ["2020-02", 0.2]],
+     "derivation": "Same series quoted in pence (every value x100). Returns are ratios, so they are identical to F02."},
+
+    {"id": "F04", "check": "period_return", "series": "S1", "start": "2019-11", "end": "2020-02",
+     "expected": 0.188,
+     "derivation": "118.8/100 - 1 = +18.8%. Check by compounding F02: 1.1 x 0.9 x 1.2 = 1.188."},
+
+    {"id": "F05", "check": "period_return", "series": "S1_pence", "start": "2019-11", "end": "2020-02",
+     "expected": 0.188,
+     "derivation": "11880/10000 - 1 = +18.8%, identical to F04."},
+
+    {"id": "F06", "check": "period_return", "series": "S1", "start": "2019-12", "end": "2020-01",
+     "expected": -0.1,
+     "derivation": "99/110 - 1 = -10%."},
+
+    {"id": "F07", "check": "period_return", "series": "S1", "start": "2019-11", "end": "2019-12",
+     "expected": 0.1,
+     "derivation": "A one-month period equals that month's return: 110/100 - 1 = +10%."},
+
+    {"id": "F08", "check": "period_return", "series": "S1", "start": "2019-10", "end": "2020-02",
+     "expected_error": "CoverageError",
+     "derivation": "Start month 2019-10 is before the series begins. Not covered; never shortened to fit."},
+
+    {"id": "F09", "check": "period_return", "series": "S1", "start": "2019-11", "end": "2020-03",
+     "expected_error": "CoverageError",
+     "derivation": "End month 2020-03 is after the series ends. Not covered."},
+
+    {"id": "F10", "check": "period_return", "series": "S1", "start": "2020-01", "end": "2020-01",
+     "expected_error": "ValueError",
+     "derivation": "Start must be earlier than end."},
+
+    {"id": "F11", "check": "period_return", "series": "S1", "start": "2020-02", "end": "2019-12",
+     "expected_error": "ValueError",
+     "derivation": "Start after end."},
+
+    {"id": "F12", "check": "annualise", "total_return": 0.21, "months": 24,
+     "expected": 0.1,
+     "derivation": "(1.21)^(12/24) = sqrt(1.21) = 1.1, so +10% a year."},
+
+    {"id": "F13", "check": "annualise", "total_return": -0.19, "months": 24,
+     "expected": -0.1,
+     "derivation": "(0.81)^(1/2) = 0.9, so -10% a year."},
+
+    {"id": "F14", "check": "annualise", "total_return": 0.331, "months": 36,
+     "expected": 0.1,
+     "derivation": "(1.331)^(1/3) = 1.1, because 1.1^3 = 1.331."},
+
+    {"id": "F15", "check": "annualise", "total_return": 0.1, "months": 12,
+     "expected": 0.1,
+     "derivation": "Exactly one year: annualising changes nothing."},
+
+    {"id": "F16", "check": "annualise", "total_return": 0.0, "months": 60,
+     "expected": 0.0,
+     "derivation": "No gain over five years is 0% a year."},
+
+    {"id": "F17", "check": "annualise", "total_return": 1.0, "months": 120,
+     "expected": 0.07177346253629313,
+     "derivation": "Doubling over ten years: 2^(1/10) - 1 = 7.177...% a year. Sanity check with the rule of 72: 72/7.2 is about 10 years."},
+
+    {"id": "F18", "check": "annualise", "total_return": 0.05, "months": 6,
+     "expected_error": "ValueError",
+     "derivation": "Periods shorter than 12 months are never annualised."},
+
+    {"id": "F19", "check": "annualise", "total_return": 0.05, "months": 11,
+     "expected_error": "ValueError",
+     "derivation": "11 months is still under a year."},
+
+    {"id": "F20", "check": "annualise", "total_return": -1.0, "months": 24,
+     "expected_error": "ValueError",
+     "derivation": "A -100% total return cannot be annualised (and cannot arise from positive values)."},
+
+    {"id": "F21", "check": "common_window", "a": "S2", "b": "S3",
+     "expected_a": {"name": "Synthetic B", "currency": "GBP", "basis": "total_return",
+                    "months": ["2020-03", "2020-04", "2020-05", "2020-06"], "values": [102, 103, 104, 105]},
+     "expected_b": {"name": "Synthetic C", "currency": "USD", "basis": "price",
+                    "months": ["2020-03", "2020-04", "2020-05", "2020-06"], "values": [200, 202, 204, 206]},
+     "derivation": "S2 covers 2020-01 to 2020-06, S3 covers 2020-03 to 2020-09. Later start is 2020-03, earlier end is 2020-06. Labels kept."},
+
+    {"id": "F22", "check": "common_window", "a": "S3", "b": "S2",
+     "expected_a": {"name": "Synthetic C", "currency": "USD", "basis": "price",
+                    "months": ["2020-03", "2020-04", "2020-05", "2020-06"], "values": [200, 202, 204, 206]},
+     "expected_b": {"name": "Synthetic B", "currency": "GBP", "basis": "total_return",
+                    "months": ["2020-03", "2020-04", "2020-05", "2020-06"], "values": [102, 103, 104, 105]},
+     "derivation": "Same as F21 with the arguments swapped: results come back in the order given."},
+
+    {"id": "F23", "check": "common_window", "a": "S2", "b": "S7",
+     "expected_a": {"name": "Synthetic B", "currency": "GBP", "basis": "total_return",
+                    "months": ["2020-01", "2020-02", "2020-03", "2020-04", "2020-05", "2020-06"], "values": [100, 101, 102, 103, 104, 105]},
+     "expected_b": {"name": "Synthetic G", "currency": "USD", "basis": "fx_rate",
+                    "months": ["2020-01", "2020-02", "2020-03", "2020-04", "2020-05", "2020-06"], "values": [1.25, 1.2, 1.3, 1.28, 1.24, 1.22]},
+     "derivation": "Identical coverage: both come back unchanged."},
+
+    {"id": "F24", "check": "common_window", "a": "S4", "b": "S5",
+     "expected_error": "CoverageError",
+     "derivation": "Only 2020-02 is shared. One month gives no common return."},
+
+    {"id": "F25", "check": "common_window", "a": "S2", "b": "S6",
+     "expected_error": "CoverageError",
+     "derivation": "No months in common."},
+
+    {"id": "F30", "check": "invalid_series",
+     "build": {"name": "Gap", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-03", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-02"],
+     "derivation": "2020-02 is missing. The message names the first missing month."},
+
+    {"id": "F31", "check": "invalid_series",
+     "build": {"name": "Gap over year end", "currency": "GBP", "basis": "total_return", "pairs": [["2019-12", 100], ["2020-02", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-01"],
+     "derivation": "2020-01 is missing across the year boundary."},
+
+    {"id": "F32", "check": "invalid_series",
+     "build": {"name": "Duplicate", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-01", 101], ["2020-02", 102]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-01"],
+     "derivation": "2020-01 appears twice."},
+
+    {"id": "F33", "check": "invalid_series",
+     "build": {"name": "Out of order", "currency": "GBP", "basis": "total_return", "pairs": [["2020-02", 100], ["2020-01", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-01"],
+     "derivation": "Months must be in ascending order; never silently re-sorted."},
+
+    {"id": "F34", "check": "invalid_series",
+     "build": {"name": "Zero", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-02", 0], ["2020-03", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-02"],
+     "derivation": "Values must be positive."},
+
+    {"id": "F35", "check": "invalid_series",
+     "build": {"name": "Negative", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-02", -37.5], ["2020-03", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-02"], "message_must_not_contain": ["37.5"],
+     "derivation": "Values must be positive. The message names the month but never shows the value."},
+
+    {"id": "F36", "check": "invalid_series",
+     "build": {"name": "NaN", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-02", "NaN"], ["2020-03", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-02"],
+     "derivation": "Not a number. Rejected, never skipped or filled."},
+
+    {"id": "F37", "check": "invalid_series",
+     "build": {"name": "Infinity", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-02", "Infinity"], ["2020-03", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-02"],
+     "derivation": "Not finite."},
+
+    {"id": "F38", "check": "invalid_series",
+     "build": {"name": "Text value", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-02", "101"]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-02"],
+     "derivation": "A string is not converted to a number; it is rejected."},
+
+    {"id": "F39", "check": "invalid_series",
+     "build": {"name": "True/false value", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-02", true]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-02"],
+     "derivation": "In Python, True counts as the number 1. It must still be rejected."},
+
+    {"id": "F40", "check": "invalid_series",
+     "build": {"name": "One value", "currency": "GBP", "basis": "total_return", "pairs": [["2020-01", 100]]},
+     "expected_error": "SeriesError",
+     "derivation": "Fewer than 2 observations: no return can be computed."},
+
+    {"id": "F41", "check": "invalid_series",
+     "build": {"name": "Empty", "currency": "GBP", "basis": "total_return", "pairs": []},
+     "expected_error": "SeriesError",
+     "derivation": "No observations."},
+
+    {"id": "F42", "check": "invalid_series",
+     "build": {"name": "Month 13", "currency": "GBP", "basis": "total_return", "pairs": [["2020-12", 100], ["2020-13", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-13"],
+     "derivation": "There is no month 13."},
+
+    {"id": "F43", "check": "invalid_series",
+     "build": {"name": "Month 00", "currency": "GBP", "basis": "total_return", "pairs": [["2020-00", 100], ["2020-01", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-00"],
+     "derivation": "There is no month 0."},
+
+    {"id": "F44", "check": "invalid_series",
+     "build": {"name": "Short month key", "currency": "GBP", "basis": "total_return", "pairs": [["2020-1", 100], ["2020-2", 101]]},
+     "expected_error": "SeriesError", "message_must_contain": ["2020-1"],
+     "derivation": "Month keys must be exactly YYYY-MM."},
+
+    {"id": "F45", "check": "invalid_series",
+     "build": {"name": "Lower-case currency", "currency": "gbp", "basis": "total_return", "pairs": [["2020-01", 100], ["2020-02", 101]]},
+     "expected_error": "SeriesError",
+     "derivation": "Currency must be three upper-case letters."},
+
+    {"id": "F46", "check": "invalid_series",
+     "build": {"name": "Unknown basis", "currency": "GBP", "basis": "adjusted", "pairs": [["2020-01", 100], ["2020-02", 101]]},
+     "expected_error": "SeriesError",
+     "derivation": "Basis must be total_return, price or fx_rate."}
+  ]
+}
