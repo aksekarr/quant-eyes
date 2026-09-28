@@ -74,6 +74,20 @@ Calculation engine and tests
   needed, add it there. A rule used by more than one engine module is written once
   (shared rules live in `engine/series.py`) and imported, never re-written.
 
+Data pipeline
+- `pipeline/` turns provider responses into engine inputs and published files. Every
+  module in it follows the engine's rules (no network, no file reads or writes, no
+  environment variables, no printing or logging of values, no rounding) unless a task
+  names it as the fetch module or the writer.
+- Methodology sections from 7 onward are pipeline sections: one module per section, each
+  with one test file `tests/test_<module>.py` and one golden file, using
+  `tests/golden_support.py` like the engine.
+- Pipeline code reuses engine rules by importing them (month format, series validation,
+  errors) and never re-writes them. Do not modify `engine/` in a pipeline task unless
+  the task says so.
+- Tests never use real provider data and never make network requests. Where fetch code
+  must be tested, the test supplies a fake provider in memory.
+
 Site
 - The website makes zero runtime API calls. It only reads precomputed JSON.
 - Every page shows data sources with attribution and a "data as of" date.

@@ -16,6 +16,7 @@ section is written here only once its conventions are confirmed.
 | 4. Stress windows and holding periods | 4 | `windows.json` | Written |
 | 5. Correlation and the 90/10 comparison | 5 | `portfolio.json` | Written |
 | 6. Engine output | 6 | `output.json` | Written |
+| 7. From provider rows to month-end values | Pipeline 1 | `monthly.json` | Written |
 
 ## General rules
 
@@ -347,3 +348,83 @@ volatility (3.1), largest fall (3.2), the three stress windows (4.1) and the 1-,
   output against these rules before returning it and refuses (`OutputError`) if they are
   broken.
 - Numbers are never rounded (general rules).
+
+## 7. From provider rows to month-end values
+
+The engine starts from month-end values (section 1.1). This section fixes how the data
+pipeline picks them from what a provider returns. It is pure calculation, in
+`pipeline/monthly.py`: no network, no files, no printing. Fetching happens elsewhere, and
+raw rows are held in memory only (`DATA-RIGHTS.md`).
+
+### 7.1 Provider rows
+
+A provider's response is turned into a list of rows, each a (date, value) pair, in
+whatever order the provider sent them. Alpha Vantage sends newest first.
+
+- **Date.** Text that begins with a real calendar date written `YYYY-MM-DD`. It is either
+  exactly that, or that followed by `T` and a time (`2020-01-31T00:00:00.000Z`). The date
+  is taken as written: the time and any time zone are ignored, never converted. Crypto
+  rows are labelled by their UTC day, which is what is written.
+- **Value.** A number, or text holding a number (Alpha Vantage sends `"105.2500"`).
+  True/false, empty text, nothing, and text that isn't a number are not values. A value
+  must be finite.
+- Tiingo is fetched daily and Alpha Vantage monthly. The same rule (7.3) picks the
+  month-end from both, so one rule decides every month-end value.
+
+### 7.2 The as-of month
+
+Every run has one **as-of month**: the last month included for every instrument, shown
+on the site as "data as of" that month's end.
+
+- By default it is the **last complete calendar month before the run date**: the month
+  before the run date's month. A run on 28 Sept 2026 gives `2026-08`. A run on 31 March
+  gives February, because March's closing values may not be in until the month has
+  ended.
+- Rows after the as-of month (the unfinished current month) are dropped before anything
+  in them is read.
+- Every instrument must reach the as-of month, or a `CoverageError` is raised. No
+  instrument is published with an earlier as-of month.
+
+### 7.3 Picking the month-end value
+
+For each calendar month from the start month (7.4) to the as-of month:
+
+- The **month-end row** is the row with the **latest date** in that month, not the last
+  row in the list.
+- **Stale check.** The month-end row's date must fall in the **last 7 calendar days** of
+  its month: from the 25th of a 31-day month, the 24th of a 30-day month, the 22nd of a
+  28-day February, the 23rd of a 29-day February. Otherwise the run fails, naming the
+  month and the date. Without this, a provider that hasn't yet posted the true last
+  close, or a month missing its last days, would pass silently as a month-end value.
+  Weekends, Good Friday and Christmas never move the last trading day earlier than this.
+- **Only the month-end row's value is read.** Values on other days, and every row before
+  the start month or after the as-of month, are neither used nor checked. Every row's
+  date is checked, because the date decides where the row belongs.
+- The result is a list of (month, value) pairs in ascending month order, one per month
+  that has rows. It becomes a `MonthlySeries` (section 1.1), which rejects gaps, zeros
+  and negative values. Those rules are the engine's and are not repeated here.
+
+### 7.4 Start month
+
+An instrument may have a start month, for history that is deliberately excluded. Months
+before it are dropped unread (apart from their dates). If the start month has no rows,
+a `CoverageError` is raised: the start is never moved to the first month that does have
+data. With no start month, the series starts at the earliest month in the rows.
+
+### 7.5 Errors
+
+Checks run in this order, and the first problem stops the run:
+
+1. **Arguments** (`ValueError`): the as-of month and any start month must be `YYYY-MM`
+   with a month from 01 to 12, and the start must be earlier than the as-of month.
+2. **Each row, in the order given** (`ProviderDataError`, naming the row number counted
+   from 1, or the repeated date): it is a date and a value; the date is valid; the date
+   has not appeared before. Two rows on the same date are a duplicate even if one
+   carries a time.
+3. **Coverage** (`CoverageError`, naming the month): the as-of month has rows, then the
+   start month has rows.
+4. **Each kept month, in ascending order** (`ProviderDataError`, naming the month): the
+   stale check, then the value.
+
+Messages name the row number, date or month and the problem, never a value: a value is
+raw provider data.
