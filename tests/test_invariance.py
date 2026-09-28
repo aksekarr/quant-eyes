@@ -225,7 +225,8 @@ class InvarianceTests(unittest.TestCase):
         self.assertGreater(checked, 0)
 
     def test_engine_sources_have_no_io_imports_or_calls(self):
-        source_paths = sorted((Path(__file__).resolve().parents[1] / "engine").glob("*.py"))
+        root = Path(__file__).resolve().parents[1]
+        source_paths = sorted((root / "engine").glob("*.py"))
         self.assertTrue(source_paths)
         forbidden_imports = {
             "socket", "urllib", "http", "requests", "os", "pathlib", "io",
@@ -235,7 +236,13 @@ class InvarianceTests(unittest.TestCase):
         # New standard-library imports need explicit review of this allowlist.
         allowed_imports = {"math", "numbers", "re", "statistics", "engine"}
         allowed_imports.update("engine." + path.stem for path in source_paths)
+        allowed_by_package = {
+            "engine": allowed_imports,
+            "pipeline": {"calendar", "datetime", "math", "numbers", "re", "engine.series"},
+        }
+        source_paths.append(root / "pipeline" / "monthly.py")
         for path in source_paths:
+            package = path.parent.name
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
             for node in ast.walk(tree):
                 with self.subTest(module=path.name, line=getattr(node, "lineno", None)):
@@ -246,11 +253,11 @@ class InvarianceTests(unittest.TestCase):
                         module = node.module or ""
                         if node.level:
                             self.assertEqual(node.level, 1)
-                            module = "engine" + ("." + module if module else "")
+                            module = package + ("." + module if module else "")
                         imports = [module]
                     for module in imports:
                         self.assertNotIn(module.split(".")[0], forbidden_imports)
-                        self.assertIn(module, allowed_imports)
+                        self.assertIn(module, allowed_by_package[package])
                     if isinstance(node, ast.Call):
                         function = node.func
                         if isinstance(function, ast.Name):
