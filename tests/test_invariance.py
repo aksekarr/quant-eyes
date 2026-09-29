@@ -245,8 +245,13 @@ class InvarianceTests(unittest.TestCase):
             "providers.py": {"re", "engine.series"},
         }
         source_paths.extend(root / "pipeline" / name for name in allowed_pipeline_imports)
-        allowed_words_imports = {"decimal", "math", "numbers", "re", "engine.series"}
-        source_paths.append(root / "words" / "cards.py")
+        allowed_words_imports = {
+            "cards.py": {"decimal", "math", "numbers", "re", "engine.series"},
+            "cards_567.py": {
+                "decimal", "math", "numbers", "re", "engine.series", "words.cards",
+            },
+        }
+        source_paths.extend(root / "words" / name for name in allowed_words_imports)
         for path in source_paths:
             package = path.parent.name
             if package == "engine":
@@ -254,7 +259,7 @@ class InvarianceTests(unittest.TestCase):
             elif package == "pipeline":
                 module_allowlist = allowed_pipeline_imports[path.name]
             else:
-                module_allowlist = allowed_words_imports
+                module_allowlist = allowed_words_imports[path.name]
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
             for node in ast.walk(tree):
                 with self.subTest(module=path.name, line=getattr(node, "lineno", None)):
