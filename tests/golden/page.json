@@ -1,0 +1,183 @@
+{
+  "file": "page",
+  "spec": "docs/METHODOLOGY.md section 13",
+  "authorship": "Expected values written by hand by Claude (architect), checked against a separate Claude-only reference implementation, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+  "interface": {
+    "module": "words.page",
+    "errors": "WordsError is words.cards.WordsError, imported, never redefined.",
+    "PAGE_VERSION / INDEX_VERSION": "Both the string \"1\".",
+    "check_context(context, registry)": "Returns None or raises WordsError. Section 13.1. The registry has already passed check_registry.",
+    "build_page(document, facts)": "Returns the page (section 13.2). The document has already passed check_document; facts is the asset's context entry without its \"why\".",
+    "build_index(registry, pages)": "Returns the index (section 13.3)."
+  },
+  "case_fields": {
+    "registry": "The registry below (deep copy). context / document: the named fixture (deep copy); *_edits applied with apply_edits.",
+    "facts": "Passed as given.",
+    "expected_page": "The page must equal this dictionary with two keys added: \"cards\", equal to build_cards(document)[\"cards\"] followed by build_cards_567(document, facts)[\"cards\"], and \"claims\", equal to build_cards(document)[\"claims\"] followed by build_cards_567(document, facts)[\"claims\"]. Compare with assert_result_equal, tolerance 0.",
+    "pages": "build_index cases: a list with one entry per page, each {\"document\", \"facts\", \"page_edits\"}. Build each page with build_page from a deep copy of the named document and the given facts, apply that entry's page_edits (an edit list, may be empty) with apply_edits, then pass the pages to build_index in the order given."
+  },
+  "registry": {
+    "about": "Synthetic instrument list for page tests.",
+    "facts_checked": "2026-09-28",
+    "providers": {"prova": {"name": "Provider A", "url": "https://a.example.com"}, "provb": {"name": "Provider B", "url": "https://b.example.com"}},
+    "fx": {"label": "US dollars per pound", "data": {"provider": "provb", "kind": "fx", "symbol": "GBP/USD", "field": "4. close", "currency": "USD", "basis": "fx_rate", "start": null}},
+    "instruments": [
+      {"id": "trk", "role": "benchmark", "label": "Test tracker",
+       "identity": {"name": "Test Tracker ETF", "share_class": "USD (Acc)", "type": "etf", "isin": "IE00TEST0001", "ticker": "TRK", "exchange": "Test exchange", "trading_currency": "GBP", "quote_unit": "pence", "income": "accumulating", "currency_hedged": false, "sources": ["https://issuer.example.com/trk"]},
+       "data": {"provider": "provb", "kind": "equity", "symbol": "TRK.X", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": null}},
+      {"id": "usa", "role": "asset", "label": "US share",
+       "identity": {"name": "Test US Corp", "share_class": "Common stock", "type": "share", "isin": "US00TEST0002", "ticker": "USA", "exchange": "Test US exchange", "trading_currency": "USD", "quote_unit": "dollars", "income": "dividends", "currency_hedged": null, "sources": ["https://issuer.example.com/usa"]},
+       "data": {"provider": "prova", "kind": "equity", "symbol": "USA", "field": "adjClose", "currency": "USD", "basis": "total_return", "start": null}},
+      {"id": "gbf", "role": "asset", "label": "UK fund",
+       "identity": {"name": "Test UK Fund", "share_class": "GBP (Dist)", "type": "etf", "isin": "IE00TEST0003", "ticker": "GBF", "exchange": "Test exchange", "trading_currency": "GBP", "quote_unit": "pounds", "income": "distributing", "currency_hedged": false, "sources": ["https://issuer.example.com/gbf"]},
+       "data": {"provider": "provb", "kind": "equity", "symbol": "GBF.X", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": null}}
+    ]
+  },
+  "contexts": {
+    "CTX": {
+      "about": "Synthetic facts for page tests.",
+      "facts_checked": "2026-09-29",
+      "sources": {"index": "https://index.example.com/factsheet"},
+      "instruments": {
+        "usa": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false, "why": "In the test index."},
+        "gbf": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false, "why": "Bonds, not in the test index."}
+      }
+    }
+  },
+  "documents": {
+    "DOC_USA": {
+      "document_version": "1",
+      "instrument": {"id": "usa", "label": "US share",
+        "identity": {"name": "Test US Corp", "share_class": "Common stock", "type": "share", "isin": "US00TEST0002", "ticker": "USA", "exchange": "Test US exchange", "trading_currency": "USD", "quote_unit": "dollars", "income": "dividends", "currency_hedged": null, "sources": ["https://issuer.example.com/usa"]}},
+      "benchmark": {"id": "trk", "label": "Test tracker",
+        "identity": {"name": "Test Tracker ETF", "share_class": "USD (Acc)", "type": "etf", "isin": "IE00TEST0001", "ticker": "TRK", "exchange": "Test exchange", "trading_currency": "GBP", "quote_unit": "pence", "income": "accumulating", "currency_hedged": false, "sources": ["https://issuer.example.com/trk"]}},
+      "data_as_of": "2026-08",
+      "generated_on": "2026-09-29",
+      "sources": [
+        {"provider": "Provider A", "url": "https://a.example.com", "used_for": ["US share"]},
+        {"provider": "Provider B", "url": "https://b.example.com", "used_for": ["Test tracker", "US dollars per pound"]}],
+      "results": {
+        "method_version": "1.0", "asset_currency": "USD",
+        "own": {"start": "2007-08", "end": "2026-08", "volatility": 0.46094,
+          "largest_fall": {"max_drawdown": -0.72536, "peak_month": "2007-09", "trough_month": "2008-11", "recovery_month": "2015-10", "recovered": true,
+                           "months_peak_to_trough": 14, "months_trough_to_recovery": 83, "months_underwater": 97,
+                           "ten_thousand_at_trough": 2746.4, "ten_thousand_lost": 7253.6, "drawdown_at_end": 0.0},
+          "stress_windows": [
+            {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": true, "return": -0.61114},
+            {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "return": 0.18845},
+            {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "return": -0.0725}]},
+        "side_by_side": {
+          "asset": {"start": "2010-01", "end": "2026-08", "volatility": 0.43114},
+          "tracker": {"start": "2010-01", "end": "2026-08", "volatility": 0.11714,
+            "stress_windows": [
+              {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": false, "return": null},
+              {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "return": -0.14455},
+              {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "return": -0.05951}]},
+          "correlation": 0.47365,
+          "rolling_correlation_36": {"lowest": 0.2095, "lowest_end": "2013-12", "highest": 0.66555, "highest_end": "2024-04", "windows": 164},
+          "blend_90_10": {"start": "2010-01", "end": "2026-08", "months": 199, "asset_weight": 0.1, "rebalance": "december",
+            "blend": {"annualised_return": 0.17534, "volatility": 0.13504, "largest_fall": {"max_drawdown": -0.17548}},
+            "tracker": {"annualised_return": 0.12504, "volatility": 0.11714, "largest_fall": {"max_drawdown": -0.14952}}}},
+        "currency": {
+          "full_history": {"start": "2007-08", "end": "2026-08", "local_return": 281.71237, "currency_return": 0.48886, "gbp_return": 419.92783},
+          "stress_windows": [
+            {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": true, "local_return": -0.72794, "currency_return": 0.42955, "gbp_return": -0.61114},
+            {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "local_return": 0.11645, "currency_return": 0.0645, "gbp_return": 0.18845},
+            {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": false, "local_return": null, "currency_return": null, "gbp_return": null}]}}
+    }
+  },
+  "cases": [
+    {"id": "C01", "check": "check_context", "context": "CTX", "expected": "valid",
+     "derivation": "One entry per asset (usa, gbf), none for the benchmark, true/false values, a reason each, safe links."},
+    {"id": "C02", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["instruments", "gbf"], "delete": true}], "expected_error": "WordsError", "message_must_contain": ["gbf"],
+     "derivation": "An asset with no facts would get no card 5 or 6 wording."},
+    {"id": "C03", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["instruments", "trk"], "set": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false, "why": "x"}}], "expected_error": "WordsError", "message_must_contain": ["trk"],
+     "derivation": "The benchmark has no page, so no facts."},
+    {"id": "C04", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["instruments", "zzz"], "set": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false, "why": "x"}}], "expected_error": "WordsError", "message_must_contain": ["zzz"],
+     "derivation": "Facts for an instrument not in the list."},
+    {"id": "C05", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["instruments", "usa", "held_by_tracker"], "set": 1}], "expected_error": "WordsError", "message_must_contain": ["usa", "held_by_tracker"],
+     "derivation": "1 is not true."},
+    {"id": "C06", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["instruments", "usa", "why"], "set": ""}], "expected_error": "WordsError", "message_must_contain": ["usa", "why"],
+     "derivation": "Every fact needs its reason."},
+    {"id": "C07", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["instruments", "usa", "notes"], "set": "x"}], "expected_error": "WordsError", "message_must_contain": ["usa", "notes"],
+     "derivation": "Unknown key."},
+    {"id": "C08", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["instruments", "usa", "priced_in_pounds_holds_dollars"], "set": true}], "expected_error": "WordsError", "message_must_contain": ["usa", "priced_in_pounds_holds_dollars"],
+     "derivation": "usa trades in dollars, so it can't be 'priced in pounds'. Caught here, before any card is built."},
+    {"id": "C09", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["sources", "index"], "set": "https://index.example.com/?apikey=SECRET1"}], "expected_error": "WordsError", "message_must_contain": ["index"], "message_must_not_contain": ["SECRET1"],
+     "derivation": "Same URL rule as the instrument list (section 8.1); the URL is never repeated."},
+    {"id": "C10", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["facts_checked"], "set": "2026-02-30"}], "expected_error": "WordsError", "message_must_contain": ["facts_checked"],
+     "derivation": "Not a date."},
+    {"id": "C11", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["extra"], "set": 1}], "expected_error": "WordsError", "message_must_contain": ["extra"],
+     "derivation": "Top-level keys are exactly about, facts_checked, sources, instruments."},
+    {"id": "C12", "check": "check_context", "context": "CTX", "context_edits": [{"path": ["sources"], "set": {}}], "expected_error": "WordsError", "message_must_contain": ["sources"],
+     "derivation": "At least one source."},
+
+    {"id": "P01", "check": "build_page", "document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_page": {
+       "page_version": "1",
+       "instrument": {"id": "usa", "label": "US share",
+         "identity": {"name": "Test US Corp", "share_class": "Common stock", "type": "share", "isin": "US00TEST0002", "ticker": "USA", "exchange": "Test US exchange", "trading_currency": "USD", "quote_unit": "dollars", "income": "dividends", "currency_hedged": null, "sources": ["https://issuer.example.com/usa"]}},
+       "benchmark": {"id": "trk", "label": "Test tracker",
+         "identity": {"name": "Test Tracker ETF", "share_class": "USD (Acc)", "type": "etf", "isin": "IE00TEST0001", "ticker": "TRK", "exchange": "Test exchange", "trading_currency": "GBP", "quote_unit": "pence", "income": "accumulating", "currency_hedged": false, "sources": ["https://issuer.example.com/trk"]}},
+       "data_as_of": "2026-08",
+       "data_as_of_text": "Data to the end of Aug 2026",
+       "generated_on": "2026-09-29",
+       "method_version": "1.0",
+       "sources": [
+         {"provider": "Provider A", "url": "https://a.example.com", "used_for": ["US share"]},
+         {"provider": "Provider B", "url": "https://b.example.com", "used_for": ["Test tracker", "US dollars per pound"]}],
+       "headline": null},
+     "derivation": "Identity, benchmark and sources copied from the published file; 'Data to the end of Aug 2026' from the as-of month (never 'as of 31 Aug'); the six cards in order bumpy, worst, panic, next, pound, limits; claims from both card builders, ids unique; headline empty until section 14 fills it."},
+    {"id": "P02", "check": "build_page", "document": "DOC_USA", "document_edits": [{"path": ["data_as_of"], "delete": true}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["data_as_of"],
+     "derivation": "Every page states its data-as-of month."},
+    {"id": "P03", "check": "build_page", "document": "DOC_USA", "document_edits": [{"path": ["results", "method_version"], "set": null}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["method_version"],
+     "derivation": "Every page states the method version its numbers came from."},
+
+    {"id": "N01", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument"], "set": {"id": "gbf", "label": "UK fund", "identity": {"name": "Test UK Fund", "share_class": "GBP (Dist)", "type": "etf", "isin": "IE00TEST0003", "ticker": "GBF", "exchange": "Test exchange", "trading_currency": "GBP", "quote_unit": "pounds", "income": "distributing", "currency_hedged": false, "sources": ["https://issuer.example.com/gbf"]}}}]}],
+     "expected": {
+       "index_version": "1",
+       "data_as_of": "2026-08",
+       "data_as_of_text": "Data to the end of Aug 2026",
+       "generated_on": "2026-09-29",
+       "method_version": "1.0",
+       "benchmark": {"id": "trk", "label": "Test tracker", "name": "Test Tracker ETF", "ticker": "TRK"},
+       "assets": [
+         {"id": "usa", "label": "US share", "name": "Test US Corp", "ticker": "USA", "type": "share"},
+         {"id": "gbf", "label": "UK fund", "name": "Test UK Fund", "ticker": "GBF", "type": "etf"}]},
+     "derivation": "The landing page's list: one entry per asset, in the instrument list's order, with the shared data-as-of month, generation date and method version. (The second page is the first with its instrument swapped, which is enough for the index, which reads only these fields.)"},
+    {"id": "N02", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument", "id"], "set": "gbf"}, {"path": ["data_as_of"], "set": "2026-07"}]}],
+     "expected_error": "WordsError", "message_must_contain": ["data_as_of"],
+     "derivation": "Pages with different as-of months: one date must stand for the whole site."},
+    {"id": "N03", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []}],
+     "expected_error": "WordsError", "message_must_contain": ["gbf"],
+     "derivation": "An asset in the list has no page."},
+    {"id": "N04", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []}],
+     "expected_error": "WordsError", "message_must_contain": ["usa"],
+     "derivation": "Two pages for one asset."},
+    {"id": "N05", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument", "id"], "set": "gbf"}, {"path": ["method_version"], "set": "0.9"}]}],
+     "expected_error": "WordsError", "message_must_contain": ["method_version"],
+     "derivation": "Pages from different method versions."},
+    {"id": "N06", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument", "id"], "set": "trk"}]}],
+     "expected_error": "WordsError", "message_must_contain": ["trk"],
+     "derivation": "A page for the benchmark (and none for gbf)."}
+  ]
+}

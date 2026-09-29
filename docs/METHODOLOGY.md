@@ -22,6 +22,7 @@ section is written here only once its conventions are confirmed.
 | 10. Running the pipeline | Pipeline 3b | `runner.json` | Written |
 | 11. Claims and card text (cards 1 to 3) | Words 1 | `cards.json` | Written |
 | 12. Card text (cards 5 to 7) | Words 2 | `cards_567.json` | Written |
+| 13. Page data | Words 3 | `page.json` | Written |
 
 ## General rules
 
@@ -925,3 +926,56 @@ One sentence for the instrument type, then one for all:
 `currency` (`full_history` and `stress_windows`, each with `start`, `end`, `covered` for
 windows, `local_return`, `currency_return`, `gbp_return`). Anything needed that is
 missing or empty is a `WordsError` naming it.
+
+## 13. Page data
+
+In `words/page.py`. Pure, like sections 11 and 12, reusing their builders. It turns one
+published document (section 8) into everything one asset page shows, and builds the
+landing page's list. Nothing on the site is worded, rounded or computed anywhere else.
+
+### 13.1 The facts file check (`check_context`)
+
+`words/context.json` (section 12.1) is refused (`WordsError`, naming the instrument and
+field, never repeating a URL) unless:
+
+- its top-level keys are exactly `about` (text), `facts_checked` (a `YYYY-MM-DD` date),
+  `sources` (at least one name mapped to a URL) and `instruments`;
+- every URL follows the rule in section 8.1 (https, no query, no fragment, no spaces);
+- `instruments` has exactly one entry per asset in the instrument list: none for the
+  benchmark, none for anything else;
+- each entry has exactly `held_by_tracker` and `priced_in_pounds_holds_dollars` (true or
+  false, not 0 or 1) and `why` (text, not blank);
+- `priced_in_pounds_holds_dollars` is true only for an asset that trades in `GBP`.
+
+### 13.2 One page (`build_page`)
+
+`build_page(document, facts)`, where `facts` is the asset's context entry without `why`:
+
+| Key | Contents |
+|---|---|
+| `page_version` | `"1"`. |
+| `instrument`, `benchmark` | Copied from the document. |
+| `data_as_of` | The as-of month, `YYYY-MM`. |
+| `data_as_of_text` | `Data to the end of {Mon YYYY}`, e.g. `Data to the end of Aug 2026`. Never "as of 31 Aug": the data is month-end values. |
+| `generated_on` | From the document. |
+| `method_version` | From the results. |
+| `sources` | Copied from the document. |
+| `cards` | Cards 1 to 3 (section 11) then 5 to 7 (section 12): `bumpy`, `worst`, `panic`, `next`, `pound`, `limits`. |
+| `claims` | Section 11's claims, then section 12's. Claim ids must be unique. |
+| `headline` | Empty. Section 14 fills it with a checked, human-reviewed headline. |
+
+A missing `data_as_of`, `generated_on`, `sources` or `method_version` is a `WordsError`.
+
+### 13.3 The landing list (`build_index`)
+
+`build_index(registry, pages)` checks, in order: every page is for an asset in the list,
+and no asset has two pages; every page has the same `data_as_of`, `generated_on` and
+`method_version` (one date and one method version stand for the whole site); every asset
+in the list has a page. Then it returns:
+
+| Key | Contents |
+|---|---|
+| `index_version` | `"1"`. |
+| `data_as_of`, `data_as_of_text`, `generated_on`, `method_version` | The shared values. |
+| `benchmark` | Its `id`, `label`, and identity `name` and `ticker`, from the instrument list. |
+| `assets` | For each asset, in the instrument list's order: `id`, `label`, and identity `name`, `ticker` and `type`. |
