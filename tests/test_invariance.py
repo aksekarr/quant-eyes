@@ -301,6 +301,13 @@ class InvarianceTests(unittest.TestCase):
             },
             {"eval", "exec", "__import__"},
         )
+        pages_path = root / "scripts" / "build_pages.py"
+        self._check_file_io_source(
+            pages_path,
+            {"json", "os", "pathlib", "sys", "pipeline.publish", "words.cards", "words.page"},
+            {"eval", "exec", "__import__", "getenv"},
+        )
+        self.assertNotIn(".environ", pages_path.read_text(encoding="utf-8"))
 
     def _check_file_io_source(self, path, allowed_imports, forbidden_calls):
         """Keep the writer and command within their explicit I/O boundaries."""
