@@ -26,6 +26,7 @@ data is used or stored yet, and there is no website yet.
 | `docs/DATA-RIGHTS.md` | Data-provider terms and the rules that follow from them. |
 | `AGENTS.md` | Working rules for the AI coding agent. |
 | `pipeline/` | Turns provider data (held in memory only) into engine inputs and derived JSON. |
+| `words/` | Card text and the claims behind every number, from the derived JSON. Rounding happens here, once. |
 | `scripts/` | Scripts Avi runs by hand. `build_data.py` fetches the data (held in memory only) and writes the derived JSON to `data/derived/`; `--list` shows the plan without fetching. |
 
 ## Running the tests

@@ -20,6 +20,7 @@ section is written here only once its conventions are confirmed.
 | 8. Instruments and published files | Pipeline 2 | `publish.json` | Written |
 | 9. Fetching provider data | Pipeline 3a | `providers.json` | Written |
 | 10. Running the pipeline | Pipeline 3b | `runner.json` | Written |
+| 11. Claims and card text (cards 1 to 3) | Words 1 | `cards.json` | Written |
 
 ## General rules
 
@@ -721,3 +722,101 @@ list is `root/pipeline/instruments.json`; the output folder is `root/data/derive
   5. On a `RunError`: `FAILED: <message>`. On anything else: `FAILED: unexpected
      <ErrorType>.` Either way, then `Check git status --short before committing
      anything.` and exit code 1.
+
+## 11. Claims and card text (cards 1 to 3)
+
+In `words/cards.py`. Pure: it reads one published document (section 8) and returns the
+text for cards 1 to 3 and the claims behind every number in it. No files, no network, no
+printing. The site shows this text as it is; nothing is worded or rounded anywhere else.
+
+### 11.1 Claims
+
+Every number in a sentence is a **claim**:
+
+| Field | Meaning |
+|---|---|
+| `id` | Unique on the page, e.g. `worst.fall`, `panic.covid.tracker`. |
+| `series` | `asset` or `tracker`. |
+| `instrument` | The asset's id, or the benchmark's id for a tracker claim. |
+| `metric` | The engine field it comes from (`volatility`, `largest_fall`, `months_peak_to_trough`, `ten_thousand_at_trough`, `ten_thousand_lost`, `months_trough_to_recovery`, `months_underwater`, `drawdown_at_end`, `stress_window`). |
+| `period_start`, `period_end` | The month-ends the number covers. |
+| `unit` | `percent`, `gbp` or `months`. |
+| `currency` | `GBP` for percent and £ claims; empty for months. |
+| `value` | The number after its one rounding: percentage points as a float with one decimal place (signed), whole pounds as an integer, months as an integer. |
+| `direction` | For returns and falls: `down`, `up`, or `flat` if the rounded value is zero. Empty for volatility, £ and months. |
+| `display` | Exactly the text shown in the sentence: `72.5%`, `£2,750`, `14 months`. |
+| `kind` | `observed` (history). Cards 1 to 3 have no illustrations. |
+
+Each sentence lists the claim ids it uses, in the order they appear. Every claim's
+`display` appears in its sentence. Fixed sentences have no claims.
+
+### 11.2 Rounding and display, once
+
+- **Percentages:** take the value as written (Python's `repr`, as a `Decimal`), multiply by
+  100 exactly, and round to one decimal place, half-up (away from zero). Never multiply
+  the float first: 0.0725 x 100 is 7.249999999999999 in floating point and would round to
+  7.2, where the right answer is 7.3. A result of zero is `0.0`, never `-0.0`. The text is
+  the size only, with a thousands comma (`41,992.8%`); direction is in the words.
+- **Pounds:** nearest £10, half-up, written `£2,750`. The amount lost is £10,000 minus
+  the rounded amount left, so the two always add up to £10,000.
+- **Months:** whole numbers given as integers; `1 month`, otherwise `N months`.
+- **Months of the year:** `Sep 2007`; a month-end is written `the end of Sep 2007`.
+- True/false, text, empty and non-finite values are refused (`ValueError`).
+
+### 11.3 Card 1: How bumpy is the ride?
+
+1. `Its volatility was {own volatility} a year, measured on monthly returns in pounds
+   from the end of {own start} to the end of {own end}.`
+2. If the asset's own history starts earlier than the side-by-side window:
+   `Over the same months as the tracker, from the end of {side-by-side start} to the end
+   of {side-by-side end}, it was {asset volatility, side by side} against the tracker's
+   {tracker volatility}.` Otherwise: `Over the same months, the tracker's was {tracker
+   volatility}.`
+3. `Volatility measures how widely returns swung around their average, up as well as
+   down. It describes the past, not the future.`
+
+### 11.4 Card 2: What's the worst it's been?
+
+If the largest fall is zero, one sentence only: `Since the end of {own start}, it has not
+been below a previous high at any month-end.` Otherwise:
+
+1. `Since the end of {own start}, its largest fall, measured at month-end, was {fall}:
+   from its high at the end of {peak} to its low at the end of {trough}, {months peak to
+   trough} later.`
+2. `£10,000 invested at that high would have been worth {£ left} at the low, {£ lost}
+   less.`
+3. If recovered: `It was back at that high by the end of {recovery}, {months trough to
+   recovery} after the low and {months underwater} after the high.` If not: `It had not
+   recovered by the end of {own end}: it was still {drawdown at end} below its high,
+   {months underwater} after it.` Never "never recovered": the data says what had
+   happened by one month, not what will.
+4. `Falls are measured from one month-end to the next, so a fall that recovered within a
+   month doesn't show. The £10,000 figure applies only to money invested at the high.`
+
+### 11.5 Card 3: What happened when markets panicked?
+
+For each window in order (global financial crisis, Covid crash, 2022 rate shock), with
+its heading `{name} (end of {start} to end of {end})`:
+
+- The asset, from its own history: `{heading}: down {x} over the period.` (or `up`, or
+  `unchanged (0.0%)` when it rounds to zero), or, if not covered, `{heading}: not
+  covered; its history in pounds starts at the end of {own start}.`
+- The tracker, from the side-by-side window: `The tracker: down {x} over the same
+  period.` (or `up`, or `unchanged (0.0%)`), or `The tracker: not covered.`
+- Then, once: `Each figure compares the start and end of the period. Prices may have
+  fallen further in between and partly recovered.`
+
+Stress-window returns are never "fell by": the figure compares two month-ends, not the
+lowest point in between.
+
+### 11.6 What is read, and errors
+
+`build_cards` reads only: the instrument's and benchmark's `id`; from `own`: `start`,
+`end`, `volatility`, `largest_fall` and `stress_windows`; from `side_by_side`: the
+asset's `start`, `end` and `volatility`, and the tracker's `start`, `end`, `volatility`
+and `stress_windows`. Anything it needs that is missing or empty (a window marked covered
+without a return, a fall without its £ figure, an unknown window name) is a `WordsError`
+naming the field. A missing number is never shown as blank or zero.
+
+The asset is always "it" and the benchmark "the tracker"; the page names both in full
+once, outside the cards.

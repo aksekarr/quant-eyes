@@ -1,0 +1,253 @@
+{
+  "file": "cards",
+  "spec": "docs/METHODOLOGY.md section 11",
+  "authorship": "Expected values and every sentence written by hand by Claude (architect), wording approved by Avi, checked against a separate Claude-only reference implementation, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+  "interface": {
+    "module": "words.cards",
+    "errors": "WordsError (a document is missing something a card needs) is defined in words.cards. Bad arguments to the display helpers raise the built-in ValueError.",
+    "percent_display(value)": "Returns {\"points\": float, \"text\": str}. Section 11.2.",
+    "pounds_display(value)": "Returns {\"rounded\": int, \"text\": str}. Section 11.2.",
+    "months_display(n)": "Returns str. Section 11.2.",
+    "month_name(month)": "Returns str, e.g. \"Sep 2007\". Section 11.2.",
+    "build_cards(document)": "Returns {\"cards\": [...], \"claims\": [...]}. Sections 11.3 to 11.6."
+  },
+  "case_fields": {
+    "value / n / month": "Passed exactly as given (JSON null is None, true is True).",
+    "document / document_edits": "Name of an entry in \"documents\"; edits applied to a deep copy with apply_edits, as in publish.json.",
+    "expected": "Compared exactly with assert_result_equal, tolerance 0. Where an expected percent points value is 0.0, the actual value must also have a positive sign (math.copysign(1, value) == 1): -0.0 is wrong.",
+    "claim checks": "For every build_cards case with an expected result, also check: claim ids are unique; every claim id a sentence lists appears in that sentence's text as its display, in the order listed; and every claim is listed by at least one sentence."
+  },
+  "documents": {
+    "DOC_R": {
+      "instrument": {"id": "usa"}, "benchmark": {"id": "trk"},
+      "results": {
+        "own": {"start": "2007-08", "end": "2026-08", "volatility": 0.46094,
+          "largest_fall": {"max_drawdown": -0.72536, "peak_month": "2007-09", "trough_month": "2008-11", "recovery_month": "2015-10", "recovered": true,
+                           "months_peak_to_trough": 14, "months_trough_to_recovery": 83, "months_underwater": 97,
+                           "ten_thousand_at_trough": 2746.4, "ten_thousand_lost": 7253.6, "drawdown_at_end": 0.0},
+          "stress_windows": [
+            {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": true, "return": -0.61114},
+            {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "return": 0.18845},
+            {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "return": -0.0725}]},
+        "side_by_side": {
+          "asset": {"start": "2010-01", "end": "2026-08", "volatility": 0.43114},
+          "tracker": {"start": "2010-01", "end": "2026-08", "volatility": 0.11714,
+            "stress_windows": [
+              {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": false, "return": null},
+              {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "return": -0.14455},
+              {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "return": -0.05951}]}}}
+    },
+    "DOC_U": {
+      "instrument": {"id": "gbf"}, "benchmark": {"id": "trk"},
+      "results": {
+        "own": {"start": "2010-01", "end": "2026-08", "volatility": 0.0725,
+          "largest_fall": {"max_drawdown": -0.3195, "peak_month": "2020-05", "trough_month": "2020-06", "recovery_month": null, "recovered": false,
+                           "months_peak_to_trough": 1, "months_trough_to_recovery": null, "months_underwater": 75,
+                           "ten_thousand_at_trough": 6805.0, "ten_thousand_lost": 3195.0, "drawdown_at_end": -0.25851},
+          "stress_windows": [
+            {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": false, "return": null},
+            {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "return": -0.0004},
+            {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "return": 0.02}]},
+        "side_by_side": {
+          "asset": {"start": "2010-01", "end": "2026-08", "volatility": 0.0725},
+          "tracker": {"start": "2010-01", "end": "2026-08", "volatility": 0.11714,
+            "stress_windows": [
+              {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": false, "return": null},
+              {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "return": -0.14455},
+              {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "return": 0.0}]}}}
+    },
+    "DOC_N": {
+      "instrument": {"id": "cry"}, "benchmark": {"id": "trk"},
+      "results": {
+        "own": {"start": "2014-12", "end": "2026-08", "volatility": 1.23456,
+          "largest_fall": {"max_drawdown": 0.0, "peak_month": null, "trough_month": null, "recovery_month": null, "recovered": null,
+                           "months_peak_to_trough": null, "months_trough_to_recovery": null, "months_underwater": null,
+                           "ten_thousand_at_trough": 10000.0, "ten_thousand_lost": 0.0, "drawdown_at_end": 0.0},
+          "stress_windows": [
+            {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": false, "return": null},
+            {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "return": 0.5},
+            {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "return": 1.0}]},
+        "side_by_side": {
+          "asset": {"start": "2014-12", "end": "2026-08", "volatility": 1.23456},
+          "tracker": {"start": "2014-12", "end": "2026-08", "volatility": 0.11714,
+            "stress_windows": [
+              {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": false, "return": null},
+              {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "return": -0.14455},
+              {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "return": -0.05951}]}}}
+    }
+  },
+  "fixed_text": {
+    "bumpy": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.",
+    "worst": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high.",
+    "panic": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+  },
+  "cases": [
+    {"id": "D01", "check": "percent_display", "value": 0.46094, "expected": {"points": 46.1, "text": "46.1%"},
+     "derivation": "0.46094 x 100 = 46.094; one decimal place, half-up: 46.1."},
+    {"id": "D02", "check": "percent_display", "value": -0.72536, "expected": {"points": -72.5, "text": "72.5%"},
+     "derivation": "-72.536 rounds to -72.5. The text is the size only; direction goes in the words."},
+    {"id": "D03", "check": "percent_display", "value": 0.0725, "expected": {"points": 7.3, "text": "7.3%"},
+     "derivation": "The float trap: in floating point 0.0725 x 100 is 7.249999999999999, which rounds to 7.2. Rounding the number as written (Decimal of its repr, x 100 = 7.2500) gives 7.25, and half-up gives 7.3."},
+    {"id": "D04", "check": "percent_display", "value": -0.0725, "expected": {"points": -7.3, "text": "7.3%"},
+     "derivation": "Half-up means away from zero: -7.25 rounds to -7.3."},
+    {"id": "D05", "check": "percent_display", "value": 0.12345, "expected": {"points": 12.3, "text": "12.3%"},
+     "derivation": "12.345 to one decimal place: the digit after the first decimal is 4, so 12.3. Rounding happens once; rounding 12.345 to 12.35 first and then to 12.4 would be double rounding."},
+    {"id": "D06", "check": "percent_display", "value": -0.0004, "expected": {"points": 0.0, "text": "0.0%"},
+     "derivation": "-0.04 rounds to zero. Zero is written 0.0, never -0.0."},
+    {"id": "D07", "check": "percent_display", "value": 0.00049, "expected": {"points": 0.0, "text": "0.0%"},
+     "derivation": "0.049 rounds to 0.0."},
+    {"id": "D08", "check": "percent_display", "value": 419.9278, "expected": {"points": 41992.8, "text": "41,992.8%"},
+     "derivation": "Large figures take a thousands comma."},
+    {"id": "D09", "check": "percent_display", "value": 0.99995, "expected": {"points": 100.0, "text": "100.0%"},
+     "derivation": "99.995 rounds up to 100.0."},
+    {"id": "D10", "check": "percent_display", "value": -0.09999999999999998, "expected": {"points": -10.0, "text": "10.0%"},
+     "derivation": "A value the engine really produces (1 - 0.9 in floating point): -9.999999999999998 rounds to -10.0."},
+    {"id": "D11", "check": "percent_display", "value": 0, "expected": {"points": 0.0, "text": "0.0%"},
+     "derivation": "An integer zero is allowed; points is still a float."},
+    {"id": "D12", "check": "percent_display", "value": true, "expected_error": "ValueError",
+     "derivation": "True is not a number, even though Python treats it as 1."},
+    {"id": "D13", "check": "percent_display", "value": null, "expected_error": "ValueError",
+     "derivation": "Nothing to display."},
+    {"id": "D14", "check": "percent_display", "value": "0.5", "expected_error": "ValueError",
+     "derivation": "Text is not a number."},
+    {"id": "D15", "check": "pounds_display", "value": 2746.4, "expected": {"rounded": 2750, "text": "£2,750"},
+     "derivation": "Nearest £10: 274.64 tens rounds to 275 tens."},
+    {"id": "D16", "check": "pounds_display", "value": 2745.0, "expected": {"rounded": 2750, "text": "£2,750"},
+     "derivation": "Exactly halfway rounds up."},
+    {"id": "D17", "check": "pounds_display", "value": 2744.999, "expected": {"rounded": 2740, "text": "£2,740"},
+     "derivation": "Just below halfway rounds down."},
+    {"id": "D18", "check": "pounds_display", "value": 4.9, "expected": {"rounded": 0, "text": "£0"},
+     "derivation": "Rounds to nothing."},
+    {"id": "D19", "check": "pounds_display", "value": 9995.0, "expected": {"rounded": 10000, "text": "£10,000"},
+     "derivation": "Halfway rounds up, to £10,000."},
+    {"id": "D20", "check": "pounds_display", "value": true, "expected_error": "ValueError",
+     "derivation": "True is not a number."},
+    {"id": "D21", "check": "months_display", "n": 1, "expected": "1 month",
+     "derivation": "Singular."},
+    {"id": "D22", "check": "months_display", "n": 14, "expected": "14 months",
+     "derivation": "Plural."},
+    {"id": "D23", "check": "months_display", "n": 0, "expected": "0 months",
+     "derivation": "Zero is plural in English."},
+    {"id": "D24", "check": "months_display", "n": 2.0, "expected_error": "ValueError",
+     "derivation": "Months are whole numbers given as integers; 2.0 is refused rather than guessed at."},
+    {"id": "D25", "check": "months_display", "n": true, "expected_error": "ValueError",
+     "derivation": "True is not a number of months."},
+    {"id": "D26", "check": "month_name", "month": "2007-09", "expected": "Sep 2007",
+     "derivation": "Three-letter English month, then the year."},
+    {"id": "D27", "check": "month_name", "month": "2026-12", "expected": "Dec 2026",
+     "derivation": "December."},
+    {"id": "D28", "check": "month_name", "month": "2026-13", "expected_error": "ValueError",
+     "derivation": "Month 13."},
+
+    {"id": "K01", "check": "build_cards", "document": "DOC_R",
+     "expected": {
+       "cards": [
+         {"id": "bumpy", "title": "How bumpy is the ride?", "sentences": [
+           {"text": "Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.", "claims": ["bumpy.volatility"]},
+           {"text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 43.1% against the tracker's 11.7%.", "claims": ["bumpy.volatility_common", "bumpy.tracker_volatility"]},
+           {"text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.", "claims": []}]},
+         {"id": "worst", "title": "What's the worst it's been?", "sentences": [
+           {"text": "Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.", "claims": ["worst.fall", "worst.months_to_low"]},
+           {"text": "£10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.", "claims": ["worst.ten_thousand_left", "worst.ten_thousand_lost"]},
+           {"text": "It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.", "claims": ["worst.months_to_recover", "worst.months_underwater"]},
+           {"text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high.", "claims": []}]},
+         {"id": "panic", "title": "What happened when markets panicked?", "sentences": [
+           {"text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.", "claims": ["panic.gfc"]},
+           {"text": "The tracker: not covered.", "claims": []},
+           {"text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period.", "claims": ["panic.covid"]},
+           {"text": "The tracker: down 14.5% over the same period.", "claims": ["panic.covid.tracker"]},
+           {"text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.", "claims": ["panic.rate_shock"]},
+           {"text": "The tracker: down 6.0% over the same period.", "claims": ["panic.rate_shock.tracker"]},
+           {"text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered.", "claims": []}]}],
+       "claims": [
+         {"id": "bumpy.volatility", "series": "asset", "instrument": "usa", "metric": "volatility", "period_start": "2007-08", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 46.1, "direction": null, "display": "46.1%", "kind": "observed"},
+         {"id": "bumpy.volatility_common", "series": "asset", "instrument": "usa", "metric": "volatility", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 43.1, "direction": null, "display": "43.1%", "kind": "observed"},
+         {"id": "bumpy.tracker_volatility", "series": "tracker", "instrument": "trk", "metric": "volatility", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 11.7, "direction": null, "display": "11.7%", "kind": "observed"},
+         {"id": "worst.fall", "series": "asset", "instrument": "usa", "metric": "largest_fall", "period_start": "2007-09", "period_end": "2008-11", "unit": "percent", "currency": "GBP", "value": -72.5, "direction": "down", "display": "72.5%", "kind": "observed"},
+         {"id": "worst.months_to_low", "series": "asset", "instrument": "usa", "metric": "months_peak_to_trough", "period_start": "2007-09", "period_end": "2008-11", "unit": "months", "currency": null, "value": 14, "direction": null, "display": "14 months", "kind": "observed"},
+         {"id": "worst.ten_thousand_left", "series": "asset", "instrument": "usa", "metric": "ten_thousand_at_trough", "period_start": "2007-09", "period_end": "2008-11", "unit": "gbp", "currency": "GBP", "value": 2750, "direction": null, "display": "£2,750", "kind": "observed"},
+         {"id": "worst.ten_thousand_lost", "series": "asset", "instrument": "usa", "metric": "ten_thousand_lost", "period_start": "2007-09", "period_end": "2008-11", "unit": "gbp", "currency": "GBP", "value": 7250, "direction": null, "display": "£7,250", "kind": "observed"},
+         {"id": "worst.months_to_recover", "series": "asset", "instrument": "usa", "metric": "months_trough_to_recovery", "period_start": "2008-11", "period_end": "2015-10", "unit": "months", "currency": null, "value": 83, "direction": null, "display": "83 months", "kind": "observed"},
+         {"id": "worst.months_underwater", "series": "asset", "instrument": "usa", "metric": "months_underwater", "period_start": "2007-09", "period_end": "2015-10", "unit": "months", "currency": null, "value": 97, "direction": null, "display": "97 months", "kind": "observed"},
+         {"id": "panic.gfc", "series": "asset", "instrument": "usa", "metric": "stress_window", "period_start": "2007-09", "period_end": "2009-03", "unit": "percent", "currency": "GBP", "value": -61.1, "direction": "down", "display": "61.1%", "kind": "observed"},
+         {"id": "panic.covid", "series": "asset", "instrument": "usa", "metric": "stress_window", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "GBP", "value": 18.8, "direction": "up", "display": "18.8%", "kind": "observed"},
+         {"id": "panic.covid.tracker", "series": "tracker", "instrument": "trk", "metric": "stress_window", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "GBP", "value": -14.5, "direction": "down", "display": "14.5%", "kind": "observed"},
+         {"id": "panic.rate_shock", "series": "asset", "instrument": "usa", "metric": "stress_window", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": "GBP", "value": -7.3, "direction": "down", "display": "7.3%", "kind": "observed"},
+         {"id": "panic.rate_shock.tracker", "series": "tracker", "instrument": "trk", "metric": "stress_window", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": "GBP", "value": -6.0, "direction": "down", "display": "6.0%", "kind": "observed"}]},
+     "derivation": "Recovered fall; the asset's own history (from Aug 2007) is longer than the common window with the tracker (from Jan 2010), so card 1 gives both volatilities. 0.18845 -> 18.845 -> 18.8; -0.14455 -> -14.455 -> -14.5 (half-up); -0.0725 -> -7.3 (the float trap again); -0.05951 -> -6.0, shown as 6.0%. £2,746.40 -> £2,750, and £10,000 - £2,750 = £7,250. The tracker's crisis figure is not covered, so that sentence has no claim."},
+    {"id": "K02", "check": "build_cards", "document": "DOC_U",
+     "expected": {
+       "cards": [
+         {"id": "bumpy", "title": "How bumpy is the ride?", "sentences": [
+           {"text": "Its volatility was 7.3% a year, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026.", "claims": ["bumpy.volatility"]},
+           {"text": "Over the same months, the tracker's was 11.7%.", "claims": ["bumpy.tracker_volatility"]},
+           {"text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.", "claims": []}]},
+         {"id": "worst", "title": "What's the worst it's been?", "sentences": [
+           {"text": "Since the end of Jan 2010, its largest fall, measured at month-end, was 32.0%: from its high at the end of May 2020 to its low at the end of Jun 2020, 1 month later.", "claims": ["worst.fall", "worst.months_to_low"]},
+           {"text": "£10,000 invested at that high would have been worth £6,810 at the low, £3,190 less.", "claims": ["worst.ten_thousand_left", "worst.ten_thousand_lost"]},
+           {"text": "It had not recovered by the end of Aug 2026: it was still 25.9% below its high, 75 months after it.", "claims": ["worst.below_high_at_end", "worst.months_underwater"]},
+           {"text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high.", "claims": []}]},
+         {"id": "panic", "title": "What happened when markets panicked?", "sentences": [
+           {"text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): not covered; its history in pounds starts at the end of Jan 2010.", "claims": []},
+           {"text": "The tracker: not covered.", "claims": []},
+           {"text": "Covid crash (end of Jan 2020 to end of Mar 2020): unchanged (0.0%) over the period.", "claims": ["panic.covid"]},
+           {"text": "The tracker: down 14.5% over the same period.", "claims": ["panic.covid.tracker"]},
+           {"text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): up 2.0% over the period.", "claims": ["panic.rate_shock"]},
+           {"text": "The tracker: unchanged (0.0%) over the same period.", "claims": ["panic.rate_shock.tracker"]},
+           {"text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered.", "claims": []}]}],
+       "claims": [
+         {"id": "bumpy.volatility", "series": "asset", "instrument": "gbf", "metric": "volatility", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 7.3, "direction": null, "display": "7.3%", "kind": "observed"},
+         {"id": "bumpy.tracker_volatility", "series": "tracker", "instrument": "trk", "metric": "volatility", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 11.7, "direction": null, "display": "11.7%", "kind": "observed"},
+         {"id": "worst.fall", "series": "asset", "instrument": "gbf", "metric": "largest_fall", "period_start": "2020-05", "period_end": "2020-06", "unit": "percent", "currency": "GBP", "value": -32.0, "direction": "down", "display": "32.0%", "kind": "observed"},
+         {"id": "worst.months_to_low", "series": "asset", "instrument": "gbf", "metric": "months_peak_to_trough", "period_start": "2020-05", "period_end": "2020-06", "unit": "months", "currency": null, "value": 1, "direction": null, "display": "1 month", "kind": "observed"},
+         {"id": "worst.ten_thousand_left", "series": "asset", "instrument": "gbf", "metric": "ten_thousand_at_trough", "period_start": "2020-05", "period_end": "2020-06", "unit": "gbp", "currency": "GBP", "value": 6810, "direction": null, "display": "£6,810", "kind": "observed"},
+         {"id": "worst.ten_thousand_lost", "series": "asset", "instrument": "gbf", "metric": "ten_thousand_lost", "period_start": "2020-05", "period_end": "2020-06", "unit": "gbp", "currency": "GBP", "value": 3190, "direction": null, "display": "£3,190", "kind": "observed"},
+         {"id": "worst.below_high_at_end", "series": "asset", "instrument": "gbf", "metric": "drawdown_at_end", "period_start": "2020-05", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -25.9, "direction": "down", "display": "25.9%", "kind": "observed"},
+         {"id": "worst.months_underwater", "series": "asset", "instrument": "gbf", "metric": "months_underwater", "period_start": "2020-05", "period_end": "2026-08", "unit": "months", "currency": null, "value": 75, "direction": null, "display": "75 months", "kind": "observed"},
+         {"id": "panic.covid", "series": "asset", "instrument": "gbf", "metric": "stress_window", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "GBP", "value": 0.0, "direction": "flat", "display": "0.0%", "kind": "observed"},
+         {"id": "panic.covid.tracker", "series": "tracker", "instrument": "trk", "metric": "stress_window", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "GBP", "value": -14.5, "direction": "down", "display": "14.5%", "kind": "observed"},
+         {"id": "panic.rate_shock", "series": "asset", "instrument": "gbf", "metric": "stress_window", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": "GBP", "value": 2.0, "direction": "up", "display": "2.0%", "kind": "observed"},
+         {"id": "panic.rate_shock.tracker", "series": "tracker", "instrument": "trk", "metric": "stress_window", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": "GBP", "value": 0.0, "direction": "flat", "display": "0.0%", "kind": "observed"}]},
+     "derivation": "Not recovered: the third worst sentence states the as-of month, the distance still below the high (25.851 -> 25.9) and the months since the high (May 2020 to Aug 2026 = 75), never 'never recovered'. 1 month is singular. The asset's own history starts where the common window does, so card 1's second sentence is the short form with no repeated asset figure. -0.0004 rounds to 0.0: 'unchanged (0.0%)', direction flat, value 0.0 not -0.0. -0.3195 -> -31.95 -> -32.0 (half-up). £6,805 is exactly halfway and rounds up to £6,810; the amount lost is £10,000 - £6,810 = £3,190. Rounding the engine's £3,195 separately would give £3,200, and the two figures would add up to £10,010."},
+    {"id": "K03", "check": "build_cards", "document": "DOC_N",
+     "expected": {
+       "cards": [
+         {"id": "bumpy", "title": "How bumpy is the ride?", "sentences": [
+           {"text": "Its volatility was 123.5% a year, measured on monthly returns in pounds from the end of Dec 2014 to the end of Aug 2026.", "claims": ["bumpy.volatility"]},
+           {"text": "Over the same months, the tracker's was 11.7%.", "claims": ["bumpy.tracker_volatility"]},
+           {"text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.", "claims": []}]},
+         {"id": "worst", "title": "What's the worst it's been?", "sentences": [
+           {"text": "Since the end of Dec 2014, it has not been below a previous high at any month-end.", "claims": []}]},
+         {"id": "panic", "title": "What happened when markets panicked?", "sentences": [
+           {"text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): not covered; its history in pounds starts at the end of Dec 2014.", "claims": []},
+           {"text": "The tracker: not covered.", "claims": []},
+           {"text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 50.0% over the period.", "claims": ["panic.covid"]},
+           {"text": "The tracker: down 14.5% over the same period.", "claims": ["panic.covid.tracker"]},
+           {"text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): up 100.0% over the period.", "claims": ["panic.rate_shock"]},
+           {"text": "The tracker: down 6.0% over the same period.", "claims": ["panic.rate_shock.tracker"]},
+           {"text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered.", "claims": []}]}],
+       "claims": [
+         {"id": "bumpy.volatility", "series": "asset", "instrument": "cry", "metric": "volatility", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 123.5, "direction": null, "display": "123.5%", "kind": "observed"},
+         {"id": "bumpy.tracker_volatility", "series": "tracker", "instrument": "trk", "metric": "volatility", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 11.7, "direction": null, "display": "11.7%", "kind": "observed"},
+         {"id": "panic.covid", "series": "asset", "instrument": "cry", "metric": "stress_window", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "GBP", "value": 50.0, "direction": "up", "display": "50.0%", "kind": "observed"},
+         {"id": "panic.covid.tracker", "series": "tracker", "instrument": "trk", "metric": "stress_window", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "GBP", "value": -14.5, "direction": "down", "display": "14.5%", "kind": "observed"},
+         {"id": "panic.rate_shock", "series": "asset", "instrument": "cry", "metric": "stress_window", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": "GBP", "value": 100.0, "direction": "up", "display": "100.0%", "kind": "observed"},
+         {"id": "panic.rate_shock.tracker", "series": "tracker", "instrument": "trk", "metric": "stress_window", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": "GBP", "value": -6.0, "direction": "down", "display": "6.0%", "kind": "observed"}]},
+     "derivation": "No fall at any month-end: one sentence, no claims, no £ figures and no caveat about falls. 1.23456 -> 123.456 -> 123.5. The tracker's volatility period is the common window (from Dec 2014), as given in side_by_side."},
+    {"id": "K04", "check": "build_cards", "document": "DOC_R", "document_edits": [{"path": ["results", "own", "volatility"], "set": null}],
+     "expected_error": "WordsError", "message_must_contain": ["volatility"],
+     "derivation": "A missing number is refused, never shown as blank or zero."},
+    {"id": "K05", "check": "build_cards", "document": "DOC_R", "document_edits": [{"path": ["results", "own", "largest_fall", "ten_thousand_at_trough"], "set": null}],
+     "expected_error": "WordsError", "message_must_contain": ["ten_thousand_at_trough"],
+     "derivation": "There was a fall but the £ figure is missing."},
+    {"id": "K06", "check": "build_cards", "document": "DOC_R", "document_edits": [{"path": ["results", "side_by_side"], "set": null}],
+     "expected_error": "WordsError", "message_must_contain": ["side_by_side"],
+     "derivation": "Cards 1 and 3 need the tracker."},
+    {"id": "K07", "check": "build_cards", "document": "DOC_R", "document_edits": [{"path": ["results", "own", "stress_windows", 1, "window"], "set": "dotcom"}],
+     "expected_error": "WordsError", "message_must_contain": ["dotcom"],
+     "derivation": "Only the three named windows have wording. (A window name is an internal code, not a value, so the message may name it.)"},
+    {"id": "K08", "check": "build_cards", "document": "DOC_R", "document_edits": [{"path": ["results", "own", "stress_windows", 2, "return"], "set": null}],
+     "expected_error": "WordsError", "message_must_contain": ["rate_shock"],
+     "derivation": "A window marked covered must have a return."}
+  ]
+}

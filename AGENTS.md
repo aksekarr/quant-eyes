@@ -97,6 +97,14 @@ Data pipeline
   `tests/golden/`: never create, edit, rename or delete it. If you think a fact in it is
   wrong, stop and report.
 
+Words
+- `words/` turns published documents into card text and claims. It follows the engine's
+  rules (no network, no files, no environment variables, no printing) and rounds only
+  where METHODOLOGY.md says, once. Sentences are fixed templates: never reword one, add
+  one or drop one unless the task and the golden file say so.
+- One module per methodology section, one test file and one golden file each, using
+  `tests/golden_support.py`.
+
 Site
 - The website makes zero runtime API calls. It only reads precomputed JSON.
 - Every page shows data sources with attribution and a "data as of" date.
