@@ -1,0 +1,18 @@
+{
+  "about": "Facts the card text depends on that are not in the price data, one entry per asset. Checked by Avi against the source links, committed by Avi. Codex never edits this file. See docs/METHODOLOGY.md section 12.",
+  "facts_checked": "2026-09-29",
+  "sources": {
+    "msci_world": "https://www.msci.com/documents/10199/f0e54c85-98b7-40eb-9a7b-bbb03288b523",
+    "msci_uk": "https://www.msci.com/documents/10199/587e9bae-0a65-49e8-b1c6-bb84cf061441",
+    "sgln": "https://www.ishares.com/uk/individual/en/products/258441/ishares-physical-gold-etc-fund"
+  },
+  "instruments": {
+    "msft": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false, "why": "MSCI World top 10, 3.90% (factsheet 31 Aug 2026)."},
+    "aapl": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false, "why": "MSCI World top 10, 5.07% (factsheet 31 Aug 2026)."},
+    "nvda": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false, "why": "MSCI World top 10, 5.56% (factsheet 31 Aug 2026)."},
+    "azn": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false, "why": "MSCI World covers the UK; AstraZeneca is 7.58% of MSCI UK (factsheet 31 Aug 2026)."},
+    "sgln": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": true, "why": "Physical gold, priced in dollars (fund base currency USD); the London line is priced in pounds."},
+    "iglt": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false, "why": "UK government bonds, in pounds; MSCI World holds shares only."},
+    "btc": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false, "why": "Priced in dollars and converted by the engine (card 6 shows the split); MSCI World holds shares only."}
+  }
+}

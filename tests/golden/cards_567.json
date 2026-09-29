@@ -1,0 +1,275 @@
+{
+  "file": "cards_567",
+  "spec": "docs/METHODOLOGY.md section 12",
+  "authorship": "Expected values and every sentence written by hand by Claude (architect), wording approved by Avi, checked against a separate Claude-only reference implementation, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+  "interface": {
+    "module": "words.cards_567",
+    "errors": "WordsError is words.cards.WordsError, imported, never redefined. Bad arguments to the display helpers raise the built-in ValueError.",
+    "correlation_display(value)": "Returns {\"value\": float, \"text\": str}. Section 12.2.",
+    "signed_percent_display(value)": "Returns {\"points\": float, \"text\": str}. Section 12.2.",
+    "build_cards_567(document, facts)": "Returns {\"cards\": [...], \"claims\": [...]}. Sections 12.3 to 12.6. facts is the instrument's entry from words/context.json: {\"held_by_tracker\": bool, \"priced_in_pounds_holds_dollars\": bool}."
+  },
+  "case_fields": {
+    "value": "Passed exactly as given.",
+    "document / document_edits": "Name of an entry in \"documents\"; edits applied to a deep copy with apply_edits.",
+    "facts / facts_edits": "The facts dictionary given in the case, deep-copied, with edits applied.",
+    "expected": "Compared exactly with assert_result_equal, tolerance 0. Where an expected value or points is 0.0, the actual must have a positive sign (math.copysign(1, x) == 1).",
+    "claim checks": "For every build_cards_567 case with an expected result: claim ids are unique; every claim id a sentence lists appears in that sentence's text as its display, in the order listed; and every claim is listed by at least one sentence."
+  },
+  "documents": {
+    "DOC_S": {
+      "instrument": {"id": "usa", "identity": {"type": "share"}}, "benchmark": {"id": "trk"},
+      "results": {
+        "own": {"start": "2007-08"},
+        "side_by_side": {
+          "asset": {"start": "2010-01", "end": "2026-08"},
+          "correlation": 0.47365,
+          "rolling_correlation_36": {"lowest": 0.2095, "lowest_end": "2013-12", "highest": 0.66555, "highest_end": "2024-04", "windows": 164},
+          "blend_90_10": {"start": "2010-01", "end": "2026-08", "months": 199, "asset_weight": 0.1, "rebalance": "december",
+            "blend": {"annualised_return": 0.17534, "volatility": 0.13504, "largest_fall": {"max_drawdown": -0.17548}},
+            "tracker": {"annualised_return": 0.12504, "volatility": 0.11714, "largest_fall": {"max_drawdown": -0.14952}}}},
+        "currency": {
+          "full_history": {"start": "2007-08", "end": "2026-08", "local_return": 281.71237, "currency_return": 0.48886, "gbp_return": 419.92783},
+          "stress_windows": [
+            {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": true, "local_return": -0.72794, "currency_return": 0.42955, "gbp_return": -0.61114},
+            {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "local_return": 0.11645, "currency_return": 0.0645, "gbp_return": 0.18845},
+            {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": false, "local_return": null, "currency_return": null, "gbp_return": null}]}}
+    },
+    "DOC_G": {
+      "instrument": {"id": "gld", "identity": {"type": "etc"}}, "benchmark": {"id": "trk"},
+      "results": {
+        "own": {"start": "2011-05"},
+        "side_by_side": {
+          "asset": {"start": "2011-05", "end": "2026-08"},
+          "correlation": 0.03941,
+          "rolling_correlation_36": {"lowest": -0.29271, "lowest_end": "2023-10", "highest": 0.38049, "highest_end": "2018-09", "windows": 148},
+          "blend_90_10": {"start": "2011-05", "end": "2026-08", "months": 183, "asset_weight": 0.1, "rebalance": "december",
+            "blend": {"annualised_return": -0.0205, "volatility": 0.10545, "largest_fall": {"max_drawdown": -0.12355}},
+            "tracker": {"annualised_return": 0.0, "volatility": 0.11473, "largest_fall": {"max_drawdown": -0.14952}}}},
+        "currency": null}
+    },
+    "DOC_B": {
+      "instrument": {"id": "gbf", "identity": {"type": "etf"}}, "benchmark": {"id": "trk"},
+      "results": {
+        "own": {"start": "2010-01"},
+        "side_by_side": {
+          "asset": {"start": "2010-01", "end": "2026-08"},
+          "correlation": -0.004,
+          "rolling_correlation_36": {"lowest": -0.55, "lowest_end": "2013-01", "highest": 0.125, "highest_end": "2024-06", "windows": 164},
+          "blend_90_10": {"start": "2010-01", "end": "2026-08", "months": 199, "asset_weight": 0.1, "rebalance": "december",
+            "blend": {"annualised_return": 0.11504, "volatility": 0.10556, "largest_fall": {"max_drawdown": -0.12755}},
+            "tracker": {"annualised_return": 0.12504, "volatility": 0.11714, "largest_fall": {"max_drawdown": -0.14952}}}},
+        "currency": null}
+    },
+    "DOC_C": {
+      "instrument": {"id": "cry", "identity": {"type": "cryptocurrency"}}, "benchmark": {"id": "trk"},
+      "results": {
+        "own": {"start": "2014-12"},
+        "side_by_side": {
+          "asset": {"start": "2014-12", "end": "2026-08"},
+          "correlation": 0.3901,
+          "rolling_correlation_36": {"lowest": 0.2399, "lowest_end": "2021-12", "highest": 0.6, "highest_end": "2025-02", "windows": 128},
+          "blend_90_10": {"start": "2014-12", "end": "2026-08", "months": 140, "asset_weight": 0.1, "rebalance": "december",
+            "blend": {"annualised_return": 0.24804, "volatility": 0.18351, "largest_fall": {"max_drawdown": -0.19904}},
+            "tracker": {"annualised_return": 0.12905, "volatility": 0.11714, "largest_fall": {"max_drawdown": -0.14952}}}},
+        "currency": {
+          "full_history": {"start": "2014-12", "end": "2026-08", "local_return": 249.99512, "currency_return": 0.00004, "gbp_return": 250.0},
+          "stress_windows": [
+            {"window": "gfc", "start": "2007-09", "end": "2009-03", "covered": false, "local_return": null, "currency_return": null, "gbp_return": null},
+            {"window": "covid", "start": "2020-01", "end": "2020-03", "covered": true, "local_return": -0.31395, "currency_return": -0.0645, "gbp_return": -0.35847},
+            {"window": "rate_shock", "start": "2021-12", "end": "2022-10", "covered": true, "local_return": -0.55672, "currency_return": 0.1789, "gbp_return": -0.47743}]}}
+    }
+  },
+  "fixed_text": {
+    "correlation": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.",
+    "costs": "Before fees, trading costs and tax.",
+    "held": "The tracker already holds these shares, so the 10% adds to a holding it already has.",
+    "multiply": "The two parts multiply rather than add, so they never simply add up to the figure in pounds.",
+    "dollars_inside": "It is priced in pounds, but what it holds is priced in dollars, so part of its return in pounds comes from the pound against the dollar. With only a price in pounds, that part can't be separated out.",
+    "pounds_only": "It is priced in pounds, so there is no separate currency effect to show.",
+    "share": "A single company's shares can fall a long way and stay down, and the company can fail.",
+    "etf": "A fund's value moves with what it holds: bond prices, for example, fall when interest rates rise. Its market price can differ slightly from the value of its holdings, and its running charges are already inside these figures.",
+    "etc": "This is an exchange-traded commodity: a security backed by metal held in a vault, not the metal itself. It pays no income, and you rely on the issuer and on the custodian holding the metal.",
+    "cryptocurrency": "It is not issued or backed by a government or a company, and it pays no income. Its price can move a long way in days, it trades around the clock, and holdings can be lost to theft or lost keys. Its history here starts at the end of {own start}, so it covers fewer market conditions than the others.",
+    "common": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+  },
+  "cases": [
+    {"id": "H01", "check": "correlation_display", "value": 0.47365, "expected": {"value": 0.47, "text": "0.47"},
+     "derivation": "Two decimal places, half-up: 0.47|365 -> 0.47."},
+    {"id": "H02", "check": "correlation_display", "value": -0.29271, "expected": {"value": -0.29, "text": "−0.29"},
+     "derivation": "Negative correlations keep their sign, written with a true minus sign (U+2212), not a hyphen."},
+    {"id": "H03", "check": "correlation_display", "value": 0.125, "expected": {"value": 0.13, "text": "0.13"},
+     "derivation": "Exactly halfway rounds away from zero: 0.13. Banker's rounding (Python's round) would give 0.12."},
+    {"id": "H04", "check": "correlation_display", "value": -0.004, "expected": {"value": 0.0, "text": "0.00"},
+     "derivation": "Rounds to zero: 0.00, never −0.00, and the value is +0.0."},
+    {"id": "H05", "check": "correlation_display", "value": 1.0, "expected": {"value": 1.0, "text": "1.00"},
+     "derivation": "Always two decimal places."},
+    {"id": "H06", "check": "correlation_display", "value": true, "expected_error": "ValueError",
+     "derivation": "True is not a number."},
+    {"id": "H07", "check": "signed_percent_display", "value": 0.17534, "expected": {"points": 17.5, "text": "17.5%"},
+     "derivation": "Same rounding as section 11.2; positive values have no sign."},
+    {"id": "H08", "check": "signed_percent_display", "value": -0.0205, "expected": {"points": -2.1, "text": "−2.1%"},
+     "derivation": "-2.05 rounds half-up (away from zero) to -2.1; the text carries a true minus sign."},
+    {"id": "H09", "check": "signed_percent_display", "value": -0.0004, "expected": {"points": 0.0, "text": "0.0%"},
+     "derivation": "Rounds to zero: 0.0%, no sign."},
+    {"id": "H10", "check": "signed_percent_display", "value": null, "expected_error": "ValueError",
+     "derivation": "Nothing to display."},
+
+    {"id": "L01", "check": "build_cards_567", "document": "DOC_S", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected": {
+       "cards": [
+         {"id": "next", "title": "What does it do next to the tracker?", "sentences": [
+           {"text": "Its correlation with the tracker was 0.47, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.", "claims": ["next.correlation"]},
+           {"text": "Measured over each 36-month stretch, it ranged from 0.21 (the 36 months to the end of Dec 2013) to 0.67 (the 36 months to the end of Apr 2024).", "claims": ["next.rolling_lowest", "next.rolling_highest"]},
+           {"text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.", "claims": []},
+           {"text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 17.5% a year, against 12.5% a year for the tracker alone.", "claims": ["next.mix_annualised", "next.tracker_annualised"]},
+           {"text": "The mix's volatility was 13.5% against the tracker's 11.7%, and its largest fall at month-end was 17.5% against 15.0%.", "claims": ["next.mix_volatility", "next.tracker_volatility", "next.mix_fall", "next.tracker_fall"]},
+           {"text": "Before fees, trading costs and tax.", "claims": []},
+           {"text": "The tracker already holds these shares, so the 10% adds to a holding it already has.", "claims": []}]},
+         {"id": "pound", "title": "How much of it was the pound?", "sentences": [
+           {"text": "From the end of Aug 2007 to the end of Aug 2026: up 28,171.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 41,992.8%.", "claims": ["pound.local", "pound.currency", "pound.gbp"]},
+           {"text": "Global financial crisis: down 72.8% in dollars, the dollar rose 43.0%, so down 61.1% in pounds.", "claims": ["pound.gfc.local", "pound.gfc.currency", "pound.gfc.gbp"]},
+           {"text": "Covid crash: up 11.6% in dollars, the dollar rose 6.5%, so up 18.8% in pounds.", "claims": ["pound.covid.local", "pound.covid.currency", "pound.covid.gbp"]},
+           {"text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds.", "claims": []}]},
+         {"id": "limits", "title": "What these numbers don't capture", "sentences": [
+           {"text": "A single company's shares can fall a long way and stay down, and the company can fail.", "claims": []},
+           {"text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.", "claims": []}]}],
+       "claims": [
+         {"id": "next.correlation", "series": "asset", "instrument": "usa", "metric": "correlation", "period_start": "2010-01", "period_end": "2026-08", "unit": "ratio", "currency": null, "value": 0.47, "direction": null, "display": "0.47", "kind": "observed"},
+         {"id": "next.rolling_lowest", "series": "asset", "instrument": "usa", "metric": "rolling_correlation_36_lowest", "period_start": "2010-12", "period_end": "2013-12", "unit": "ratio", "currency": null, "value": 0.21, "direction": null, "display": "0.21", "kind": "observed"},
+         {"id": "next.rolling_highest", "series": "asset", "instrument": "usa", "metric": "rolling_correlation_36_highest", "period_start": "2021-04", "period_end": "2024-04", "unit": "ratio", "currency": null, "value": 0.67, "direction": null, "display": "0.67", "kind": "observed"},
+         {"id": "next.mix_annualised", "series": "mix", "instrument": "usa", "metric": "annualised_return", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 17.5, "direction": "up", "display": "17.5%", "kind": "illustration"},
+         {"id": "next.tracker_annualised", "series": "tracker", "instrument": "trk", "metric": "annualised_return", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 12.5, "direction": "up", "display": "12.5%", "kind": "observed"},
+         {"id": "next.mix_volatility", "series": "mix", "instrument": "usa", "metric": "volatility", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 13.5, "direction": null, "display": "13.5%", "kind": "illustration"},
+         {"id": "next.tracker_volatility", "series": "tracker", "instrument": "trk", "metric": "volatility", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 11.7, "direction": null, "display": "11.7%", "kind": "observed"},
+         {"id": "next.mix_fall", "series": "mix", "instrument": "usa", "metric": "largest_fall", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -17.5, "direction": "down", "display": "17.5%", "kind": "illustration"},
+         {"id": "next.tracker_fall", "series": "tracker", "instrument": "trk", "metric": "largest_fall", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -15.0, "direction": "down", "display": "15.0%", "kind": "observed"},
+         {"id": "pound.local", "series": "asset", "instrument": "usa", "metric": "local_return", "period_start": "2007-08", "period_end": "2026-08", "unit": "percent", "currency": "USD", "value": 28171.2, "direction": "up", "display": "28,171.2%", "kind": "observed"},
+         {"id": "pound.currency", "series": "currency", "instrument": "usa", "metric": "currency_return", "period_start": "2007-08", "period_end": "2026-08", "unit": "percent", "currency": null, "value": 48.9, "direction": "up", "display": "48.9%", "kind": "observed"},
+         {"id": "pound.gbp", "series": "asset", "instrument": "usa", "metric": "gbp_return", "period_start": "2007-08", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 41992.8, "direction": "up", "display": "41,992.8%", "kind": "observed"},
+         {"id": "pound.gfc.local", "series": "asset", "instrument": "usa", "metric": "local_return", "period_start": "2007-09", "period_end": "2009-03", "unit": "percent", "currency": "USD", "value": -72.8, "direction": "down", "display": "72.8%", "kind": "observed"},
+         {"id": "pound.gfc.currency", "series": "currency", "instrument": "usa", "metric": "currency_return", "period_start": "2007-09", "period_end": "2009-03", "unit": "percent", "currency": null, "value": 43.0, "direction": "up", "display": "43.0%", "kind": "observed"},
+         {"id": "pound.gfc.gbp", "series": "asset", "instrument": "usa", "metric": "gbp_return", "period_start": "2007-09", "period_end": "2009-03", "unit": "percent", "currency": "GBP", "value": -61.1, "direction": "down", "display": "61.1%", "kind": "observed"},
+         {"id": "pound.covid.local", "series": "asset", "instrument": "usa", "metric": "local_return", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "USD", "value": 11.6, "direction": "up", "display": "11.6%", "kind": "observed"},
+         {"id": "pound.covid.currency", "series": "currency", "instrument": "usa", "metric": "currency_return", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": null, "value": 6.5, "direction": "up", "display": "6.5%", "kind": "observed"},
+         {"id": "pound.covid.gbp", "series": "asset", "instrument": "usa", "metric": "gbp_return", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "GBP", "value": 18.8, "direction": "up", "display": "18.8%", "kind": "observed"}]},
+     "derivation": "A dollar share the tracker holds. Correlation 0.47365 -> 0.47; the lowest 36-month run ends Dec 2013, so it starts 36 months earlier at Dec 2010; highest 0.66555 -> 0.67, run Apr 2021 to Apr 2024. The 90/10 figures are illustrations (kind), the tracker's are observed. Card 6: the 2022 window isn't covered, so it has no sentence (card 3 already says so). 42.955 -> 43.0; 11.645 -> 11.6; 6.45 -> 6.5 (half-up). The currency part is its own series: what the dollar did against the pound."},
+    {"id": "L02", "check": "build_cards_567", "document": "DOC_G", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": true},
+     "expected": {
+       "cards": [
+         {"id": "next", "title": "What does it do next to the tracker?", "sentences": [
+           {"text": "Its correlation with the tracker was 0.04, measured on monthly returns in pounds from the end of May 2011 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.", "claims": ["next.correlation"]},
+           {"text": "Measured over each 36-month stretch, it ranged from −0.29 (the 36 months to the end of Oct 2023) to 0.38 (the 36 months to the end of Sep 2018).", "claims": ["next.rolling_lowest", "next.rolling_highest"]},
+           {"text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.", "claims": []},
+           {"text": "As an illustration, not a recommendation: from the end of May 2011 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned −2.1% a year, against 0.0% a year for the tracker alone.", "claims": ["next.mix_annualised", "next.tracker_annualised"]},
+           {"text": "The mix's volatility was 10.5% against the tracker's 11.5%, and its largest fall at month-end was 12.4% against 15.0%.", "claims": ["next.mix_volatility", "next.tracker_volatility", "next.mix_fall", "next.tracker_fall"]},
+           {"text": "Before fees, trading costs and tax.", "claims": []}]},
+         {"id": "pound", "title": "How much of it was the pound?", "sentences": [
+           {"text": "It is priced in pounds, but what it holds is priced in dollars, so part of its return in pounds comes from the pound against the dollar. With only a price in pounds, that part can't be separated out.", "claims": []}]},
+         {"id": "limits", "title": "What these numbers don't capture", "sentences": [
+           {"text": "This is an exchange-traded commodity: a security backed by metal held in a vault, not the metal itself. It pays no income, and you rely on the issuer and on the custodian holding the metal.", "claims": []},
+           {"text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.", "claims": []}]}],
+       "claims": [
+         {"id": "next.correlation", "series": "asset", "instrument": "gld", "metric": "correlation", "period_start": "2011-05", "period_end": "2026-08", "unit": "ratio", "currency": null, "value": 0.04, "direction": null, "display": "0.04", "kind": "observed"},
+         {"id": "next.rolling_lowest", "series": "asset", "instrument": "gld", "metric": "rolling_correlation_36_lowest", "period_start": "2020-10", "period_end": "2023-10", "unit": "ratio", "currency": null, "value": -0.29, "direction": null, "display": "−0.29", "kind": "observed"},
+         {"id": "next.rolling_highest", "series": "asset", "instrument": "gld", "metric": "rolling_correlation_36_highest", "period_start": "2015-09", "period_end": "2018-09", "unit": "ratio", "currency": null, "value": 0.38, "direction": null, "display": "0.38", "kind": "observed"},
+         {"id": "next.mix_annualised", "series": "mix", "instrument": "gld", "metric": "annualised_return", "period_start": "2011-05", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -2.1, "direction": "down", "display": "−2.1%", "kind": "illustration"},
+         {"id": "next.tracker_annualised", "series": "tracker", "instrument": "trk", "metric": "annualised_return", "period_start": "2011-05", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 0.0, "direction": "flat", "display": "0.0%", "kind": "observed"},
+         {"id": "next.mix_volatility", "series": "mix", "instrument": "gld", "metric": "volatility", "period_start": "2011-05", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 10.5, "direction": null, "display": "10.5%", "kind": "illustration"},
+         {"id": "next.tracker_volatility", "series": "tracker", "instrument": "trk", "metric": "volatility", "period_start": "2011-05", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 11.5, "direction": null, "display": "11.5%", "kind": "observed"},
+         {"id": "next.mix_fall", "series": "mix", "instrument": "gld", "metric": "largest_fall", "period_start": "2011-05", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -12.4, "direction": "down", "display": "12.4%", "kind": "illustration"},
+         {"id": "next.tracker_fall", "series": "tracker", "instrument": "trk", "metric": "largest_fall", "period_start": "2011-05", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -15.0, "direction": "down", "display": "15.0%", "kind": "observed"}]},
+     "derivation": "A pound-priced fund holding a dollar asset, not held by the tracker (no 'already holds' sentence). Negative correlation keeps its minus sign (-0.29271 -> −0.29); lowest run ends Oct 2023 so starts Oct 2020. The mix's annualised return is negative and signed: -2.05 -> −2.1%. The tracker's 0.0 is 'flat' and shown as 0.0%. 10.545 -> 10.5; 12.355 -> 12.4; 11.473 -> 11.5. Card 6 is the fixed 'can't be separated' sentence: no claims."},
+    {"id": "L03", "check": "build_cards_567", "document": "DOC_B", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false},
+     "expected": {
+       "cards": [
+         {"id": "next", "title": "What does it do next to the tracker?", "sentences": [
+           {"text": "Its correlation with the tracker was 0.00, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.", "claims": ["next.correlation"]},
+           {"text": "Measured over each 36-month stretch, it ranged from −0.55 (the 36 months to the end of Jan 2013) to 0.13 (the 36 months to the end of Jun 2024).", "claims": ["next.rolling_lowest", "next.rolling_highest"]},
+           {"text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.", "claims": []},
+           {"text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 11.5% a year, against 12.5% a year for the tracker alone.", "claims": ["next.mix_annualised", "next.tracker_annualised"]},
+           {"text": "The mix's volatility was 10.6% against the tracker's 11.7%, and its largest fall at month-end was 12.8% against 15.0%.", "claims": ["next.mix_volatility", "next.tracker_volatility", "next.mix_fall", "next.tracker_fall"]},
+           {"text": "Before fees, trading costs and tax.", "claims": []}]},
+         {"id": "pound", "title": "How much of it was the pound?", "sentences": [
+           {"text": "It is priced in pounds, so there is no separate currency effect to show.", "claims": []}]},
+         {"id": "limits", "title": "What these numbers don't capture", "sentences": [
+           {"text": "A fund's value moves with what it holds: bond prices, for example, fall when interest rates rise. Its market price can differ slightly from the value of its holdings, and its running charges are already inside these figures.", "claims": []},
+           {"text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.", "claims": []}]}],
+       "claims": [
+         {"id": "next.correlation", "series": "asset", "instrument": "gbf", "metric": "correlation", "period_start": "2010-01", "period_end": "2026-08", "unit": "ratio", "currency": null, "value": 0.0, "direction": null, "display": "0.00", "kind": "observed"},
+         {"id": "next.rolling_lowest", "series": "asset", "instrument": "gbf", "metric": "rolling_correlation_36_lowest", "period_start": "2010-01", "period_end": "2013-01", "unit": "ratio", "currency": null, "value": -0.55, "direction": null, "display": "−0.55", "kind": "observed"},
+         {"id": "next.rolling_highest", "series": "asset", "instrument": "gbf", "metric": "rolling_correlation_36_highest", "period_start": "2021-06", "period_end": "2024-06", "unit": "ratio", "currency": null, "value": 0.13, "direction": null, "display": "0.13", "kind": "observed"},
+         {"id": "next.mix_annualised", "series": "mix", "instrument": "gbf", "metric": "annualised_return", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 11.5, "direction": "up", "display": "11.5%", "kind": "illustration"},
+         {"id": "next.tracker_annualised", "series": "tracker", "instrument": "trk", "metric": "annualised_return", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 12.5, "direction": "up", "display": "12.5%", "kind": "observed"},
+         {"id": "next.mix_volatility", "series": "mix", "instrument": "gbf", "metric": "volatility", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 10.6, "direction": null, "display": "10.6%", "kind": "illustration"},
+         {"id": "next.tracker_volatility", "series": "tracker", "instrument": "trk", "metric": "volatility", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 11.7, "direction": null, "display": "11.7%", "kind": "observed"},
+         {"id": "next.mix_fall", "series": "mix", "instrument": "gbf", "metric": "largest_fall", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -12.8, "direction": "down", "display": "12.8%", "kind": "illustration"},
+         {"id": "next.tracker_fall", "series": "tracker", "instrument": "trk", "metric": "largest_fall", "period_start": "2010-01", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -15.0, "direction": "down", "display": "15.0%", "kind": "observed"}]},
+     "derivation": "A pound bond fund: no currency effect sentence, ETF limits text. Correlation -0.004 rounds to 0.00 (value +0.0, no minus sign). The highest run is exactly 0.125: half-up gives 0.13 (banker's rounding would give 0.12). The lowest run ends Jan 2013, so it starts Jan 2010. 10.556 -> 10.6; 12.755 -> 12.8."},
+    {"id": "L04", "check": "build_cards_567", "document": "DOC_C", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false},
+     "expected": {
+       "cards": [
+         {"id": "next", "title": "What does it do next to the tracker?", "sentences": [
+           {"text": "Its correlation with the tracker was 0.39, measured on monthly returns in pounds from the end of Dec 2014 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.", "claims": ["next.correlation"]},
+           {"text": "Measured over each 36-month stretch, it ranged from 0.24 (the 36 months to the end of Dec 2021) to 0.60 (the 36 months to the end of Feb 2025).", "claims": ["next.rolling_lowest", "next.rolling_highest"]},
+           {"text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.", "claims": []},
+           {"text": "As an illustration, not a recommendation: from the end of Dec 2014 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 24.8% a year, against 12.9% a year for the tracker alone.", "claims": ["next.mix_annualised", "next.tracker_annualised"]},
+           {"text": "The mix's volatility was 18.4% against the tracker's 11.7%, and its largest fall at month-end was 19.9% against 15.0%.", "claims": ["next.mix_volatility", "next.tracker_volatility", "next.mix_fall", "next.tracker_fall"]},
+           {"text": "Before fees, trading costs and tax.", "claims": []}]},
+         {"id": "pound", "title": "How much of it was the pound?", "sentences": [
+           {"text": "From the end of Dec 2014 to the end of Aug 2026: up 24,999.5% in dollars, and the dollar was unchanged (0.0%) against the pound, so in pounds it was up 25,000.0%.", "claims": ["pound.local", "pound.currency", "pound.gbp"]},
+           {"text": "Covid crash: down 31.4% in dollars, the dollar fell 6.5%, so down 35.8% in pounds.", "claims": ["pound.covid.local", "pound.covid.currency", "pound.covid.gbp"]},
+           {"text": "2022 rate shock: down 55.7% in dollars, the dollar rose 17.9%, so down 47.7% in pounds.", "claims": ["pound.rate_shock.local", "pound.rate_shock.currency", "pound.rate_shock.gbp"]},
+           {"text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds.", "claims": []}]},
+         {"id": "limits", "title": "What these numbers don't capture", "sentences": [
+           {"text": "It is not issued or backed by a government or a company, and it pays no income. Its price can move a long way in days, it trades around the clock, and holdings can be lost to theft or lost keys. Its history here starts at the end of Dec 2014, so it covers fewer market conditions than the others.", "claims": []},
+           {"text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.", "claims": []}]}],
+       "claims": [
+         {"id": "next.correlation", "series": "asset", "instrument": "cry", "metric": "correlation", "period_start": "2014-12", "period_end": "2026-08", "unit": "ratio", "currency": null, "value": 0.39, "direction": null, "display": "0.39", "kind": "observed"},
+         {"id": "next.rolling_lowest", "series": "asset", "instrument": "cry", "metric": "rolling_correlation_36_lowest", "period_start": "2018-12", "period_end": "2021-12", "unit": "ratio", "currency": null, "value": 0.24, "direction": null, "display": "0.24", "kind": "observed"},
+         {"id": "next.rolling_highest", "series": "asset", "instrument": "cry", "metric": "rolling_correlation_36_highest", "period_start": "2022-02", "period_end": "2025-02", "unit": "ratio", "currency": null, "value": 0.6, "direction": null, "display": "0.60", "kind": "observed"},
+         {"id": "next.mix_annualised", "series": "mix", "instrument": "cry", "metric": "annualised_return", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 24.8, "direction": "up", "display": "24.8%", "kind": "illustration"},
+         {"id": "next.tracker_annualised", "series": "tracker", "instrument": "trk", "metric": "annualised_return", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 12.9, "direction": "up", "display": "12.9%", "kind": "observed"},
+         {"id": "next.mix_volatility", "series": "mix", "instrument": "cry", "metric": "volatility", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 18.4, "direction": null, "display": "18.4%", "kind": "illustration"},
+         {"id": "next.tracker_volatility", "series": "tracker", "instrument": "trk", "metric": "volatility", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 11.7, "direction": null, "display": "11.7%", "kind": "observed"},
+         {"id": "next.mix_fall", "series": "mix", "instrument": "cry", "metric": "largest_fall", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -19.9, "direction": "down", "display": "19.9%", "kind": "illustration"},
+         {"id": "next.tracker_fall", "series": "tracker", "instrument": "trk", "metric": "largest_fall", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": -15.0, "direction": "down", "display": "15.0%", "kind": "observed"},
+         {"id": "pound.local", "series": "asset", "instrument": "cry", "metric": "local_return", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "USD", "value": 24999.5, "direction": "up", "display": "24,999.5%", "kind": "observed"},
+         {"id": "pound.currency", "series": "currency", "instrument": "cry", "metric": "currency_return", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": null, "value": 0.0, "direction": "flat", "display": "0.0%", "kind": "observed"},
+         {"id": "pound.gbp", "series": "asset", "instrument": "cry", "metric": "gbp_return", "period_start": "2014-12", "period_end": "2026-08", "unit": "percent", "currency": "GBP", "value": 25000.0, "direction": "up", "display": "25,000.0%", "kind": "observed"},
+         {"id": "pound.covid.local", "series": "asset", "instrument": "cry", "metric": "local_return", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "USD", "value": -31.4, "direction": "down", "display": "31.4%", "kind": "observed"},
+         {"id": "pound.covid.currency", "series": "currency", "instrument": "cry", "metric": "currency_return", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": null, "value": -6.5, "direction": "down", "display": "6.5%", "kind": "observed"},
+         {"id": "pound.covid.gbp", "series": "asset", "instrument": "cry", "metric": "gbp_return", "period_start": "2020-01", "period_end": "2020-03", "unit": "percent", "currency": "GBP", "value": -35.8, "direction": "down", "display": "35.8%", "kind": "observed"},
+         {"id": "pound.rate_shock.local", "series": "asset", "instrument": "cry", "metric": "local_return", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": "USD", "value": -55.7, "direction": "down", "display": "55.7%", "kind": "observed"},
+         {"id": "pound.rate_shock.currency", "series": "currency", "instrument": "cry", "metric": "currency_return", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": null, "value": 17.9, "direction": "up", "display": "17.9%", "kind": "observed"},
+         {"id": "pound.rate_shock.gbp", "series": "asset", "instrument": "cry", "metric": "gbp_return", "period_start": "2021-12", "period_end": "2022-10", "unit": "percent", "currency": "GBP", "value": -47.7, "direction": "down", "display": "47.7%", "kind": "observed"}]},
+     "derivation": "Crypto: the limits text carries the history's start month. The full-history currency part rounds to zero: 'the dollar was unchanged (0.0%) against the pound', direction flat. 'The dollar fell 6.5%' for a negative currency part (-6.45 -> -6.5). 31.395 -> 31.4; 35.847 -> 35.8; 18.351 -> 18.4; 12.905 -> 12.9. 0.6 displays as 0.60. The crisis window isn't covered, so card 6 skips it."},
+    {"id": "X01", "check": "build_cards_567", "document": "DOC_S", "facts": {"priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["held_by_tracker"],
+     "derivation": "The facts must say whether the tracker holds it."},
+    {"id": "X02", "check": "build_cards_567", "document": "DOC_S", "facts": {"held_by_tracker": 1, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["held_by_tracker"],
+     "derivation": "1 is not true."},
+    {"id": "X03", "check": "build_cards_567", "document": "DOC_S", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": true},
+     "expected_error": "WordsError", "message_must_contain": ["priced_in_pounds_holds_dollars"],
+     "derivation": "A dollar asset (it has currency results) can't also be 'priced in pounds': the facts contradict the data."},
+    {"id": "X04", "check": "build_cards_567", "document": "DOC_S", "document_edits": [{"path": ["results", "side_by_side", "blend_90_10", "blend", "annualised_return"], "set": null}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["annualised_return"],
+     "derivation": "A missing number is refused."},
+    {"id": "X05", "check": "build_cards_567", "document": "DOC_B", "document_edits": [{"path": ["instrument", "identity", "type"], "set": "fund"}], "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["type"],
+     "derivation": "Only the four instrument types have limits text."},
+    {"id": "X06", "check": "build_cards_567", "document": "DOC_S", "document_edits": [{"path": ["results", "side_by_side", "correlation"], "set": null}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["correlation"],
+     "derivation": "No correlation, no card 5."},
+    {"id": "X07", "check": "build_cards_567", "document": "DOC_S", "document_edits": [{"path": ["results", "side_by_side", "blend_90_10", "asset_weight"], "set": 0.2}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["asset_weight"],
+     "derivation": "The template says 90/10. Any other weight is refused rather than described wrongly."},
+    {"id": "X08", "check": "build_cards_567", "document": "DOC_S", "document_edits": [{"path": ["results", "side_by_side", "blend_90_10", "rebalance"], "set": "quarterly"}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["rebalance"],
+     "derivation": "The template says every December."},
+    {"id": "X09", "check": "build_cards_567", "document": "DOC_S", "document_edits": [{"path": ["results", "currency", "stress_windows", 1, "gbp_return"], "set": null}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["covid"],
+     "derivation": "A covered window must have all three parts."}
+  ]
+}

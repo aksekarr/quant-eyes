@@ -104,6 +104,8 @@ Words
   one or drop one unless the task and the golden file say so.
 - One module per methodology section, one test file and one golden file each, using
   `tests/golden_support.py`.
+- `words/context.json` holds hand-checked facts committed by Avi. Treat it like
+  `tests/golden/`: never create, edit, rename or delete it.
 
 Site
 - The website makes zero runtime API calls. It only reads precomputed JSON.

@@ -21,6 +21,7 @@ section is written here only once its conventions are confirmed.
 | 9. Fetching provider data | Pipeline 3a | `providers.json` | Written |
 | 10. Running the pipeline | Pipeline 3b | `runner.json` | Written |
 | 11. Claims and card text (cards 1 to 3) | Words 1 | `cards.json` | Written |
+| 12. Card text (cards 5 to 7) | Words 2 | `cards_567.json` | Written |
 
 ## General rules
 
@@ -820,3 +821,107 @@ naming the field. A missing number is never shown as blank or zero.
 
 The asset is always "it" and the benchmark "the tracker"; the page names both in full
 once, outside the cards.
+
+## 12. Card text (cards 5 to 7)
+
+In `words/cards_567.py`, with the same rules as section 11 and reusing its helpers
+(rounding, month names, `WordsError`). `build_cards_567(document, facts)` takes one
+published document and the asset's entry from `words/context.json`, and returns cards 5
+to 7 and their claims. Card 4 (holding periods) is not in v1.
+
+### 12.1 The facts file (`words/context.json`)
+
+Hand-checked facts the text needs that are not in the price data, one entry per asset,
+with its reason and sources. Codex never edits it. Each entry gives:
+
+- `held_by_tracker`: the tracker (MSCI World) holds this asset. Microsoft, Apple, Nvidia
+  and AstraZeneca (MSCI factsheets, 31 Aug 2026).
+- `priced_in_pounds_holds_dollars`: priced in pounds but holding something priced in
+  dollars, so it carries a currency effect that can't be separated (the gold fund).
+
+`build_cards_567` receives exactly those two true/false values. Missing keys, other keys,
+anything but true or false, or `priced_in_pounds_holds_dollars` for an asset that has
+currency results (a dollar asset), is a `WordsError`.
+
+### 12.2 More display rules
+
+- **Correlation:** the value as written (`repr`, as a `Decimal`), two decimal places,
+  half-up; zero is `0.00`; a negative value keeps its sign, written with a true minus sign
+  (U+2212): `−0.29`. Claims have unit `ratio`, no currency, no direction.
+- **Signed percentages** (the 90/10 returns a year): as section 11.2, but a negative value
+  is written with a true minus sign (`−2.1%`). Direction `up`, `down` or `flat`.
+- **New claim fields:** series may also be `mix` (the 90/10 illustration, kind
+  `illustration`) or `currency` (what the dollar did against the pound). Dollar returns
+  have currency `USD`; the currency part has none.
+- A 36-month run's claim period starts 36 months before the month it ends.
+
+### 12.3 Card 5: What does it do next to the tracker?
+
+(Not "a global tracker": the tracker is developed-world only.)
+
+1. `Its correlation with the tracker was {correlation}, measured on monthly returns in
+   pounds from the end of {side-by-side start} to the end of {side-by-side end}: 1 would
+   mean always moving in step, 0 no pattern, and −1 always opposite.`
+2. `Measured over each 36-month stretch, it ranged from {lowest} (the 36 months to the
+   end of {lowest end}) to {highest} (the 36 months to the end of {highest end}).`
+3. `Correlation says how consistently the monthly moves lined up, not how big they were.
+   A low figure is not protection.`
+4. `As an illustration, not a recommendation: from the end of {mix start} to the end of
+   {mix end}, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at
+   the end of every December, returned {mix a year} a year, against {tracker a year} a
+   year for the tracker alone.`
+5. `The mix's volatility was {mix volatility} against the tracker's {tracker volatility},
+   and its largest fall at month-end was {mix fall} against {tracker fall}.`
+6. `Before fees, trading costs and tax.`
+7. Only if held by the tracker: `The tracker already holds these shares, so the 10% adds
+   to a holding it already has.`
+
+The words say 90/10 and every December, so an asset weight other than 0.1 or a
+rebalancing rule other than `december` is a `WordsError`, never described wrongly.
+
+### 12.4 Card 6: How much of it was the pound?
+
+- **A dollar asset** (it has currency results):
+  1. `From the end of {start} to the end of {end}: {up|down x|unchanged (0.0%)} in
+     dollars, and the dollar {rose|fell y|was unchanged (0.0%)} against the pound, so in
+     pounds it was {up|down z|unchanged (0.0%)}.`
+  2. For each covered stress window, in order: `{window name}: {..} in dollars, the
+     dollar {..}, so {..} in pounds.` Windows not covered are skipped (card 3 already
+     says so).
+  3. `The two parts multiply rather than add, so they never simply add up to the figure
+     in pounds.`
+- **Priced in pounds, holding dollars:** `It is priced in pounds, but what it holds is
+  priced in dollars, so part of its return in pounds comes from the pound against the
+  dollar. With only a price in pounds, that part can't be separated out.`
+- **Otherwise:** `It is priced in pounds, so there is no separate currency effect to
+  show.`
+
+### 12.5 Card 7: What these numbers don't capture
+
+One sentence for the instrument type, then one for all:
+
+- share: `A single company's shares can fall a long way and stay down, and the company
+  can fail.`
+- etf: `A fund's value moves with what it holds: bond prices, for example, fall when
+  interest rates rise. Its market price can differ slightly from the value of its
+  holdings, and its running charges are already inside these figures.`
+- etc: `This is an exchange-traded commodity: a security backed by metal held in a vault,
+  not the metal itself. It pays no income, and you rely on the issuer and on the
+  custodian holding the metal.`
+- cryptocurrency: `It is not issued or backed by a government or a company, and it pays
+  no income. Its price can move a long way in days, it trades around the clock, and
+  holdings can be lost to theft or lost keys. Its history here starts at the end of {own
+  start}, so it covers fewer market conditions than the others.`
+- All: `These are past results in pounds, measured at month-ends, before platform fees,
+  trading costs and tax. Past behaviour does not predict future results.`
+
+### 12.6 What is read, and errors
+
+`build_cards_567` reads only: the instrument's `id` and `identity.type`; the benchmark's
+`id`; `own.start`; from `side_by_side`: the asset's `start` and `end`, `correlation`,
+`rolling_correlation_36` (`lowest`, `lowest_end`, `highest`, `highest_end`) and
+`blend_90_10` (`start`, `end`, `asset_weight`, `rebalance`, and for both `blend` and
+`tracker`: `annualised_return`, `volatility`, `largest_fall.max_drawdown`); and
+`currency` (`full_history` and `stress_windows`, each with `start`, `end`, `covered` for
+windows, `local_return`, `currency_return`, `gbp_return`). Anything needed that is
+missing or empty is a `WordsError` naming it.
