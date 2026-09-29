@@ -250,6 +250,7 @@ class InvarianceTests(unittest.TestCase):
             "cards_567.py": {
                 "decimal", "math", "numbers", "re", "engine.series", "words.cards",
             },
+            "headline.py": {"copy", "re", "pipeline.publish", "words.cards"},
             "page.py": {"copy", "pipeline.publish", "words.cards", "words.cards_567"},
         }
         source_paths.extend(root / "words" / name for name in allowed_words_imports)
