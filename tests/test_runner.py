@@ -8,11 +8,12 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from engine.output import analyse
 from pipeline.monthly import build_monthly_series, last_complete_month
 from pipeline.providers import ProviderError
-from pipeline.publish import build_document
+from pipeline.publish import PublishError, build_document, check_document
 from pipeline.runner import RunError, run
 from golden_support import (
     apply_edits,
@@ -117,6 +118,19 @@ class RunnerGoldenTests(unittest.TestCase):
     def _exercise_run(self, case, registry, today, out_dir, fetch):
         def calculate():
             try:
+                if "read_back_failure" in case:
+                    failure = case["read_back_failure"]
+                    calls = 0
+
+                    def check_read_back(document, registry):
+                        nonlocal calls
+                        calls += 1
+                        if calls == failure["call"]:
+                            raise PublishError(failure["message"])
+                        return check_document(document, registry)
+
+                    with patch("pipeline.runner.check_document", side_effect=check_read_back):
+                        return run(registry, fetch, today, out_dir)
                 return run(registry, fetch, today, out_dir)
             except Exception as error:
                 if "message_equals" in case:
