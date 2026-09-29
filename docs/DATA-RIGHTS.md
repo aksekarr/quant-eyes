@@ -34,17 +34,17 @@ This is a product assessment, not legal advice.
 - Error messages and printed output name the month, row number or instrument, never a
   value, and never a response body. A provider's error is reported only through its known
   message fields (Alpha Vantage: Information, Note, Error Message) or the exception's type.
-  `scripts/data_check.py` prints up to 80 characters of an unexpected response, which
-  could include prices; the pipeline does not copy that, and the data check is to be
-  fixed or retired before any further live run.
+  The 28 Sept availability check (`scripts/data_check.py`) could print up to 80 characters
+  of an unexpected response, which could include prices. It was retired on 29 Sept, once
+  `scripts/build_data.py` replaced it; it remains in git history.
 - Before public release, confirm each provider's attribution wording.
 
 ## Sources
 
 | Source | What it could supply | Terms (summary) | Status |
 |---|---|---|---|
-| Tiingo (free/Starter) | US stocks, US ETFs, crypto, FX | Starter plans may not store data; processing must be transient in memory. Derived products (e.g. volatility, averages, percentage returns, Sharpe) may be distributed if they cannot substitute for or reconstruct the data. Coverage of London-listed funds unconfirmed. | Candidate, test in data check |
-| Alpha Vantage (free) | US and London stocks/ETFs (.LON), FX, crypto | Non-commercial licence covering "investment analysis, research"; public display not explicitly addressed. Some endpoints premium. About 25 requests a day on free. | Candidate, test in data check |
+| Tiingo (free/Starter) | US stocks, US ETFs, crypto, FX | Starter plans may not store data; processing must be transient in memory. Derived products (e.g. volatility, averages, percentage returns, Sharpe) may be distributed if they cannot substitute for or reconstruct the data. Coverage of London-listed funds unconfirmed. | In use: US stocks, bitcoin |
+| Alpha Vantage (free) | US and London stocks/ETFs (.LON), FX, crypto | Non-commercial licence covering "investment analysis, research"; public display not explicitly addressed. Some endpoints premium. About 25 requests a day on free. | In use: London funds and AstraZeneca, GBP/USD |
 | Bank of England Database | Gilt yields, Bank Rate | Open Government Licence v3.0, attribution required. Some exchange-rate series excluded (third-party licensed); check series before use. | Usable for macro context |
 | FRED | US government series | Required notice: "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis." Third-party series need the owner's permission (e.g. Coinbase BTC prohibits reproduction). Terms reportedly include AI-related restrictions; clarify before use. | Not planned for v1 |
 | ECB | Euro FX reference rates | Reportedly allows reuse with attribution and clearly identified modifications (from an external review, not yet checked). | Possible currency source, unverified |
