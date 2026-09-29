@@ -19,6 +19,7 @@
     "expected_files": "After the run, the output folder holds exactly these names (including any before_files kept). Each name in expected_documents must hold exactly json.dumps(document, indent=2, sort_keys=True, allow_nan=False) + \"\\n\", where the test builds the document itself from the same edited rows with the library functions in section 10.2 step 4 (build_monthly_series, analyse, build_document). Every other name must hold exactly its before_files text.",
     "expected_summary": "run() only: the returned summary, compared exactly.",
     "expected_error / message_equals / message_must_contain / message_must_not_contain": "As in the other golden files. message_equals compares the whole message.",
+    "read_back_failure": "run() only: {\"call\": n, \"message\": text}. Replace pipeline.runner.check_document (the name the runner uses for the section 10.2 step 6 read-back check) so that its n-th call, counting from 1, raises PublishError(text) and every other call goes to the real check_document. Section 8's own check inside build_document is not affected. (Added after task 3b: without it, removing the read-back check or the temporary-file cleanup passed every test.)",
     "canaries": "Every run and cli case: every row value, written as text (a string as given, a number as repr() gives it), must not appear in any file in the output folder or in anything main() wrote to out.",
     "cli": "main() cases: root is a new temporary folder containing pipeline/instruments.json (the registry, or registry_text if given); out is a StringIO; make_fetch is a fake that records the keys dictionary it is given and returns the fake fetch, unless make_fetch_raises gives a RuntimeError message to raise instead. expected_stdout is the exact list of lines written. expected_keys is the dictionary make_fetch received, or null if it must not be called. data/derived is the output folder; expected_files as above, or null if the folder must not exist."
   },
@@ -138,6 +139,13 @@
      "expected_fetch_order": ["GBP/USD", "TRK.X", "USA", "GBF.X", "cryusd"],
      "expected_files": [], "expected_documents": [],
      "derivation": "The crypto's start month has no rows. The start is never moved (section 7.4), and the last asset's failure still means nothing is written for the first two."},
+    {"id": "U16", "check": "run", "today": "2026-09-28",
+     "before_files": {"usa.json": "old\n"},
+     "read_back_failure": {"call": 2, "message": "synthetic read-back failure"},
+     "expected_error": "RunError", "message_equals": "gbf: write: PublishError: synthetic read-back failure",
+     "expected_fetch_order": ["GBP/USD", "TRK.X", "USA", "GBF.X", "cryusd"],
+     "expected_files": ["usa.json"], "expected_documents": [],
+     "derivation": "All three temporary files are written, then read back in asset order; the second read-back (gbf) fails. Nothing has been renamed yet, so last run's usa.json is untouched, and all three temporary files, including the two not yet checked, are removed. This is the all-or-nothing rule's failure path, which no fetch failure can reach."},
 
     {"id": "L01", "check": "cli", "argv": ["--list"], "environ": {}, "today": "2026-09-28",
      "expected_exit": 0,
