@@ -1134,7 +1134,8 @@ consecutive words. Each rule fails if any word or phrase on its list is present.
 12. **loaded**: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic,
     dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous,
     catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed,
-    collapse, collapsed.
+    collapse, collapsed, never. ("Never" is a claim about all time, and the data stops at a
+    month-end: "never recovered" is exactly the slip rule 15 exists for.)
 13. **other_instrument**: the label, identity name or identity ticker of any other
     instrument in the list, the benchmark included, appears in the text (case-insensitive,
     not inside a longer run of letters and digits).
@@ -1143,6 +1144,19 @@ consecutive words. Each rule fails if any word or phrase on its list is present.
     lost, lose, loss, losses, below, lower. One with direction `up` needs one of: rise,
     rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth,
     increase, increased, increases, higher, above.
+15. **recovery**: whether the asset's largest fall recovered comes from the page's claims
+    (all of them, not only the cited ones): *not recovered* if there is a
+    `worst.below_high_at_end` claim, *recovered* if there is a `worst.months_to_recover`
+    claim, and *no fall* otherwise. The recovery words are: recover, recovers, recovered,
+    recovering, recovery, regain, regains, regained, regaining, back. A recovery word is
+    *negated* if one of the two words just before it is `not` or ends in `n't`; for this
+    rule each run of letters is one word (a possessive is not counted twice). For a fall
+    that had not recovered, every recovery word must be negated ("had not recovered"); for
+    one that recovered, none may be ("it recovered", never "it had not recovered"); with no
+    fall, no recovery word may appear. Added on 29 Sept after a trial on the real pages
+    passed "It fell 31.9% from May 2020 to Oct 2023 and took 75 months to get back to that
+    high" for IGLT: both figures were real claims, and the sentence was false. IGLT had
+    not recovered; 75 months was its time below the high so far.
 
 Within a rule, problems follow the order they are found. The word lists are part of the
 method: changing one is a methodology change with its own golden cases.
