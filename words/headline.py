@@ -40,7 +40,11 @@ LOADED_WORDS = (
     "extremely", "dramatic", "dramatically", "stunning", "incredible",
     "impressive", "spectacular", "terrible", "disastrous", "catastrophic",
     "soared", "soaring", "plunged", "plummeted", "crashed", "skyrocketed",
-    "rocketed", "collapse", "collapsed",
+    "rocketed", "collapse", "collapsed", "never",
+)
+RECOVERY_WORDS = (
+    "recover", "recovers", "recovered", "recovering", "recovery", "regain",
+    "regains", "regained", "regaining", "back",
 )
 DOWN_WORDS = (
     "fall", "falls", "fell", "fallen", "falling", "drop", "drops", "dropped",
@@ -88,14 +92,21 @@ def _phrase_occurrences(text, phrase):
         start += 1
 
 
+def _word_runs(text):
+    """Return each lower-case run of letters, with internal apostrophes, once."""
+    return [
+        match.group(0)
+        for match in _WORD_PATTERN.finditer(text.lower().replace("’", "'"))
+    ]
+
+
 def _words(text):
     """Return lower-case words plus possessive bases, in text order."""
     result = []
-    for match in _WORD_PATTERN.finditer(text.lower().replace("’", "'")):
-        word = match.group(0)
-        result.append((match.start(), word))
+    for position, word in enumerate(_word_runs(text)):
+        result.append((position, word))
         if word.endswith("'s"):
-            result.append((match.start(), word[:-2]))
+            result.append((position, word[:-2]))
     result.sort(key=lambda item: item[0])
     return [word for _, word in result]
 
@@ -220,6 +231,29 @@ def check_headline(text, claim_ids, page, registry):
         needed = DOWN_WORDS if direction == "down" else UP_WORDS if direction == "up" else ()
         if needed and not word_set.intersection(needed):
             problems.append(_problem("direction", "{} lacks a {} word".format(claim["id"], direction)))
+
+    recovery_words = _word_runs(uncovered_text)
+    page_claim_ids = {claim["id"] for claim in page["claims"]}
+    if "worst.below_high_at_end" in page_claim_ids:
+        recovery_state = "not recovered"
+    elif "worst.months_to_recover" in page_claim_ids:
+        recovery_state = "recovered"
+    else:
+        recovery_state = "no fall"
+    for index, word in enumerate(recovery_words):
+        if word not in RECOVERY_WORDS:
+            continue
+        preceding = recovery_words[max(0, index - 2):index]
+        negated = any(item == "not" or item.endswith("n't") for item in preceding)
+        wrong = (
+            recovery_state == "no fall"
+            or (recovery_state == "not recovered" and not negated)
+            or (recovery_state == "recovered" and negated)
+        )
+        if wrong:
+            problems.append(_problem(
+                "recovery", "{} conflicts with {}".format(word, recovery_state),
+            ))
     return problems
 
 
