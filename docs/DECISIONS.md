@@ -39,13 +39,13 @@ Only Avi confirms decisions. Anything under Proposed is not approved.
 | 2026-09-28 | The tracker has no page of its own in v1; its figures appear in every side-by-side view. | Keeps the site about the one investment being considered; its own card 5 would compare it with itself. |
 | 2026-09-28 | Instrument identity (METHODOLOGY.md section 8.1) comes from issuer pages, plus a broker page for how the London line is quoted, checked by Avi against the links. It lives in `pipeline/instruments.json`, which Codex never edits, and is published exactly as written. The published file (section 8.2) carries identity, benchmark, sources, data-as-of month, generation date and the engine results, and is checked before it is written and again as read back (section 8.3). | Identity is a fact claim on the page; it must be sourced and checked like a number. |
 | 2026-09-29 | SWDA starts at the end of Jan 2010 (instrument start month), not Dec 2009. | The first live run (29 Sept) found Alpha Vantage's Dec 2009 row for SWDA dated 23 Dec, eight days before the London market's last trading day of 2009: not a month-end value (section 7.3). One untrustworthy month dropped; every tracker comparison starts a month later. No other series had a stale month, a bad value or a gap. |
+| 2026-09-29 | Headline read: OpenAI `gpt-6.1-sol` drafts it at build time, run by Avi with a key for this project only (its only permission: model requests) and a hard monthly spend limit ($5). One neutral, past-tense sentence of at most 30 words citing one or two of the asset's own observed figures; no comparisons, no other instrument named. Checked in code (METHODOLOGY section 15). Avi reviews every headline by editing `words/headlines.json`; after a data refresh, last month's headlines are dropped until he approves new ones. | Cost is pennies a month, and a stronger model follows strict rules better, so fewer drafts are rejected. Dropping stale headlines fails closed. Code can't judge framing, so human review stays the final control. |
 
 ## Proposed (not approved)
 
 | Proposal | Notes |
 |---|---|
 | Show a holding-period horizon only if history covers at least 3 non-overlapping periods of that length (e.g. 15 years for 5-year periods). | Bitcoin would show 1- and 3-year only. |
-| AI provider and model for the headline read. | Unresolved. |
 | Ethereum deferred to after v1. | Adds little the bitcoin card doesn't already show; shorter history; 2022 proof-of-stake switch and staking yield complicate what 'total return' means. Adding it later is one config line once the pipeline exists. |
 | Product name. | Working title only. |
 | Display labels in `pipeline/instruments.json` ("Developed-world tracker", "Physical gold fund", "UK government bond fund", company names, "Bitcoin"). | Product copy; revisit with the landing page. |

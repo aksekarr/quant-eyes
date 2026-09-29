@@ -106,6 +106,10 @@ Words
   `tests/golden_support.py`.
 - `words/context.json` holds hand-checked facts committed by Avi. Treat it like
   `tests/golden/`: never create, edit, rename or delete it.
+- `words/headlines.json` holds the headlines Avi has approved (METHODOLOGY section 15.2).
+  Treat it like `tests/golden/`: never create, edit, rename or delete it.
+- The headline checker's word lists (METHODOLOGY section 15.1) are copied exactly. Never
+  add, drop or reword an entry.
 
 Site
 - The website makes zero runtime API calls. It only reads precomputed JSON.

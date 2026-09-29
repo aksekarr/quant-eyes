@@ -24,6 +24,7 @@ section is written here only once its conventions are confirmed.
 | 12. Card text (cards 5 to 7) | Words 2 | `cards_567.json` | Written |
 | 13. Page data | Words 3 | `page.json` | Written |
 | 14. Writing the site's data | Site 1 | `build_pages.json` | Written |
+| 15. The headline (15.1 and 15.2) | Words 4 | `headline.json` | Written |
 
 ## General rules
 
@@ -1059,3 +1060,128 @@ traceback or a value.
 - On a `PageError`: `FAILED: <message>`. On anything else: `FAILED: unexpected
   <ErrorType>.` Either way, then `Check git status --short before committing anything.`
   and exit code 1.
+
+## 15. The headline
+
+The one AI-written line on each asset page (`docs/BRIEF.md`, "Words"). Avi's decisions
+(29 Sept): one neutral, past-tense sentence of at most 30 words, using one or two of the
+asset's own figures; OpenAI `gpt-6.1-sol` drafts it; code checks it; Avi reviews every
+headline by editing an approvals file; after a data refresh, last month's headlines are
+dropped until he approves new ones. Nothing reaches a page any other way.
+
+In `words/headline.py`. Pure, like sections 11 to 13. Drafting (15.3) and the page
+writer's use of approved headlines (15.4) are written with their own tasks.
+
+### 15.1 The checker: `check_headline(text, claim_ids, page, registry)`
+
+Returns a list of problems, each `"<rule>: <detail>"` with a non-empty detail; an empty
+list means the headline passes. `page` is a section 13 page (only its instrument's `id`
+and its `claims` are read); `registry` has passed `check_registry`. It never raises for a
+bad `text` or `claim_ids`: it reports them. The *cited claims* are the page's claims whose
+ids are in `claim_ids`.
+
+The rules, in this order. If **text** or **claims** fails, that is the only problem
+returned.
+
+1. **text**: a string, not empty, with no leading or trailing whitespace and no line
+   break or tab.
+2. **claims**: a list of 1 or 2 different ids, each the id of a claim on the page.
+3. **citable**: every cited claim has series `asset` and kind `observed`, the asset's own
+   history: not the tracker's figures, the 90/10 illustration or the currency part.
+4. **one_sentence**: the text ends with `.`; before that, it has no `!`, `?` or `;`, and
+   every other `.` has a digit on both sides (a decimal point).
+5. **length**: at most 30 words, counting the pieces between whitespace.
+6. **uncited_number** and 7. **display_missing**, the figures. The *allowed phrases* are,
+   for each cited claim: its `display`; the start and end months of its period, written as
+   `Mon YYYY` (`month_name`, section 11); `£10,000` if its id starts with
+   `worst.ten_thousand`; `2022 rate shock` if its id contains `rate_shock`. A phrase
+   *occurs* where it appears exactly (case-sensitive), with just before it the start of
+   the text or a character that is not a letter, a digit or one of `. , £ $ € − - + /`,
+   and just after it the end of the text or a character that is not a letter, a digit or
+   `%`, and is not a `.` or `,` followed by a digit. Longer phrases are matched first, and
+   an occurrence may not overlap one already matched. Matched text is *covered*.
+   - **uncited_number**: a digit, or one of `% £ $ €`, outside covered text. So every
+     number is a cited figure written exactly as its card shows it (value, unit and
+     currency together, with no sign glued on: the words carry the direction), and every
+     date is the start or end of a cited figure's period.
+   - **display_missing**: a cited claim whose display does not occur. Citations are not
+     padding.
+
+Rules 8 to 12 look at the *words*: the runs of letters `a` to `z` (with apostrophes
+inside, as in `won't`) in the text lower-cased, after covered text is blanked out and `’`
+is replaced by `'`. A word ending in `'s` also counts without it. A phrase is two
+consecutive words. Each rule fails if any word or phrase on its list is present.
+
+8.  **advice**: buy, buys, buying, bought, sell, sells, selling, sold, should,
+    attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee,
+    guaranteed, guarantees, recommend, recommends, recommended, recommendation,
+    diversifier, diversify, diversifies, diversification, hedge, hedges, protect,
+    protects, protected, protection; "limited to".
+9.  **future**: will, won't, shall, expect, expects, expected, expecting, forecast,
+    forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might,
+    outlook, poised, ahead, soon; "going to", "set to".
+10. **number_word**: zero, one, two, three, four, five, six, seven, eight, nine, ten,
+    eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen,
+    twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand,
+    million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled,
+    quadruple, half, halved, halving, quarter, third, percent; "per cent"; and any word of
+    more than 4 letters ending in `fold`. A figure the model works out itself ("twice the
+    tracker's") is not a claim.
+11. **comparison**: than, versus, vs, compared, comparison, relative, outperform,
+    outperformed, outperforming, underperform, underperformed, beat, beats, beating,
+    tracker, benchmark, index. The headline is about the asset alone; comparisons stay in
+    card 5, with their numbers.
+12. **loaded**: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic,
+    dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous,
+    catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed,
+    collapse, collapsed.
+13. **other_instrument**: the label, identity name or identity ticker of any other
+    instrument in the list, the benchmark included, appears in the text (case-insensitive,
+    not inside a longer run of letters and digits).
+14. **direction**: a cited claim with direction `down` needs one of these words: fall,
+    falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines,
+    lost, lose, loss, losses, below, lower. One with direction `up` needs one of: rise,
+    rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth,
+    increase, increased, increases, higher, above.
+
+Within a rule, problems follow the order they are found. The word lists are part of the
+method: changing one is a methodology change with its own golden cases.
+
+What code cannot check: whether a correct figure is framed fairly. "It fell 35.5% before
+recovering" and "it recovered after falling 35.5%" pass alike; so would a rise word used
+somewhere else in the sentence. That is why every headline is reviewed by Avi before it is
+published (15.2), and why the page records who drafted it and when it was reviewed.
+
+### 15.2 Approved headlines: `words/headlines.json` and `check_approvals(approvals, pages, registry)`
+
+`words/headlines.json` holds the headlines Avi has approved. He writes it from the drafts
+(15.3) and commits it; nothing else edits it.
+
+```json
+{
+  "data_as_of": "2026-08",
+  "headlines": {
+    "msft": {"text": "…", "claims": ["worst.fall"], "drafted_by": "gpt-6.1-sol", "reviewed_on": "2026-09-30"}
+  }
+}
+```
+
+`check_approvals(approvals, pages, registry)` returns `{asset id: headline}` for the
+headlines that may be published, in the instrument list's order. Each headline is a copy
+with exactly `text`, `claims`, `drafted_by` and `reviewed_on`. `pages` is the list of
+section 13 pages being built. It raises `WordsError`, naming the field and the asset,
+unless:
+
+- the top-level keys are exactly `data_as_of` (a month, `YYYY-MM`) and `headlines` (a
+  dictionary, which may be empty);
+- every key of `headlines` is an asset in the list, not the benchmark;
+- every entry has exactly `text`, `claims`, `drafted_by` (text, not blank) and
+  `reviewed_on` (a `YYYY-MM-DD` date).
+
+Then, if any page's `data_as_of` differs from the file's, it returns `{}`: last month's
+headlines are dropped, never shown against new data, and are not checked further.
+Otherwise, for each asset with an entry, in list order: there must be exactly one page for
+it; `reviewed_on` must not be before that page's `generated_on` (a headline can't be
+reviewed against numbers that didn't exist yet); and `check_headline(text, claims, page,
+registry)` must return no problems. The error names the asset and the failing rules. An
+approved headline that fails is an error, never silently dropped or published.
