@@ -38,6 +38,7 @@ Only Avi confirms decisions. Anything under Proposed is not approved.
 | 2026-09-28 | A pipeline run writes all files or none: if any instrument fails, nothing is written. | Keeps one as-of date across the site; the tracker and exchange rate feed every file anyway. |
 | 2026-09-28 | The tracker has no page of its own in v1; its figures appear in every side-by-side view. | Keeps the site about the one investment being considered; its own card 5 would compare it with itself. |
 | 2026-09-28 | Instrument identity (METHODOLOGY.md section 8.1) comes from issuer pages, plus a broker page for how the London line is quoted, checked by Avi against the links. It lives in `pipeline/instruments.json`, which Codex never edits, and is published exactly as written. The published file (section 8.2) carries identity, benchmark, sources, data-as-of month, generation date and the engine results, and is checked before it is written and again as read back (section 8.3). | Identity is a fact claim on the page; it must be sourced and checked like a number. |
+| 2026-09-29 | SWDA starts at the end of Jan 2010 (instrument start month), not Dec 2009. | The first live run (29 Sept) found Alpha Vantage's Dec 2009 row for SWDA dated 23 Dec, eight days before the London market's last trading day of 2009: not a month-end value (section 7.3). One untrustworthy month dropped; every tracker comparison starts a month later. No other series had a stale month, a bad value or a gap. |
 
 ## Proposed (not approved)
 

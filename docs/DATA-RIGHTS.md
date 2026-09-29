@@ -23,7 +23,7 @@ This is a product assessment, not legal advice.
   There are no price levels, and no run of consecutive values: the engine's output rule
   allows no list except the three stress windows.
 - The tracker's figures appear in every asset's file, over each asset's common window
-  (from Dec 2009 for most, from Dec 2014 for bitcoin). Across all seven files that gives a
+  (from Jan 2010 for most, from Dec 2014 for bitcoin). Across all seven files that gives a
   few dozen point-to-point ratios for the tracker out of about 200 months: not enough to
   rebuild the series or stand in for it.
 - No URL in a published file may carry a query string, so an API key cannot reach one by

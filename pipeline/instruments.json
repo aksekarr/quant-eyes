@@ -30,7 +30,7 @@
           "https://www.hl.co.uk/shares/shares-search-results/i/ishares-core-msci-world-ucits-etf-usd-acc"
         ]
       },
-      "data": {"provider": "alphavantage", "kind": "equity", "symbol": "SWDA.LON", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": null}
+      "data": {"provider": "alphavantage", "kind": "equity", "symbol": "SWDA.LON", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": "2010-01"}
     },
     {
       "id": "msft",
