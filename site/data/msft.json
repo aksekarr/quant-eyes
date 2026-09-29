@@ -1,0 +1,759 @@
+{
+  "benchmark": {
+    "id": "swda",
+    "identity": {
+      "currency_hedged": false,
+      "exchange": "London Stock Exchange",
+      "income": "accumulating",
+      "isin": "IE00B4L5Y983",
+      "name": "iShares Core MSCI World UCITS ETF",
+      "quote_unit": "pence",
+      "share_class": "USD (Accumulating)",
+      "sources": [
+        "https://www.ishares.com/uk/individual/en/products/251882/ishares-msci-world-ucits-etf-acc-fund",
+        "https://www.hl.co.uk/shares/shares-search-results/i/ishares-core-msci-world-ucits-etf-usd-acc"
+      ],
+      "ticker": "SWDA",
+      "trading_currency": "GBP",
+      "type": "etf"
+    },
+    "label": "Developed-world tracker"
+  },
+  "cards": [
+    {
+      "id": "bumpy",
+      "sentences": [
+        {
+          "claims": [
+            "bumpy.volatility"
+          ],
+          "text": "Its volatility was 22.6% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026."
+        },
+        {
+          "claims": [
+            "bumpy.volatility_common",
+            "bumpy.tracker_volatility"
+          ],
+          "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 21.3% against the tracker's 11.7%."
+        },
+        {
+          "claims": [],
+          "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future."
+        }
+      ],
+      "title": "How bumpy is the ride?"
+    },
+    {
+      "id": "worst",
+      "sentences": [
+        {
+          "claims": [
+            "worst.fall",
+            "worst.months_to_low"
+          ],
+          "text": "Since the end of Aug 2007, its largest fall, measured at month-end, was 35.5%: from its high at the end of Dec 2007 to its low at the end of Feb 2009, 14 months later."
+        },
+        {
+          "claims": [
+            "worst.ten_thousand_left",
+            "worst.ten_thousand_lost"
+          ],
+          "text": "£10,000 invested at that high would have been worth £6,450 at the low, £3,550 less."
+        },
+        {
+          "claims": [
+            "worst.months_to_recover",
+            "worst.months_underwater"
+          ],
+          "text": "It was back at that high by the end of Nov 2009, 9 months after the low and 23 months after the high."
+        },
+        {
+          "claims": [],
+          "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high."
+        }
+      ],
+      "title": "What's the worst it's been?"
+    },
+    {
+      "id": "panic",
+      "sentences": [
+        {
+          "claims": [
+            "panic.gfc"
+          ],
+          "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): down 8.3% over the period."
+        },
+        {
+          "claims": [],
+          "text": "The tracker: not covered."
+        },
+        {
+          "claims": [
+            "panic.covid"
+          ],
+          "text": "Covid crash (end of Jan 2020 to end of Mar 2020): down 1.1% over the period."
+        },
+        {
+          "claims": [
+            "panic.covid.tracker"
+          ],
+          "text": "The tracker: down 14.5% over the same period."
+        },
+        {
+          "claims": [
+            "panic.rate_shock"
+          ],
+          "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 18.1% over the period."
+        },
+        {
+          "claims": [
+            "panic.rate_shock.tracker"
+          ],
+          "text": "The tracker: down 6.0% over the same period."
+        },
+        {
+          "claims": [],
+          "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+        }
+      ],
+      "title": "What happened when markets panicked?"
+    },
+    {
+      "id": "next",
+      "sentences": [
+        {
+          "claims": [
+            "next.correlation"
+          ],
+          "text": "Its correlation with the tracker was 0.53, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+        },
+        {
+          "claims": [
+            "next.rolling_lowest",
+            "next.rolling_highest"
+          ],
+          "text": "Measured over each 36-month stretch, it ranged from 0.07 (the 36 months to the end of May 2015) to 0.79 (the 36 months to the end of Jun 2019)."
+        },
+        {
+          "claims": [],
+          "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection."
+        },
+        {
+          "claims": [
+            "next.mix_annualised",
+            "next.tracker_annualised"
+          ],
+          "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 13.6% a year, against 12.5% a year for the tracker alone."
+        },
+        {
+          "claims": [
+            "next.mix_volatility",
+            "next.tracker_volatility",
+            "next.mix_fall",
+            "next.tracker_fall"
+          ],
+          "text": "The mix's volatility was 11.8% against the tracker's 11.7%, and its largest fall at month-end was 13.2% against 15.0%."
+        },
+        {
+          "claims": [],
+          "text": "Before fees, trading costs and tax."
+        },
+        {
+          "claims": [],
+          "text": "The tracker already holds these shares, so the 10% adds to a holding it already has."
+        }
+      ],
+      "title": "What does it do next to the tracker?"
+    },
+    {
+      "id": "pound",
+      "sentences": [
+        {
+          "claims": [
+            "pound.local",
+            "pound.currency",
+            "pound.gbp"
+          ],
+          "text": "From the end of Aug 2007 to the end of Aug 2026: up 2,386.5% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 3,602.2%."
+        },
+        {
+          "claims": [
+            "pound.gfc.local",
+            "pound.gfc.currency",
+            "pound.gfc.gbp"
+          ],
+          "text": "Global financial crisis: down 35.8% in dollars, the dollar rose 43.0%, so down 8.3% in pounds."
+        },
+        {
+          "claims": [
+            "pound.covid.local",
+            "pound.covid.currency",
+            "pound.covid.gbp"
+          ],
+          "text": "Covid crash: down 7.1% in dollars, the dollar rose 6.5%, so down 1.1% in pounds."
+        },
+        {
+          "claims": [
+            "pound.rate_shock.local",
+            "pound.rate_shock.currency",
+            "pound.rate_shock.gbp"
+          ],
+          "text": "2022 rate shock: down 30.5% in dollars, the dollar rose 17.9%, so down 18.1% in pounds."
+        },
+        {
+          "claims": [],
+          "text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds."
+        }
+      ],
+      "title": "How much of it was the pound?"
+    },
+    {
+      "id": "limits",
+      "sentences": [
+        {
+          "claims": [],
+          "text": "A single company's shares can fall a long way and stay down, and the company can fail."
+        },
+        {
+          "claims": [],
+          "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+        }
+      ],
+      "title": "What these numbers don't capture"
+    }
+  ],
+  "claims": [
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "22.6%",
+      "id": "bumpy.volatility",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2007-08",
+      "series": "asset",
+      "unit": "percent",
+      "value": 22.6
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "21.3%",
+      "id": "bumpy.volatility_common",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "asset",
+      "unit": "percent",
+      "value": 21.3
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "11.7%",
+      "id": "bumpy.tracker_volatility",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": 11.7
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "35.5%",
+      "id": "worst.fall",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "largest_fall",
+      "period_end": "2009-02",
+      "period_start": "2007-12",
+      "series": "asset",
+      "unit": "percent",
+      "value": -35.5
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "14 months",
+      "id": "worst.months_to_low",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "months_peak_to_trough",
+      "period_end": "2009-02",
+      "period_start": "2007-12",
+      "series": "asset",
+      "unit": "months",
+      "value": 14
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "£6,450",
+      "id": "worst.ten_thousand_left",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "ten_thousand_at_trough",
+      "period_end": "2009-02",
+      "period_start": "2007-12",
+      "series": "asset",
+      "unit": "gbp",
+      "value": 6450
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "£3,550",
+      "id": "worst.ten_thousand_lost",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "ten_thousand_lost",
+      "period_end": "2009-02",
+      "period_start": "2007-12",
+      "series": "asset",
+      "unit": "gbp",
+      "value": 3550
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "9 months",
+      "id": "worst.months_to_recover",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "months_trough_to_recovery",
+      "period_end": "2009-11",
+      "period_start": "2009-02",
+      "series": "asset",
+      "unit": "months",
+      "value": 9
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "23 months",
+      "id": "worst.months_underwater",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "months_underwater",
+      "period_end": "2009-11",
+      "period_start": "2007-12",
+      "series": "asset",
+      "unit": "months",
+      "value": 23
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "8.3%",
+      "id": "panic.gfc",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2009-03",
+      "period_start": "2007-09",
+      "series": "asset",
+      "unit": "percent",
+      "value": -8.3
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "1.1%",
+      "id": "panic.covid",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2020-03",
+      "period_start": "2020-01",
+      "series": "asset",
+      "unit": "percent",
+      "value": -1.1
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "14.5%",
+      "id": "panic.covid.tracker",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2020-03",
+      "period_start": "2020-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": -14.5
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "18.1%",
+      "id": "panic.rate_shock",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2022-10",
+      "period_start": "2021-12",
+      "series": "asset",
+      "unit": "percent",
+      "value": -18.1
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "6.0%",
+      "id": "panic.rate_shock.tracker",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2022-10",
+      "period_start": "2021-12",
+      "series": "tracker",
+      "unit": "percent",
+      "value": -6.0
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "0.53",
+      "id": "next.correlation",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "correlation",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "asset",
+      "unit": "ratio",
+      "value": 0.53
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "0.07",
+      "id": "next.rolling_lowest",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "rolling_correlation_36_lowest",
+      "period_end": "2015-05",
+      "period_start": "2012-05",
+      "series": "asset",
+      "unit": "ratio",
+      "value": 0.07
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "0.79",
+      "id": "next.rolling_highest",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "rolling_correlation_36_highest",
+      "period_end": "2019-06",
+      "period_start": "2016-06",
+      "series": "asset",
+      "unit": "ratio",
+      "value": 0.79
+    },
+    {
+      "currency": "GBP",
+      "direction": "up",
+      "display": "13.6%",
+      "id": "next.mix_annualised",
+      "instrument": "msft",
+      "kind": "illustration",
+      "metric": "annualised_return",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "mix",
+      "unit": "percent",
+      "value": 13.6
+    },
+    {
+      "currency": "GBP",
+      "direction": "up",
+      "display": "12.5%",
+      "id": "next.tracker_annualised",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "annualised_return",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": 12.5
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "11.8%",
+      "id": "next.mix_volatility",
+      "instrument": "msft",
+      "kind": "illustration",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "mix",
+      "unit": "percent",
+      "value": 11.8
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "11.7%",
+      "id": "next.tracker_volatility",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": 11.7
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "13.2%",
+      "id": "next.mix_fall",
+      "instrument": "msft",
+      "kind": "illustration",
+      "metric": "largest_fall",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "mix",
+      "unit": "percent",
+      "value": -13.2
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "15.0%",
+      "id": "next.tracker_fall",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "largest_fall",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": -15.0
+    },
+    {
+      "currency": "USD",
+      "direction": "up",
+      "display": "2,386.5%",
+      "id": "pound.local",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "local_return",
+      "period_end": "2026-08",
+      "period_start": "2007-08",
+      "series": "asset",
+      "unit": "percent",
+      "value": 2386.5
+    },
+    {
+      "currency": null,
+      "direction": "up",
+      "display": "48.9%",
+      "id": "pound.currency",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "currency_return",
+      "period_end": "2026-08",
+      "period_start": "2007-08",
+      "series": "currency",
+      "unit": "percent",
+      "value": 48.9
+    },
+    {
+      "currency": "GBP",
+      "direction": "up",
+      "display": "3,602.2%",
+      "id": "pound.gbp",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "gbp_return",
+      "period_end": "2026-08",
+      "period_start": "2007-08",
+      "series": "asset",
+      "unit": "percent",
+      "value": 3602.2
+    },
+    {
+      "currency": "USD",
+      "direction": "down",
+      "display": "35.8%",
+      "id": "pound.gfc.local",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "local_return",
+      "period_end": "2009-03",
+      "period_start": "2007-09",
+      "series": "asset",
+      "unit": "percent",
+      "value": -35.8
+    },
+    {
+      "currency": null,
+      "direction": "up",
+      "display": "43.0%",
+      "id": "pound.gfc.currency",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "currency_return",
+      "period_end": "2009-03",
+      "period_start": "2007-09",
+      "series": "currency",
+      "unit": "percent",
+      "value": 43.0
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "8.3%",
+      "id": "pound.gfc.gbp",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "gbp_return",
+      "period_end": "2009-03",
+      "period_start": "2007-09",
+      "series": "asset",
+      "unit": "percent",
+      "value": -8.3
+    },
+    {
+      "currency": "USD",
+      "direction": "down",
+      "display": "7.1%",
+      "id": "pound.covid.local",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "local_return",
+      "period_end": "2020-03",
+      "period_start": "2020-01",
+      "series": "asset",
+      "unit": "percent",
+      "value": -7.1
+    },
+    {
+      "currency": null,
+      "direction": "up",
+      "display": "6.5%",
+      "id": "pound.covid.currency",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "currency_return",
+      "period_end": "2020-03",
+      "period_start": "2020-01",
+      "series": "currency",
+      "unit": "percent",
+      "value": 6.5
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "1.1%",
+      "id": "pound.covid.gbp",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "gbp_return",
+      "period_end": "2020-03",
+      "period_start": "2020-01",
+      "series": "asset",
+      "unit": "percent",
+      "value": -1.1
+    },
+    {
+      "currency": "USD",
+      "direction": "down",
+      "display": "30.5%",
+      "id": "pound.rate_shock.local",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "local_return",
+      "period_end": "2022-10",
+      "period_start": "2021-12",
+      "series": "asset",
+      "unit": "percent",
+      "value": -30.5
+    },
+    {
+      "currency": null,
+      "direction": "up",
+      "display": "17.9%",
+      "id": "pound.rate_shock.currency",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "currency_return",
+      "period_end": "2022-10",
+      "period_start": "2021-12",
+      "series": "currency",
+      "unit": "percent",
+      "value": 17.9
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "18.1%",
+      "id": "pound.rate_shock.gbp",
+      "instrument": "msft",
+      "kind": "observed",
+      "metric": "gbp_return",
+      "period_end": "2022-10",
+      "period_start": "2021-12",
+      "series": "asset",
+      "unit": "percent",
+      "value": -18.1
+    }
+  ],
+  "data_as_of": "2026-08",
+  "data_as_of_text": "Data to the end of Aug 2026",
+  "generated_on": "2026-09-29",
+  "headline": null,
+  "instrument": {
+    "id": "msft",
+    "identity": {
+      "currency_hedged": null,
+      "exchange": "Nasdaq",
+      "income": "dividends",
+      "isin": "US5949181045",
+      "name": "Microsoft Corporation",
+      "quote_unit": "dollars",
+      "share_class": "Common stock",
+      "sources": [
+        "https://etp.morganstanley.com/fr/en/underlying-details/msft_us_equity"
+      ],
+      "ticker": "MSFT",
+      "trading_currency": "USD",
+      "type": "share"
+    },
+    "label": "Microsoft"
+  },
+  "method_version": "1.0",
+  "page_version": "1",
+  "sources": [
+    {
+      "provider": "Tiingo",
+      "url": "https://www.tiingo.com",
+      "used_for": [
+        "Microsoft"
+      ]
+    },
+    {
+      "provider": "Alpha Vantage",
+      "url": "https://www.alphavantage.co",
+      "used_for": [
+        "Developed-world tracker",
+        "US dollars per pound"
+      ]
+    }
+  ]
+}

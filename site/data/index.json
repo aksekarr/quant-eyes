@@ -1,0 +1,64 @@
+{
+  "assets": [
+    {
+      "id": "msft",
+      "label": "Microsoft",
+      "name": "Microsoft Corporation",
+      "ticker": "MSFT",
+      "type": "share"
+    },
+    {
+      "id": "aapl",
+      "label": "Apple",
+      "name": "Apple Inc.",
+      "ticker": "AAPL",
+      "type": "share"
+    },
+    {
+      "id": "nvda",
+      "label": "Nvidia",
+      "name": "NVIDIA Corporation",
+      "ticker": "NVDA",
+      "type": "share"
+    },
+    {
+      "id": "sgln",
+      "label": "Physical gold fund",
+      "name": "iShares Physical Gold ETC",
+      "ticker": "SGLN",
+      "type": "etc"
+    },
+    {
+      "id": "iglt",
+      "label": "UK government bond fund",
+      "name": "iShares Core UK Gilts UCITS ETF",
+      "ticker": "IGLT",
+      "type": "etf"
+    },
+    {
+      "id": "azn",
+      "label": "AstraZeneca",
+      "name": "AstraZeneca PLC",
+      "ticker": "AZN",
+      "type": "share"
+    },
+    {
+      "id": "btc",
+      "label": "Bitcoin",
+      "name": "Bitcoin",
+      "ticker": "BTC",
+      "type": "cryptocurrency"
+    }
+  ],
+  "benchmark": {
+    "id": "swda",
+    "label": "Developed-world tracker",
+    "name": "iShares Core MSCI World UCITS ETF",
+    "ticker": "SWDA"
+  },
+  "data_as_of": "2026-08",
+  "data_as_of_text": "Data to the end of Aug 2026",
+  "generated_on": "2026-09-29",
+  "index_version": "1",
+  "method_version": "1.0"
+}

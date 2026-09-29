@@ -1,0 +1,549 @@
+{
+  "benchmark": {
+    "id": "swda",
+    "identity": {
+      "currency_hedged": false,
+      "exchange": "London Stock Exchange",
+      "income": "accumulating",
+      "isin": "IE00B4L5Y983",
+      "name": "iShares Core MSCI World UCITS ETF",
+      "quote_unit": "pence",
+      "share_class": "USD (Accumulating)",
+      "sources": [
+        "https://www.ishares.com/uk/individual/en/products/251882/ishares-msci-world-ucits-etf-acc-fund",
+        "https://www.hl.co.uk/shares/shares-search-results/i/ishares-core-msci-world-ucits-etf-usd-acc"
+      ],
+      "ticker": "SWDA",
+      "trading_currency": "GBP",
+      "type": "etf"
+    },
+    "label": "Developed-world tracker"
+  },
+  "cards": [
+    {
+      "id": "bumpy",
+      "sentences": [
+        {
+          "claims": [
+            "bumpy.volatility"
+          ],
+          "text": "Its volatility was 7.2% a year, measured on monthly returns in pounds from the end of Jan 2007 to the end of Aug 2026."
+        },
+        {
+          "claims": [
+            "bumpy.volatility_common",
+            "bumpy.tracker_volatility"
+          ],
+          "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 7.3% against the tracker's 11.7%."
+        },
+        {
+          "claims": [],
+          "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future."
+        }
+      ],
+      "title": "How bumpy is the ride?"
+    },
+    {
+      "id": "worst",
+      "sentences": [
+        {
+          "claims": [
+            "worst.fall",
+            "worst.months_to_low"
+          ],
+          "text": "Since the end of Jan 2007, its largest fall, measured at month-end, was 31.9%: from its high at the end of May 2020 to its low at the end of Oct 2023, 41 months later."
+        },
+        {
+          "claims": [
+            "worst.ten_thousand_left",
+            "worst.ten_thousand_lost"
+          ],
+          "text": "£10,000 invested at that high would have been worth £6,810 at the low, £3,190 less."
+        },
+        {
+          "claims": [
+            "worst.below_high_at_end",
+            "worst.months_underwater"
+          ],
+          "text": "It had not recovered by the end of Aug 2026: it was still 25.9% below its high, 75 months after it."
+        },
+        {
+          "claims": [],
+          "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high."
+        }
+      ],
+      "title": "What's the worst it's been?"
+    },
+    {
+      "id": "panic",
+      "sentences": [
+        {
+          "claims": [
+            "panic.gfc"
+          ],
+          "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): up 16.3% over the period."
+        },
+        {
+          "claims": [],
+          "text": "The tracker: not covered."
+        },
+        {
+          "claims": [
+            "panic.covid"
+          ],
+          "text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 3.0% over the period."
+        },
+        {
+          "claims": [
+            "panic.covid.tracker"
+          ],
+          "text": "The tracker: down 14.5% over the same period."
+        },
+        {
+          "claims": [
+            "panic.rate_shock"
+          ],
+          "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 22.8% over the period."
+        },
+        {
+          "claims": [
+            "panic.rate_shock.tracker"
+          ],
+          "text": "The tracker: down 6.0% over the same period."
+        },
+        {
+          "claims": [],
+          "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+        }
+      ],
+      "title": "What happened when markets panicked?"
+    },
+    {
+      "id": "next",
+      "sentences": [
+        {
+          "claims": [
+            "next.correlation"
+          ],
+          "text": "Its correlation with the tracker was 0.12, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+        },
+        {
+          "claims": [
+            "next.rolling_lowest",
+            "next.rolling_highest"
+          ],
+          "text": "Measured over each 36-month stretch, it ranged from −0.55 (the 36 months to the end of Jan 2013) to 0.58 (the 36 months to the end of Jun 2024)."
+        },
+        {
+          "claims": [],
+          "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection."
+        },
+        {
+          "claims": [
+            "next.mix_annualised",
+            "next.tracker_annualised"
+          ],
+          "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 11.5% a year, against 12.5% a year for the tracker alone."
+        },
+        {
+          "claims": [
+            "next.mix_volatility",
+            "next.tracker_volatility",
+            "next.mix_fall",
+            "next.tracker_fall"
+          ],
+          "text": "The mix's volatility was 10.6% against the tracker's 11.7%, and its largest fall at month-end was 12.8% against 15.0%."
+        },
+        {
+          "claims": [],
+          "text": "Before fees, trading costs and tax."
+        }
+      ],
+      "title": "What does it do next to the tracker?"
+    },
+    {
+      "id": "pound",
+      "sentences": [
+        {
+          "claims": [],
+          "text": "It is priced in pounds, so there is no separate currency effect to show."
+        }
+      ],
+      "title": "How much of it was the pound?"
+    },
+    {
+      "id": "limits",
+      "sentences": [
+        {
+          "claims": [],
+          "text": "A fund's value moves with what it holds: bond prices, for example, fall when interest rates rise. Its market price can differ slightly from the value of its holdings, and its running charges are already inside these figures."
+        },
+        {
+          "claims": [],
+          "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+        }
+      ],
+      "title": "What these numbers don't capture"
+    }
+  ],
+  "claims": [
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "7.2%",
+      "id": "bumpy.volatility",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2007-01",
+      "series": "asset",
+      "unit": "percent",
+      "value": 7.2
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "7.3%",
+      "id": "bumpy.volatility_common",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "asset",
+      "unit": "percent",
+      "value": 7.3
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "11.7%",
+      "id": "bumpy.tracker_volatility",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": 11.7
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "31.9%",
+      "id": "worst.fall",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "largest_fall",
+      "period_end": "2023-10",
+      "period_start": "2020-05",
+      "series": "asset",
+      "unit": "percent",
+      "value": -31.9
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "41 months",
+      "id": "worst.months_to_low",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "months_peak_to_trough",
+      "period_end": "2023-10",
+      "period_start": "2020-05",
+      "series": "asset",
+      "unit": "months",
+      "value": 41
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "£6,810",
+      "id": "worst.ten_thousand_left",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "ten_thousand_at_trough",
+      "period_end": "2023-10",
+      "period_start": "2020-05",
+      "series": "asset",
+      "unit": "gbp",
+      "value": 6810
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "£3,190",
+      "id": "worst.ten_thousand_lost",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "ten_thousand_lost",
+      "period_end": "2023-10",
+      "period_start": "2020-05",
+      "series": "asset",
+      "unit": "gbp",
+      "value": 3190
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "25.9%",
+      "id": "worst.below_high_at_end",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "drawdown_at_end",
+      "period_end": "2026-08",
+      "period_start": "2020-05",
+      "series": "asset",
+      "unit": "percent",
+      "value": -25.9
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "75 months",
+      "id": "worst.months_underwater",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "months_underwater",
+      "period_end": "2026-08",
+      "period_start": "2020-05",
+      "series": "asset",
+      "unit": "months",
+      "value": 75
+    },
+    {
+      "currency": "GBP",
+      "direction": "up",
+      "display": "16.3%",
+      "id": "panic.gfc",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2009-03",
+      "period_start": "2007-09",
+      "series": "asset",
+      "unit": "percent",
+      "value": 16.3
+    },
+    {
+      "currency": "GBP",
+      "direction": "up",
+      "display": "3.0%",
+      "id": "panic.covid",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2020-03",
+      "period_start": "2020-01",
+      "series": "asset",
+      "unit": "percent",
+      "value": 3.0
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "14.5%",
+      "id": "panic.covid.tracker",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2020-03",
+      "period_start": "2020-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": -14.5
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "22.8%",
+      "id": "panic.rate_shock",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2022-10",
+      "period_start": "2021-12",
+      "series": "asset",
+      "unit": "percent",
+      "value": -22.8
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "6.0%",
+      "id": "panic.rate_shock.tracker",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "stress_window",
+      "period_end": "2022-10",
+      "period_start": "2021-12",
+      "series": "tracker",
+      "unit": "percent",
+      "value": -6.0
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "0.12",
+      "id": "next.correlation",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "correlation",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "asset",
+      "unit": "ratio",
+      "value": 0.12
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "−0.55",
+      "id": "next.rolling_lowest",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "rolling_correlation_36_lowest",
+      "period_end": "2013-01",
+      "period_start": "2010-01",
+      "series": "asset",
+      "unit": "ratio",
+      "value": -0.55
+    },
+    {
+      "currency": null,
+      "direction": null,
+      "display": "0.58",
+      "id": "next.rolling_highest",
+      "instrument": "iglt",
+      "kind": "observed",
+      "metric": "rolling_correlation_36_highest",
+      "period_end": "2024-06",
+      "period_start": "2021-06",
+      "series": "asset",
+      "unit": "ratio",
+      "value": 0.58
+    },
+    {
+      "currency": "GBP",
+      "direction": "up",
+      "display": "11.5%",
+      "id": "next.mix_annualised",
+      "instrument": "iglt",
+      "kind": "illustration",
+      "metric": "annualised_return",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "mix",
+      "unit": "percent",
+      "value": 11.5
+    },
+    {
+      "currency": "GBP",
+      "direction": "up",
+      "display": "12.5%",
+      "id": "next.tracker_annualised",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "annualised_return",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": 12.5
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "10.6%",
+      "id": "next.mix_volatility",
+      "instrument": "iglt",
+      "kind": "illustration",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "mix",
+      "unit": "percent",
+      "value": 10.6
+    },
+    {
+      "currency": "GBP",
+      "direction": null,
+      "display": "11.7%",
+      "id": "next.tracker_volatility",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "volatility",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": 11.7
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "12.8%",
+      "id": "next.mix_fall",
+      "instrument": "iglt",
+      "kind": "illustration",
+      "metric": "largest_fall",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "mix",
+      "unit": "percent",
+      "value": -12.8
+    },
+    {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "15.0%",
+      "id": "next.tracker_fall",
+      "instrument": "swda",
+      "kind": "observed",
+      "metric": "largest_fall",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "tracker",
+      "unit": "percent",
+      "value": -15.0
+    }
+  ],
+  "data_as_of": "2026-08",
+  "data_as_of_text": "Data to the end of Aug 2026",
+  "generated_on": "2026-09-29",
+  "headline": null,
+  "instrument": {
+    "id": "iglt",
+    "identity": {
+      "currency_hedged": false,
+      "exchange": "London Stock Exchange",
+      "income": "distributing",
+      "isin": "IE00B1FZSB30",
+      "name": "iShares Core UK Gilts UCITS ETF",
+      "quote_unit": "pounds",
+      "share_class": "GBP (Distributing)",
+      "sources": [
+        "https://www.ishares.com/uk/individual/en/products/251806/ishares-uk-gilts-ucits-etf",
+        "https://www.hl.co.uk/shares/shares-search-results/i/ishares-ii-plc-core-uk-gilts-ucits-etf"
+      ],
+      "ticker": "IGLT",
+      "trading_currency": "GBP",
+      "type": "etf"
+    },
+    "label": "UK government bond fund"
+  },
+  "method_version": "1.0",
+  "page_version": "1",
+  "sources": [
+    {
+      "provider": "Alpha Vantage",
+      "url": "https://www.alphavantage.co",
+      "used_for": [
+        "UK government bond fund",
+        "Developed-world tracker"
+      ]
+    }
+  ]
+}
