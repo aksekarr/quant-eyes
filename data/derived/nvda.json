@@ -1,0 +1,465 @@
+{
+  "benchmark": {
+    "id": "swda",
+    "identity": {
+      "currency_hedged": false,
+      "exchange": "London Stock Exchange",
+      "income": "accumulating",
+      "isin": "IE00B4L5Y983",
+      "name": "iShares Core MSCI World UCITS ETF",
+      "quote_unit": "pence",
+      "share_class": "USD (Accumulating)",
+      "sources": [
+        "https://www.ishares.com/uk/individual/en/products/251882/ishares-msci-world-ucits-etf-acc-fund",
+        "https://www.hl.co.uk/shares/shares-search-results/i/ishares-core-msci-world-ucits-etf-usd-acc"
+      ],
+      "ticker": "SWDA",
+      "trading_currency": "GBP",
+      "type": "etf"
+    },
+    "label": "Developed-world tracker"
+  },
+  "data_as_of": "2026-08",
+  "document_version": "1",
+  "generated_on": "2026-09-29",
+  "instrument": {
+    "id": "nvda",
+    "identity": {
+      "currency_hedged": null,
+      "exchange": "Nasdaq",
+      "income": "dividends",
+      "isin": "US67066G1040",
+      "name": "NVIDIA Corporation",
+      "quote_unit": "dollars",
+      "share_class": "Common stock",
+      "sources": [
+        "https://etp.morganstanley.com/fr/en/underlying-details/nvda_us_equity"
+      ],
+      "ticker": "NVDA",
+      "trading_currency": "USD",
+      "type": "share"
+    },
+    "label": "Nvidia"
+  },
+  "results": {
+    "asset_currency": "USD",
+    "currency": {
+      "full_history": {
+        "currency_return": 0.48889052926847265,
+        "end": "2026-08",
+        "gbp_return": 419.92783887787493,
+        "local_return": 281.71241612685037,
+        "start": "2007-08"
+      },
+      "stress_windows": [
+        {
+          "covered": true,
+          "currency_return": 0.42953910614525137,
+          "end": "2009-03",
+          "gbp_return": -0.6110580687837022,
+          "local_return": -0.7279249447991116,
+          "start": "2007-09",
+          "window": "gfc"
+        },
+        {
+          "covered": true,
+          "currency_return": 0.06502622025010085,
+          "end": "2020-03",
+          "gbp_return": 0.1881687453482006,
+          "local_return": 0.115623937473748,
+          "start": "2020-01",
+          "window": "covid"
+        },
+        {
+          "covered": true,
+          "currency_return": 0.1788451979174841,
+          "end": "2022-10",
+          "gbp_return": -0.4586529753909466,
+          "local_return": -0.5407819232199594,
+          "start": "2021-12",
+          "window": "rate_shock"
+        }
+      ]
+    },
+    "method_version": "1.0",
+    "own": {
+      "annualised_return": 0.374409638353145,
+      "end": "2026-08",
+      "holding_periods": {
+        "1_year": {
+          "best": 3.2613278654846027,
+          "best_annualised": 3.2613278654846027,
+          "best_end": "2017-01",
+          "best_start": "2016-01",
+          "first_start": "2007-08",
+          "horizon_months": 12,
+          "last_end": "2026-08",
+          "median": 0.35835713988927953,
+          "median_annualised": 0.35835713988927953,
+          "non_overlapping_periods": 19,
+          "periods": 217,
+          "periods_lost_money": 48,
+          "share_lost_money": 0.22119815668202766,
+          "worst": -0.6829207718069992,
+          "worst_annualised": -0.6829207718069992,
+          "worst_end": "2008-11",
+          "worst_start": "2007-11"
+        },
+        "3_years": {
+          "best": 14.073927368941833,
+          "best_annualised": 1.470257004676029,
+          "best_end": "2018-08",
+          "best_start": "2015-08",
+          "first_start": "2007-08",
+          "horizon_months": 36,
+          "last_end": "2026-08",
+          "median": 2.166251692637321,
+          "median_annualised": 0.46841387106107235,
+          "non_overlapping_periods": 6,
+          "periods": 193,
+          "periods_lost_money": 19,
+          "share_lost_money": 0.09844559585492228,
+          "worst": -0.6407650577983405,
+          "worst_annualised": -0.28912562779132367,
+          "worst_end": "2010-08",
+          "worst_start": "2007-08"
+        },
+        "5_years": {
+          "best": 31.26450041350055,
+          "best_annualised": 1.0032953777464182,
+          "best_end": "2024-05",
+          "best_start": "2019-05",
+          "first_start": "2007-08",
+          "horizon_months": 60,
+          "last_end": "2026-08",
+          "median": 10.101574966923739,
+          "median_annualised": 0.6183666460286188,
+          "non_overlapping_periods": 3,
+          "periods": 169,
+          "periods_lost_money": 11,
+          "share_lost_money": 0.0650887573964497,
+          "worst": -0.5632737878288425,
+          "worst_annualised": -0.1526909369108571,
+          "worst_end": "2012-10",
+          "worst_start": "2007-10"
+        }
+      },
+      "largest_fall": {
+        "drawdown_at_end": 0.0,
+        "max_drawdown": -0.7253578612332513,
+        "months_peak_to_trough": 14,
+        "months_trough_to_recovery": 83,
+        "months_underwater": 97,
+        "peak_month": "2007-09",
+        "recovered": true,
+        "recovery_month": "2015-10",
+        "ten_thousand_at_trough": 2746.421387667487,
+        "ten_thousand_lost": 7253.578612332513,
+        "trough_month": "2008-11"
+      },
+      "months": 228,
+      "start": "2007-08",
+      "stress_windows": [
+        {
+          "covered": true,
+          "end": "2009-03",
+          "return": -0.6110580687837022,
+          "start": "2007-09",
+          "window": "gfc"
+        },
+        {
+          "covered": true,
+          "end": "2020-03",
+          "return": 0.1881687453482006,
+          "start": "2020-01",
+          "window": "covid"
+        },
+        {
+          "covered": true,
+          "end": "2022-10",
+          "return": -0.4586529753909466,
+          "start": "2021-12",
+          "window": "rate_shock"
+        }
+      ],
+      "total_return": 419.92783887787493,
+      "volatility": 0.46091589362583274
+    },
+    "side_by_side": {
+      "asset": {
+        "annualised_return": 0.48930639243511,
+        "end": "2026-08",
+        "holding_periods": {
+          "1_year": {
+            "best": 3.2613278654846027,
+            "best_annualised": 3.2613278654846027,
+            "best_end": "2017-01",
+            "best_start": "2016-01",
+            "first_start": "2010-01",
+            "horizon_months": 12,
+            "last_end": "2026-08",
+            "median": 0.4629908976110044,
+            "median_annualised": 0.4629908976110044,
+            "non_overlapping_periods": 16,
+            "periods": 188,
+            "periods_lost_money": 32,
+            "share_lost_money": 0.1702127659574468,
+            "worst": -0.4440856863594972,
+            "worst_annualised": -0.4440856863594972,
+            "worst_end": "2022-12",
+            "worst_start": "2021-12"
+          },
+          "3_years": {
+            "best": 14.073927368941833,
+            "best_annualised": 1.470257004676029,
+            "best_end": "2018-08",
+            "best_start": "2015-08",
+            "first_start": "2010-01",
+            "horizon_months": 36,
+            "last_end": "2026-08",
+            "median": 2.885437295622032,
+            "median_annualised": 0.5720960113892645,
+            "non_overlapping_periods": 5,
+            "periods": 164,
+            "periods_lost_money": 9,
+            "share_lost_money": 0.054878048780487805,
+            "worst": -0.34242262897986275,
+            "worst_annualised": -0.13040783151641078,
+            "worst_end": "2014-01",
+            "worst_start": "2011-01"
+          },
+          "5_years": {
+            "best": 31.26450041350055,
+            "best_annualised": 1.0032953777464182,
+            "best_end": "2024-05",
+            "best_start": "2019-05",
+            "first_start": "2010-01",
+            "horizon_months": 60,
+            "last_end": "2026-08",
+            "median": 12.313936638459367,
+            "median_annualised": 0.6782676713378694,
+            "non_overlapping_periods": 3,
+            "periods": 140,
+            "periods_lost_money": 0,
+            "share_lost_money": 0.0,
+            "worst": 0.29352678661717646,
+            "worst_annualised": 0.05282232446446877,
+            "worst_end": "2015-03",
+            "worst_start": "2010-03"
+          }
+        },
+        "largest_fall": {
+          "drawdown_at_end": 0.0,
+          "max_drawdown": -0.5569903994129337,
+          "months_peak_to_trough": 10,
+          "months_trough_to_recovery": 8,
+          "months_underwater": 18,
+          "peak_month": "2021-11",
+          "recovered": true,
+          "recovery_month": "2023-05",
+          "ten_thousand_at_trough": 4430.096005870663,
+          "ten_thousand_lost": 5569.903994129337,
+          "trough_month": "2022-09"
+        },
+        "months": 199,
+        "start": "2010-01",
+        "stress_windows": [
+          {
+            "covered": false,
+            "end": "2009-03",
+            "return": null,
+            "start": "2007-09",
+            "window": "gfc"
+          },
+          {
+            "covered": true,
+            "end": "2020-03",
+            "return": 0.1881687453482006,
+            "start": "2020-01",
+            "window": "covid"
+          },
+          {
+            "covered": true,
+            "end": "2022-10",
+            "return": -0.4586529753909466,
+            "start": "2021-12",
+            "window": "rate_shock"
+          }
+        ],
+        "total_return": 738.0132450835002,
+        "volatility": 0.43105175466756523
+      },
+      "blend_90_10": {
+        "asset_weight": 0.1,
+        "blend": {
+          "annualised_return": 0.17529607135184055,
+          "largest_fall": {
+            "drawdown_at_end": 0.0,
+            "max_drawdown": -0.17547012614527213,
+            "months_peak_to_trough": 7,
+            "months_trough_to_recovery": 16,
+            "months_underwater": 23,
+            "peak_month": "2011-02",
+            "recovered": true,
+            "recovery_month": "2013-01",
+            "ten_thousand_at_trough": 8245.298738547279,
+            "ten_thousand_lost": 1754.7012614527214,
+            "trough_month": "2011-09"
+          },
+          "total_return": 13.56383668944921,
+          "volatility": 0.13496639027772867
+        },
+        "end": "2026-08",
+        "months": 199,
+        "rebalance": "december",
+        "start": "2010-01",
+        "tracker": {
+          "annualised_return": 0.12496012001148693,
+          "largest_fall": {
+            "drawdown_at_end": 0.0,
+            "max_drawdown": -0.1495307612095933,
+            "months_peak_to_trough": 8,
+            "months_trough_to_recovery": 5,
+            "months_underwater": 13,
+            "peak_month": "2019-07",
+            "recovered": true,
+            "recovery_month": "2020-08",
+            "ten_thousand_at_trough": 8504.692387904068,
+            "ten_thousand_lost": 1495.3076120959329,
+            "trough_month": "2020-03"
+          },
+          "total_return": 6.047320476416853,
+          "volatility": 0.11706624239203986
+        }
+      },
+      "correlation": 0.4737344427285409,
+      "rolling_correlation_36": {
+        "highest": 0.6655971728463359,
+        "highest_end": "2024-04",
+        "lowest": 0.20950097047744096,
+        "lowest_end": "2013-12",
+        "windows": 164
+      },
+      "tracker": {
+        "annualised_return": 0.12496012001148693,
+        "end": "2026-08",
+        "holding_periods": {
+          "1_year": {
+            "best": 0.3707699852869053,
+            "best_annualised": 0.3707699852869053,
+            "best_end": "2021-03",
+            "best_start": "2020-03",
+            "first_start": "2010-01",
+            "horizon_months": 12,
+            "last_end": "2026-08",
+            "median": 0.1223532066159676,
+            "median_annualised": 0.1223532066159676,
+            "non_overlapping_periods": 16,
+            "periods": 188,
+            "periods_lost_money": 22,
+            "share_lost_money": 0.11702127659574468,
+            "worst": -0.08333333333333337,
+            "worst_annualised": -0.08333333333333337,
+            "worst_end": "2022-12",
+            "worst_start": "2021-12"
+          },
+          "3_years": {
+            "best": 0.7105006818624586,
+            "best_annualised": 0.19593548052378562,
+            "best_end": "2018-09",
+            "best_start": "2015-09",
+            "first_start": "2010-01",
+            "horizon_months": 36,
+            "last_end": "2026-08",
+            "median": 0.42317109387418084,
+            "median_annualised": 0.12482641828808494,
+            "non_overlapping_periods": 5,
+            "periods": 164,
+            "periods_lost_money": 0,
+            "share_lost_money": 0.0,
+            "worst": 0.08385382059800661,
+            "worst_annualised": 0.027204478675924237,
+            "worst_end": "2020-03",
+            "worst_start": "2017-03"
+          },
+          "5_years": {
+            "best": 1.1515306995040193,
+            "best_annualised": 0.16559992134169454,
+            "best_end": "2017-05",
+            "best_start": "2012-05",
+            "first_start": "2010-01",
+            "horizon_months": 60,
+            "last_end": "2026-08",
+            "median": 0.7866003419733939,
+            "median_annualised": 0.12306652501641446,
+            "non_overlapping_periods": 3,
+            "periods": 140,
+            "periods_lost_money": 0,
+            "share_lost_money": 0.0,
+            "worst": 0.4251266818102395,
+            "worst_annualised": 0.07342249987674743,
+            "worst_end": "2020-03",
+            "worst_start": "2015-03"
+          }
+        },
+        "largest_fall": {
+          "drawdown_at_end": 0.0,
+          "max_drawdown": -0.1495307612095933,
+          "months_peak_to_trough": 8,
+          "months_trough_to_recovery": 5,
+          "months_underwater": 13,
+          "peak_month": "2019-07",
+          "recovered": true,
+          "recovery_month": "2020-08",
+          "ten_thousand_at_trough": 8504.692387904068,
+          "ten_thousand_lost": 1495.3076120959329,
+          "trough_month": "2020-03"
+        },
+        "months": 199,
+        "start": "2010-01",
+        "stress_windows": [
+          {
+            "covered": false,
+            "end": "2009-03",
+            "return": null,
+            "start": "2007-09",
+            "window": "gfc"
+          },
+          {
+            "covered": true,
+            "end": "2020-03",
+            "return": -0.1448941077794087,
+            "start": "2020-01",
+            "window": "covid"
+          },
+          {
+            "covered": true,
+            "end": "2022-10",
+            "return": -0.06038647342995174,
+            "start": "2021-12",
+            "window": "rate_shock"
+          }
+        ],
+        "total_return": 6.047320476416853,
+        "volatility": 0.11706624239203986
+      }
+    }
+  },
+  "sources": [
+    {
+      "provider": "Tiingo",
+      "url": "https://www.tiingo.com",
+      "used_for": [
+        "Nvidia"
+      ]
+    },
+    {
+      "provider": "Alpha Vantage",
+      "url": "https://www.alphavantage.co",
+      "used_for": [
+        "Developed-world tracker",
+        "US dollars per pound"
+      ]
+    }
+  ]
+}
