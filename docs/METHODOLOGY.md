@@ -578,7 +578,7 @@ checked, before anything is requested.
 |---|---|
 | Tiingo, equity | One: `https://api.tiingo.com/tiingo/daily/<symbol>/prices?startDate=1990-01-01`. Daily, full history (section 7 picks the month-ends). |
 | Tiingo, crypto | One per calendar year, from the start month's year to the as-of month's year: `https://api.tiingo.com/tiingo/crypto/prices?tickers=<symbol>&startDate=<Y>-01-01&endDate=<Y>-12-31&resampleFreq=1day`. The endpoint caps the rows one request returns (found in the 28 Sept data check). A crypto instrument must have a start month, not after the as-of month. |
-| Alpha Vantage, equity | One: `https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=<symbol>&apikey=<key>`. The documentation marks this premium; the free tier served it in the 28 Sept data check. If that changes, the run fails with Alpha Vantage's message. It **never** falls back to `TIME_SERIES_MONTHLY`, which is price only. |
+| Alpha Vantage, equity | One: `https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=<symbol>&apikey=<key>`. The documentation marks this premium; the free tier served it in the 28 Sept data check. If that changes, the run fails with Alpha Vantage's message. It **never** falls back to `TIME_SERIES_MONTHLY`, which is price only. Near the daily limit, Alpha Vantage has answered `Invalid API call` before its rate-limit message (29 Sept); the same request worked on a fresh allowance. |
 | Alpha Vantage, fx | One: `https://www.alphavantage.co/query?function=FX_MONTHLY&from_symbol=GBP&to_symbol=USD&apikey=<key>`. |
 
 Any other provider and kind is a `ValueError`.
@@ -601,7 +601,8 @@ month-end.
   is a `ProviderError` carrying the text, cleaned. Otherwise, apart from `Meta Data`, it
   must have **exactly one** key, whose value is an object of date to entry. The series
   key's name is not relied on (the documentation and live responses name it
-  differently); zero or several candidates is a `ProviderError`. An entry that isn't an
+  differently; live responses on 29 Sept used `Monthly Adjusted Time Series`); zero or
+  several candidates is a `ProviderError`. An entry that isn't an
   object gives an empty value.
 
 ### 9.5 Cleaning provider text
@@ -610,7 +611,8 @@ Text from a provider goes into an error message only after, in this order: the k
 replaced by `[key]`; anything after `apikey=` up to the next `&` or space is replaced by
 `[key]`; runs of whitespace become one space; any web address (starting with a scheme
 such as `https://`, or with `www.`) becomes `[url]`; the result is cut to 200
-characters. Messages never contain a URL, a response body or a value.
+characters. Messages never contain a URL, a response body or a value. (Alpha Vantage's
+rate-limit message writes the caller's key into its text; see `VERIFICATION.md`.)
 
 ### 9.6 The fetch loop
 

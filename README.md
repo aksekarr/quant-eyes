@@ -22,6 +22,7 @@ data is used or stored yet, and there is no website yet.
 | `docs/BRIEF.md` | The product: who it's for, what v1 covers, how text is produced and checked. |
 | `docs/METHODOLOGY.md` | Exactly how every number is calculated. The code must match it. |
 | `docs/DECISIONS.md` | What has been confirmed and what is only proposed. |
+| `docs/VERIFICATION.md` | Evidence that the published numbers are right: live-run checks and cross-checks against independent figures. |
 | `docs/DATA-RIGHTS.md` | Data-provider terms and the rules that follow from them. |
 | `AGENTS.md` | Working rules for the AI coding agent. |
 | `pipeline/` | Turns provider data (held in memory only) into engine inputs and derived JSON. |
