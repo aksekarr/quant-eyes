@@ -134,6 +134,12 @@
     {"id": "P03", "check": "build_page", "document": "DOC_USA", "document_edits": [{"path": ["results", "method_version"], "set": null}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
      "expected_error": "WordsError", "message_must_contain": ["method_version"],
      "derivation": "Every page states the method version its numbers came from."},
+    {"id": "P04", "check": "build_page", "document": "DOC_USA", "document_edits": [{"path": ["generated_on"], "delete": true}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["generated_on"],
+     "derivation": "Every page states the date it was generated (section 13.2: a missing generated_on is an error)."},
+    {"id": "P05", "check": "build_page", "document": "DOC_USA", "document_edits": [{"path": ["sources"], "delete": true}], "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false},
+     "expected_error": "WordsError", "message_must_contain": ["sources"],
+     "derivation": "Every page credits its data sources (section 13.2: missing sources is an error)."},
 
     {"id": "N01", "check": "build_index",
      "pages": [
@@ -178,6 +184,36 @@
        {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
        {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument", "id"], "set": "trk"}]}],
      "expected_error": "WordsError", "message_must_contain": ["trk"],
-     "derivation": "A page for the benchmark (and none for gbf)."}
+     "derivation": "A page for the benchmark (and none for gbf)."},
+    {"id": "N07", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument"], "set": {"id": "gbf", "label": "UK fund", "identity": {"name": "Test UK Fund", "share_class": "GBP (Dist)", "type": "etf", "isin": "IE00TEST0003", "ticker": "GBF", "exchange": "Test exchange", "trading_currency": "GBP", "quote_unit": "pounds", "income": "distributing", "currency_hedged": false, "sources": ["https://issuer.example.com/gbf"]}}}]},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []}],
+     "expected": {
+       "index_version": "1", "data_as_of": "2026-08", "data_as_of_text": "Data to the end of Aug 2026", "generated_on": "2026-09-29", "method_version": "1.0",
+       "benchmark": {"id": "trk", "label": "Test tracker", "name": "Test Tracker ETF", "ticker": "TRK"},
+       "assets": [
+         {"id": "usa", "label": "US share", "name": "Test US Corp", "ticker": "USA", "type": "share"},
+         {"id": "gbf", "label": "UK fund", "name": "Test UK Fund", "ticker": "GBF", "type": "etf"}]},
+     "derivation": "N01's two pages given the other way round (gbf first). The list still follows the instrument list's order, usa then gbf, not the order the pages arrive in."},
+    {"id": "N08", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument", "id"], "set": "gbf"}, {"path": ["generated_on"], "set": "2026-09-30"}]}],
+     "expected_error": "WordsError", "message_must_contain": ["generated_on"],
+     "derivation": "Pages generated on different days. One generation date stands for the whole site."},
+    {"id": "N09", "check": "build_index",
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument", "id"], "set": "trk"}, {"path": ["data_as_of"], "set": "2026-07"}]}],
+     "expected_error": "WordsError", "message_must_contain": ["trk"], "message_must_not_contain": ["data_as_of"],
+     "derivation": "Check order (section 13.3). A benchmark page whose month also differs: the every-page-is-an-asset check comes first, so the error names trk, not data_as_of."},
+    {"id": "N10", "check": "build_index",
+     "registry_edits": [{"path": ["instruments", 3], "set": {"id": "gbx", "role": "asset", "label": "Second UK fund", "identity": {"name": "Test UK Fund Two", "share_class": "GBP (Acc)", "type": "etf", "isin": "IE00TEST0004", "ticker": "GBX", "exchange": "Test exchange", "trading_currency": "GBP", "quote_unit": "pence", "income": "accumulating", "currency_hedged": false, "sources": ["https://issuer.example.com/gbx"]}, "data": {"provider": "provb", "kind": "equity", "symbol": "GBX.X", "field": "5. adjusted close", "currency": "GBP", "basis": "total_return", "start": null}}}],
+     "pages": [
+       {"document": "DOC_USA", "facts": {"held_by_tracker": true, "priced_in_pounds_holds_dollars": false}, "page_edits": []},
+       {"document": "DOC_USA", "facts": {"held_by_tracker": false, "priced_in_pounds_holds_dollars": false}, "page_edits": [{"path": ["instrument", "id"], "set": "gbf"}, {"path": ["data_as_of"], "set": "2026-07"}]}],
+     "expected_error": "WordsError", "message_must_contain": ["data_as_of"], "message_must_not_contain": ["gbx"],
+     "derivation": "Check order (section 13.3). A third asset, gbx, is added to the list and has no page, and the two pages differ in month: the shared-values check comes before the every-asset-has-a-page check, so the error names data_as_of, not gbx."}
   ]
 }
