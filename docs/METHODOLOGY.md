@@ -23,6 +23,7 @@ section is written here only once its conventions are confirmed.
 | 11. Claims and card text (cards 1 to 3) | Words 1 | `cards.json` | Written |
 | 12. Card text (cards 5 to 7) | Words 2 | `cards_567.json` | Written |
 | 13. Page data | Words 3 | `page.json` | Written |
+| 14. Writing the site's data | Site 1 | `build_pages.json` | Written |
 
 ## General rules
 
@@ -962,7 +963,7 @@ field, never repeating a URL) unless:
 | `sources` | Copied from the document. |
 | `cards` | Cards 1 to 3 (section 11) then 5 to 7 (section 12): `bumpy`, `worst`, `panic`, `next`, `pound`, `limits`. |
 | `claims` | Section 11's claims, then section 12's. Claim ids must be unique. |
-| `headline` | Empty. Section 14 fills it with a checked, human-reviewed headline. |
+| `headline` | Empty. Section 15 fills it with a checked, human-reviewed headline. |
 
 A missing `data_as_of`, `generated_on`, `sources` or `method_version` is a `WordsError`.
 
@@ -979,3 +980,82 @@ in the list has a page. Then it returns:
 | `data_as_of`, `data_as_of_text`, `generated_on`, `method_version` | The shared values. |
 | `benchmark` | Its `id`, `label`, and identity `name` and `ticker`, from the instrument list. |
 | `assets` | For each asset, in the instrument list's order: `id`, `label`, and identity `name`, `ticker` and `type`. |
+
+## 14. Writing the site's data
+
+`scripts/build_pages.py` is the page writer and the command Avi runs after each data
+refresh: `python3 scripts/build_pages.py`. It is offline: no network, no keys, no
+environment variables and no clock. It reads committed files and writes only in
+`site/data`. The same inputs always give byte-identical files, so a run with nothing new
+shows no change in `git status`.
+
+### 14.1 `write_pages(registry, context, documents, out_dir)`
+
+`documents` maps each asset id to its published document (section 8), as read from
+`data/derived/<id>.json`. In order:
+
+1. **Instrument list:** `check_registry` (section 8.1).
+2. **Facts file:** `check_context` (section 13.1).
+3. **Output folder**, as in section 10.2 step 4. It must exist (`write_pages` never
+   creates it). Apart from names starting with `.`, which are left alone, it may hold only
+   the files `<id>.json` for assets in the list and `index.json` (a folder or link with
+   one of those names is unexpected too). Anything else (a page for a removed instrument
+   or for the benchmark, a leftover `.tmp`, a subfolder) stops the run, naming the first
+   such name in alphabetical order. A removed instrument's page is deleted by hand
+   (`git rm`), never silently.
+4. **Documents:** every asset in the list has an entry, checked in list order; then there
+   is no other entry (the first other name in alphabetical order is named).
+5. **Pages**, for each asset in list order, finishing one asset before the next:
+   `check_document(document, registry)` (section 8.3); the document's instrument must be
+   that asset; then `build_page(document, facts)` (section 13.2), where `facts` is the
+   asset's context entry without `why`.
+6. **Index:** `build_index(registry, pages)` (section 13.3), with the pages in list order.
+7. **Write, all or nothing**, as in section 10.2 step 6. Each page and the index becomes
+   `json.dumps(value, indent=2, sort_keys=True, allow_nan=False, ensure_ascii=False) + "\n"`
+   in UTF-8 (so `£` and `−` stay readable in `git diff`), written to `<id>.json.tmp` and
+   `index.json.tmp`. Every temporary file is then read back and parsed, and must equal the
+   value built: the pages in list order, then the index. Only then is each file renamed
+   into place, the pages in list order and `index.json` last. If anything fails before
+   the first rename, every temporary file created is removed and the folder is exactly as
+   it was.
+8. **Return** `{"data_as_of", "generated_on", "method_version", "written"}`: the index's
+   shared values, and the file names in the order they were renamed.
+
+**Errors** are a `PageError` (defined in `scripts/build_pages.py`), in the form
+`<who>: <step>: <ErrorType>: <message>`, as in section 10.2. The message is included only
+for `RegistryError`, `PublishError` and `WordsError`, whose messages are value-free by
+design; any other type is named alone (`usa: page: RuntimeError`).
+
+| Step | Messages |
+|---|---|
+| 1 | `registry: check: RegistryError: <message>` |
+| 2 | `context: check: WordsError: <message>` |
+| 3 | `output folder: does not exist`, `output folder: unexpected <name>` |
+| 4 | `<id>: document: missing`, `documents: unexpected <name>` |
+| 5 | `<id>: check: PublishError: <message>`, `<id>: document: for <other id>`, `<id>: page: WordsError: <message>` |
+| 6 | `index: build: WordsError: <message>` |
+| 7 | `<file>: write: <ErrorType>` for the file being written or read back (`usa.json`, `index.json`), with the message only for the three types above; `<file>: write: read back differently` |
+
+### 14.2 The command: `python3 scripts/build_pages.py`
+
+`main(argv, root, out)` returns the exit code and writes lines to `out`. It never prints a
+traceback or a value.
+
+- **Arguments:** none. Anything else prints `Usage: python3 scripts/build_pages.py` and
+  returns 2.
+- **Loading**, in this order. Each file is read as UTF-8 with `json.load`. Each failure
+  prints its line, then `Nothing was written.`, and returns 1, before `site/data` is
+  touched:
+  1. `root/pipeline/instruments.json`: `FAILED: registry: load: <ErrorType>`. Then
+     `check_registry`: `FAILED: registry: check: RegistryError: <message>` (another type
+     is named alone).
+  2. `root/words/context.json`: `FAILED: context: load: <ErrorType>`.
+  3. `root/data/derived/<id>.json` for each asset, in list order:
+     `FAILED: <id>: load: <ErrorType>`.
+- Create `root/site/data` if it doesn't exist (and `root/site`).
+- `write_pages(registry, context, documents, root/site/data)`. On success it prints
+  `Data as of <data_as_of>, generated on <generated_on>, method <method_version>.` then
+  `Wrote <n> files to site/data.` and returns 0.
+- On a `PageError`: `FAILED: <message>`. On anything else: `FAILED: unexpected
+  <ErrorType>.` Either way, then `Check git status --short before committing anything.`
+  and exit code 1.
