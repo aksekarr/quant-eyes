@@ -42,6 +42,8 @@ LOADED_WORDS = (
     "impressive", "spectacular", "terrible", "disastrous", "catastrophic",
     "soared", "soaring", "plunged", "plummeted", "crashed", "skyrocketed",
     "rocketed", "collapse", "collapsed", "never",
+    "largest", "biggest", "worst", "deepest", "steepest", "sharpest",
+    "greatest", "highest", "lowest", "record", "ever", "all time",
 )
 RECOVERY_WORDS = (
     "recover", "recovers", "recovered", "recovering", "recovery", "regain",
@@ -59,7 +61,7 @@ UP_WORDS = (
 )
 
 DRAFT_MODEL = "gpt-6.1-sol"
-PROMPT_VERSION = "1"
+PROMPT_VERSION = "2"
 
 _DRAFT_INSTRUCTIONS_TEMPLATE = """You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.
 
@@ -71,8 +73,9 @@ Rules:
 3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and "2022 rate shock" when citing that period's figure.
 4. If a cited figure's direction is down, use one of these words: {down}. If it is up, use one of these: {up}.
 5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.
-6. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
-7. Never use these words or phrases:
+6. Do not rank a fall. The data starts at a fixed month, so a fall can't be called the largest, worst or deepest. Say when it happened instead, using its first and last months.
+7. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
+8. Never use these words or phrases:
 - advice: {advice}
 - the future: {future}
 - numbers in words: {number}, or any word ending in "fold"
@@ -323,6 +326,8 @@ def draft_request(page):
                 continue
             offered_sentences.append(sentence["text"])
             for claim in claims:
+                if claim["id"] == "worst.months_to_recover":
+                    continue
                 if claim["id"] not in offered_ids:
                     offered_ids.add(claim["id"])
                     offered_claims.append(claim)
