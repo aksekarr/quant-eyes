@@ -1136,8 +1136,12 @@ consecutive words. Each rule fails if any word or phrase on its list is present.
 12. **loaded**: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic,
     dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous,
     catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed,
-    collapse, collapsed, never. ("Never" is a claim about all time, and the data stops at a
-    month-end: "never recovered" is exactly the slip rule 15 exists for.)
+    collapse, collapsed, never, largest, biggest, worst, deepest, steepest, sharpest,
+    greatest, highest, lowest, record, ever; "all time". ("Never" is a claim about all time,
+    and the data stops at a month-end: "never recovered" is exactly the slip rule 15 exists
+    for. The superlatives were added on 30 Sept, after the first real drafts called six falls
+    the "largest" with no window: a superlative ranks a fall against all of history, and the
+    data starts at a fixed month. A headline dates a fall; it never ranks it.)
 13. **other_instrument**: the label, identity name or identity ticker of any other
     instrument in the list, the benchmark included, appears in the text (case-insensitive,
     not inside a longer run of letters and digits).
@@ -1209,11 +1213,12 @@ The model drafts, code checks, Avi reviews. Avi's decisions (30 Sept):
 - One attempt per asset, with no automatic retry. Feeding the checker's complaints back to the model would train it to satisfy the checker, not to be right.
 - Every draft, with its problems, goes to `words/headline_drafts.json`. Avi commits it as the record of what the model proposed.
 - He can redraft only the assets he names.
+- Amended the same morning, after review rejected 6 of the 7 first drafts (all passed the checker): prompt version 2 adds rule 6 (date a fall, never rank it), rule 12 bans superlatives, and time to recover is only ever offered from the high (`worst.months_underwater`). The from-the-low figure is the flattering one, and the first drafts mixed the two, which reversed a comparison between pages.
 
 Only derived figures already on the page are sent, and the request asks OpenAI not to store the response.
 
 **Where the code lives.**
-- `words/headline.py`, pure like the rest of the module: `DRAFT_MODEL = "gpt-6.1-sol"`, `PROMPT_VERSION = "1"`, `DRAFT_INSTRUCTIONS`, `draft_request(page)` and `read_draft(response)`. It may import `json`, to read the model's answer.
+- `words/headline.py`, pure like the rest of the module: `DRAFT_MODEL = "gpt-6.1-sol"`, `PROMPT_VERSION = "2"`, `DRAFT_INSTRUCTIONS`, `draft_request(page)` and `read_draft(response)`. It may import `json`, to read the model's answer.
 - `pipeline/network.py`: `http_post_json(url, headers, body)`, next to `http_get_json` (section 9.7). It is still the only module that opens a connection.
 - `scripts/draft_headlines.py`: the command Avi runs, with his key. Its `main()` has no default arguments, and the script imports `pipeline.network` only under `if __name__ == "__main__":`. So a test that forgets its fake fails instead of reaching the network.
 
@@ -1234,7 +1239,7 @@ Only derived figures already on the page are sent, and the request asks OpenAI n
 **What the model is given.** Only the cards `bumpy`, `worst` and `panic` (cards 1 to 3) are read, in the page's card order.
 - The *offered sentences* are the sentences of those cards, in order, that cite at least one claim and whose every cited claim has series `asset` and kind `observed`.
 - A sentence of those cards that cites an id which is not one of the page's claims is a `WordsError`: `<id> is not a claim on the page.`
-- The *offered claims* are the claims the offered sentences cite, each once, in the order first cited.
+- The *offered claims* are the claims the offered sentences cite, except `worst.months_to_recover`, each once, in the order first cited. The recovery sentence is still offered, but time to recover is only ever offered counted from the high.
 - If there are no offered claims: `WordsError("page has no figures to cite.")`.
 - The recovery state is rule 15's, from all the page's claims.
 
@@ -1273,7 +1278,7 @@ The schema is below. With `strict`, the model can return only this shape and can
  "additionalProperties": false}
 ```
 
-`DRAFT_INSTRUCTIONS`, approved by Avi on 30 Sept, is the text below, filled in with Python's `str.format`. The placeholders are:
+`DRAFT_INSTRUCTIONS` (version 2, approved by Avi on 30 Sept) is the text below, filled in with Python's `str.format`. The placeholders are:
 - `{down}` and `{up}`: rule 14's lists.
 - `{recovery}`: rule 15's list.
 - `{advice}`, `{future}`, `{number}`, `{comparison}` and `{loaded}`: the lists of rules 8 to 12.
@@ -1291,8 +1296,9 @@ Rules:
 3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and "2022 rate shock" when citing that period's figure.
 4. If a cited figure's direction is down, use one of these words: {down}. If it is up, use one of these: {up}.
 5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.
-6. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
-7. Never use these words or phrases:
+6. Do not rank a fall. The data starts at a fixed month, so a fall can't be called the largest, worst or deepest. Say when it happened instead, using its first and last months.
+7. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
+8. Never use these words or phrases:
 - advice: {advice}
 - the future: {future}
 - numbers in words: {number}, or any word ending in "fold"
@@ -1377,7 +1383,7 @@ Error messages have the form `<who>: <step>: <ErrorType>: <message>`. The messag
    - `data_as_of` and `generated_on`: the pages'.
    - `drafted_on`: `today`, as `YYYY-MM-DD`.
    - `model`: `"gpt-6.1-sol"`.
-   - `prompt_version`: `"1"`.
+   - `prompt_version`: `"2"`.
    - `drafts`: asset id to draft.
 
    It is written as `json.dumps(value, indent=2, sort_keys=True, allow_nan=False, ensure_ascii=False) + "\n"` in UTF-8, to `headline_drafts.json.tmp`, replacing any left over. That file is read back, parsed, and must equal the value (`FAILED: drafts: write: read back differently`). Then it is renamed over `headline_drafts.json`. Any failure removes the temporary file (`FAILED: drafts: write: <ErrorType>[: <message>]`), and the previous drafts file is left as it was.
