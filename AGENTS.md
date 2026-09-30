@@ -110,6 +110,15 @@ Words
   Treat it like `tests/golden/`: never create, edit, rename or delete it.
 - The headline checker's word lists (METHODOLOGY section 15.1) are copied exactly. Never
   add, drop or reword an entry.
+- The drafting prompt (`DRAFT_INSTRUCTIONS` and the input format, METHODOLOGY section
+  15.3) was approved by Avi. Never reword it: a change is a methodology change with its own
+  golden cases. Build its word lists from the checker's lists, never retype them.
+- `scripts/draft_headlines.py` is the headline drafting command. It sends paid requests to
+  OpenAI with Avi's key. You write it and its tests but never run it, except with `--list`
+  (no key, no requests). Tests pass a fake `post` and replace `pipeline.network.urlopen`;
+  nothing in the tests reaches the network.
+- `words/headline_drafts.json` is written by that command and committed by Avi as the record
+  of what the model proposed. Never create, edit or delete it.
 
 Site
 - The website makes zero runtime API calls. It only reads precomputed JSON.

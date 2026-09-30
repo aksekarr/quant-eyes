@@ -24,7 +24,7 @@ section is written here only once its conventions are confirmed.
 | 12. Card text (cards 5 to 7) | Words 2 | `cards_567.json` | Written |
 | 13. Page data | Words 3 | `page.json` | Written |
 | 14. Writing the site's data | Site 1 | `build_pages.json` | Written |
-| 15. The headline (15.1 and 15.2) | Words 4 | `headline.json` | Written |
+| 15. The headline (15.1 to 15.3) | Words 4 | `headline.json`, `draft_headlines.json` | Written |
 
 ## General rules
 
@@ -1069,8 +1069,10 @@ asset's own figures; OpenAI `gpt-6.1-sol` drafts it; code checks it; Avi reviews
 headline by editing an approvals file; after a data refresh, last month's headlines are
 dropped until he approves new ones. Nothing reaches a page any other way.
 
-In `words/headline.py`. Pure, like sections 11 to 13. Drafting (15.3) and the page
-writer's use of approved headlines (15.4) are written with their own tasks.
+The checker and approvals (15.1, 15.2) are in `words/headline.py`, pure like sections 11 to
+13; drafting (15.3) adds to it, plus a POST in `pipeline/network.py` and the command
+`scripts/draft_headlines.py`. The page writer's use of approved headlines (15.4) is written
+with its own task.
 
 ### 15.1 The checker: `check_headline(text, claim_ids, page, registry)`
 
@@ -1199,3 +1201,191 @@ it; `reviewed_on` must not be before that page's `generated_on` (a headline can'
 reviewed against numbers that didn't exist yet); and `check_headline(text, claims, page,
 registry)` must return no problems. The error names the asset and the failing rules. An
 approved headline that fails is an error, never silently dropped or published.
+
+### 15.3 Drafting: `draft_request`, `read_draft`, `http_post_json` and `scripts/draft_headlines.py`
+
+The model drafts, code checks, Avi reviews. Avi's decisions (30 Sept):
+- The model sees only the page's own approved sentences from cards 1 to 3 whose figures are all the asset's observed history, and may cite only those figures. Card 5's figures are comparisons with the tracker by nature. Card 6 exists only for dollar assets, so headlines would not be like-for-like.
+- One attempt per asset, with no automatic retry. Feeding the checker's complaints back to the model would train it to satisfy the checker, not to be right.
+- Every draft, with its problems, goes to `words/headline_drafts.json`. Avi commits it as the record of what the model proposed.
+- He can redraft only the assets he names.
+
+Only derived figures already on the page are sent, and the request asks OpenAI not to store the response.
+
+**Where the code lives.**
+- `words/headline.py`, pure like the rest of the module: `DRAFT_MODEL = "gpt-6.1-sol"`, `PROMPT_VERSION = "1"`, `DRAFT_INSTRUCTIONS`, `draft_request(page)` and `read_draft(response)`. It may import `json`, to read the model's answer.
+- `pipeline/network.py`: `http_post_json(url, headers, body)`, next to `http_get_json` (section 9.7). It is still the only module that opens a connection.
+- `scripts/draft_headlines.py`: the command Avi runs, with his key. Its `main()` has no default arguments, and the script imports `pipeline.network` only under `if __name__ == "__main__":`. So a test that forgets its fake fails instead of reaching the network.
+
+#### 15.3.1 The request: `draft_request(page)`
+
+`page` is a section 13 page. `draft_request` returns a new dictionary: the JSON body of one request to OpenAI's Responses API.
+
+| Key | Value |
+|---|---|
+| `model` | `"gpt-6.1-sol"` |
+| `instructions` | `DRAFT_INSTRUCTIONS` (below) |
+| `input` | The page text (below) |
+| `text` | `{"format": {"type": "json_schema", "name": "headline", "strict": true, "schema": <schema>}}` |
+| `reasoning` | `{"effort": "medium"}`. This is the model's default, fixed so that a change of default can't change the drafts. |
+| `max_output_tokens` | `8000`. Reasoning counts toward it, and it bounds what one request can cost. |
+| `store` | `false` |
+
+**What the model is given.** Only the cards `bumpy`, `worst` and `panic` (cards 1 to 3) are read, in the page's card order.
+- The *offered sentences* are the sentences of those cards, in order, that cite at least one claim and whose every cited claim has series `asset` and kind `observed`.
+- A sentence of those cards that cites an id which is not one of the page's claims is a `WordsError`: `<id> is not a claim on the page.`
+- The *offered claims* are the claims the offered sentences cite, each once, in the order first cited.
+- If there are no offered claims: `WordsError("page has no figures to cite.")`.
+- The recovery state is rule 15's, from all the page's claims.
+
+`input` is these lines, joined with `\n`, with no line break at the end:
+
+```
+Investment: <the instrument's label>
+Full name: <its identity name>
+Ticker: <its identity ticker>
+<data_as_of_text>.
+
+What its page says:
+<card title>
+- <sentence text>
+
+Figures you may cite (id | figure | direction | period):
+<id> | <display> | <direction> | <Mon YYYY> to <Mon YYYY>
+
+<recovery line>
+```
+
+- A card's title is written only if the card has an offered sentence. Each such card is followed by its offered sentences, in order.
+- There is one figure line per offered claim, in order. The direction is `none` when the claim has none. The period is `period_start` and `period_end` written with `month_name`.
+- The recovery line depends on the recovery state:
+  - not recovered: `Its largest fall had not recovered by the end of the data.`
+  - recovered: `Its largest fall recovered.`
+  - no fall: `It had not fallen below a previous high at any month-end.`
+
+The schema is below. With `strict`, the model can return only this shape and can cite only an offered claim. Everything else, including citing one or two claims and all of the wording, is left to the checker.
+
+```json
+{"type": "object",
+ "properties": {"text": {"type": "string"},
+                "claims": {"type": "array", "items": {"type": "string", "enum": ["<the offered claim ids, in order>"]}}},
+ "required": ["text", "claims"],
+ "additionalProperties": false}
+```
+
+`DRAFT_INSTRUCTIONS`, approved by Avi on 30 Sept, is the text below, filled in with Python's `str.format`. The placeholders are:
+- `{down}` and `{up}`: rule 14's lists.
+- `{recovery}`: rule 15's list.
+- `{advice}`, `{future}`, `{number}`, `{comparison}` and `{loaded}`: the lists of rules 8 to 12.
+
+Each list is written out in section 15.1's order, joined by `, `. It is built from the checker's own lists, never retyped, so the prompt and the checker can't drift apart. The golden file holds the full text.
+
+```
+You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.
+
+Write one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as "text" and the ids of the figures it uses as "claims".
+
+Rules:
+1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.
+2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.
+3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and "2022 rate shock" when citing that period's figure.
+4. If a cited figure's direction is down, use one of these words: {down}. If it is up, use one of these: {up}.
+5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.
+6. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
+7. Never use these words or phrases:
+- advice: {advice}
+- the future: {future}
+- numbers in words: {number}, or any word ending in "fold"
+- comparisons: {comparison}
+- loaded words: {loaded}
+```
+
+#### 15.3.2 Reading the answer: `read_draft(response)`
+
+`response` is the parsed JSON of a Responses API reply. `read_draft` returns `{"text", "claims", "drafted_by"}`, or raises a `WordsError` whose message never includes the model's text or the response. The checks, in this order:
+
+1. The response is a dictionary. Otherwise: `response is not an object`.
+2. `status` is `"completed"`. Otherwise the message is `status <status>`:
+   - `<status>` is the value if it is an *identifier* (text of 1 to 64 characters, each `a` to `z`, `0` to `9` or `_`), and `unreadable` if not.
+   - It is followed by ` (<reason>)`, using the first identifier among `incomplete_details.reason` and `error.code`. Each is read only if its parent is a dictionary.
+   - For example, `status incomplete (max_output_tokens)` means the token cap was hit.
+3. `model` is text, not empty, with no whitespace at either end. Otherwise: `model missing`. It becomes `drafted_by`: the model that actually answered, which may be a dated version of `gpt-6.1-sol`.
+4. `output` is a list. Otherwise: `output missing`.
+   - The *answers* are its items that are dictionaries with `type` `"message"` and a `phase` other than `"commentary"`. A missing phase counts: newer models may send commentary messages before the final answer.
+   - There must be exactly one answer. Otherwise: `<n> answers`.
+5. The answer's `content` is a non-empty list. Otherwise: `answer has no content`.
+   - If any item is a dictionary with `type` `"refusal"`: `the model refused`.
+   - Otherwise every item must be a dictionary with `type` `"output_text"` and text in `text`. If not: `unexpected content`.
+   - The answer is their `text`s, joined in order.
+6. The answer is JSON for a dictionary with exactly the keys `text` and `claims`. Otherwise: `answer is not a headline object`.
+
+`text` and `claims` are returned as given, whatever their types. `check_headline` reports a bad text or claims list (rules 1 and 2).
+
+#### 15.3.3 The connection: `http_post_json(url, headers, body)`
+
+`http_post_json` makes one POST and returns the parsed JSON:
+- The body is `json.dumps(body, allow_nan=False)` in UTF-8. A body that can't be written that way is an error raised before anything is sent.
+- The headers are as given.
+- The timeout is 120 seconds, because the model reasons before answering.
+- Certificate checking is Python's default: never a `context`.
+
+Errors are `ProviderError`, as in section 9.7, and never show the URL, a header, the body or the response:
+
+| Problem | Message |
+|---|---|
+| An HTTP error status | `HTTP <code>`, then ` (<detail>)` if the error's body is JSON whose `error` is a dictionary with an identifier (15.3.2) in `code`, or failing that in `type` |
+| A timeout (`socket.timeout` or `TimeoutError`, raised directly or as a `URLError`'s reason) | `timed out` |
+| Any other connection failure | `connection problem (<error type>)` |
+| A body that isn't JSON | `response was not JSON` |
+
+OpenAI's error codes say what to fix: `invalid_api_key`, `insufficient_quota` when the $5 limit is reached, `model_not_found`. Its error messages can quote part of the key, so they are never shown. Reading the error's body never raises: any failure just leaves the detail out. `http_get_json` doesn't change.
+
+#### 15.3.4 The command: `python3 scripts/draft_headlines.py [--list | <asset id> ...]`
+
+`main(argv, environ, today, root, out, post)` returns the exit code and writes lines to `out`. `post(url, headers, body)` sends one request; only the script's entry point passes `http_post_json`. The command never prints a traceback, the key, a request or the model's text.
+
+Every `FAILED:` line is followed by a second line, and exit code 1:
+- `Nothing was sent or written.` if no request had been sent.
+- Otherwise `Nothing was written. <k> request(s) sent.` (`1 request`, `2 requests`), where `<k>` counts every call to `post`, including one that failed.
+
+Error messages have the form `<who>: <step>: <ErrorType>: <message>`. The message is included only for `RegistryError`, `WordsError` and `ProviderError`, whose messages are value-free by design; any other type is named alone.
+
+1. **Arguments:** none (every asset), `--list` on its own, or one or more different asset ids, none starting with `-`. Anything else prints `Usage: python3 scripts/draft_headlines.py [--list | <asset id> ...]` and returns 2.
+2. **Instrument list:** `root/pipeline/instruments.json`, read as UTF-8 with `json.load` (`FAILED: registry: load: <ErrorType>`), then `check_registry` (`FAILED: registry: check: <ErrorType>[: <message>]`).
+3. **Assets:** each named id, in the order given, must be an asset in the list. Otherwise: `FAILED: <name> is not an asset in the instrument list.` The assets are drafted in the list's order, whatever order they were named in.
+4. **Pages**, for each asset in list order, finishing one asset before the next:
+   - Load `root/site/data/<id>.json` (`FAILED: <id>: load: <ErrorType>`).
+   - Its `instrument` `id` must be the asset: `FAILED: <id>: page: not this asset's page`, also when the id can't be read.
+   - Its `data_as_of` and `generated_on` must equal the first asset's: `FAILED: <id>: page: data_as_of or generated_on differs`.
+   - Then `draft_request(page)` (`FAILED: <id>: request: <ErrorType>[: <message>]`).
+
+   The pages are the site's published pages, so drafts are written against exactly what each page shows.
+5. **`--list`** stops here. It has sent nothing and needs no key. It prints three lines and returns 0:
+   - `Plan: <n> request(s) to gpt-6.1-sol, one per asset: <ids in list order, joined by ", ">.`
+   - `Pages: data as of <data_as_of>, generated on <generated_on>.`
+   - `No requests made.`
+6. **Key:** `QX_OPENAI_API_KEY` from `environ`.
+   - Missing or empty: `FAILED: QX_OPENAI_API_KEY is not set in this terminal.`
+   - Anything but letters, digits, `-` and `_` (a pasted space or line break): `FAILED: QX_OPENAI_API_KEY is not a valid key.`
+7. **Drafts**, for each asset in list order:
+   - `post("https://api.openai.com/v1/responses", {"Authorization": "Bearer <key>", "Content-Type": "application/json"}, body)` (step `post`).
+   - Then `read_draft` (step `response`).
+   - Then `check_headline(text, claims, page, registry)` (step `check`).
+
+   The draft is `{"text", "claims", "drafted_by", "problems"}`, where `problems` is `check_headline`'s list as returned. A draft with problems is recorded, not an error. The first error stops the run.
+8. **Write** `root/words/headline_drafts.json`, all or nothing. The value has these keys:
+   - `data_as_of` and `generated_on`: the pages'.
+   - `drafted_on`: `today`, as `YYYY-MM-DD`.
+   - `model`: `"gpt-6.1-sol"`.
+   - `prompt_version`: `"1"`.
+   - `drafts`: asset id to draft.
+
+   It is written as `json.dumps(value, indent=2, sort_keys=True, allow_nan=False, ensure_ascii=False) + "\n"` in UTF-8, to `headline_drafts.json.tmp`, replacing any left over. That file is read back, parsed, and must equal the value (`FAILED: drafts: write: read back differently`). Then it is renamed over `headline_drafts.json`. Any failure removes the temporary file (`FAILED: drafts: write: <ErrorType>[: <message>]`), and the previous drafts file is left as it was.
+9. **Success** prints these lines and returns 0:
+   - `Drafted <n> headline(s) with gpt-6.1-sol for data as of <data_as_of>.`
+   - One line per draft, in list order: `<id>: passes the checks`, or `<id>: fails <rules>`, where `<rules>` are the rule names of its problems, each once, in the order they first appear, joined by `, `.
+   - `Wrote words/headline_drafts.json. Review every draft before copying it into words/headlines.json.`
+
+Anything else that goes wrong prints `FAILED: unexpected <ErrorType>.`, followed by the second line as above.
+
+`words/headline_drafts.json` is generated output, and the page writer never reads it. The only route to a page is Avi copying a draft into `words/headlines.json` (section 15.2), adding `reviewed_on`, and committing it. Avi commits the drafts file with it, as the record of what the model proposed.

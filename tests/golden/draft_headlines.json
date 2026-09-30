@@ -1,0 +1,5933 @@
+{
+ "file": "draft_headlines",
+ "spec": "docs/METHODOLOGY.md section 15.3",
+ "authorship": "Cases and expected behaviour written by hand by Claude (architect), checked against a separate Claude-only reference implementation, committed by Avi. The pages were built from build_pages.json's DOC_USA and DOC_GBF with the committed section 13 build_page; P_FLAT from DOC_GBF with its largest fall replaced by the engine's no-fall result (risk.json R16's shape). The expected request bodies of D01 to D08 and D12 hold the prompt Avi approved on 30 Sept. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+ "interface": {
+  "words.headline": "DRAFT_MODEL, PROMPT_VERSION, DRAFT_INSTRUCTIONS, draft_request(page) and read_draft(response), added to the section 15.1 module. WordsError is words.cards.WordsError.",
+  "pipeline.network": "http_post_json(url, headers, body), next to http_get_json. ProviderError is pipeline.providers.ProviderError.",
+  "scripts/draft_headlines.py": "main(argv, environ, today, root, out, post), with no default arguments. Load it in tests with importlib.util.spec_from_file_location, as tests/test_build_pages.py loads scripts/build_pages.py."
+ },
+ "case_fields": {
+  "constants": "expected maps attribute names of words.headline to their exact values.",
+  "draft_request: page / page_edits": "A deep copy of the named page, with page_edits applied with apply_edits.",
+  "expected": "draft_request, read_draft, http_post_json: the returned value, compared with assert_result_equal (tolerance 0).",
+  "expected_error / expected_message / message_must_not_contain": "The exact error type, and str(error) must equal expected_message exactly (check this in the test file; do not change golden_support.py). message_must_not_contain as in the other golden files.",
+  "read_draft: response": "Passed as a deep copy, exactly as written.",
+  "http_post_json: network": "Replace pipeline.network.urlopen with a fake that records its arguments and then: \"body\" returns a context manager whose read() gives the UTF-8 bytes of body_text; \"http_error\" raises urllib.error.HTTPError(url, code, \"x\", {}, fp) where fp is io.BytesIO of error_body_text's UTF-8 bytes, or None when error_body_text is null, or, when error_body_raises is true, an object whose read() raises OSError; \"url_error\" raises URLError(ssl.SSLError(\"x\")); \"url_error_timeout\" raises URLError(socket.timeout()); \"socket_timeout\" raises socket.timeout(); \"timeout_error\" raises TimeoutError(); \"reset\" raises ConnectionResetError().",
+  "http_post_json: body_nan_key / expected_no_call": "When body_nan_key is given, the body passed is the case's body plus that key set to float(\"nan\"). expected_no_call: urlopen must never have been called. expected_error without expected_message checks the type only.",
+  "http_post_json: expected_request": "Success only: urlopen was called exactly once, with a urllib.request.Request whose full_url is url, get_method() is method, headers equal these (compare names case-insensitively: urllib stores Content-Type as Content-type), and data is bytes that decode as UTF-8 and parse with json.loads to body; with timeout=120 and no other keyword arguments (in particular no context).",
+  "cli: argv / environ / today": "Passed to main as given (today as a datetime.date), with out a StringIO and post the fake below.",
+  "cli: root": "A new temporary folder per case, holding: pipeline/instruments.json (the registry below with registry_edits applied, written as JSON; or registry_text exactly); words/ (an empty folder, unless words_missing is true); site/data/<id>.json for each entry of pages (that page fixture with page_edits[id] applied, written as JSON; or page_text[id] exactly); and before_files (path relative to root: text), written last. When drafts_is_folder is true, words/headline_drafts.json is created as an empty folder, and must still be one afterwards.",
+  "cli: responses": "The fake post(url, headers, body) records each call and answers from this list in order: a name is a deep copy of that response fixture; {\"raise\": name, \"message\": text} raises ProviderError(text) or RuntimeError(text). A call beyond the list fails the test.",
+  "cli: expected_calls": "The asset of each call, in order. Every call's url is https://api.openai.com/v1/responses, its headers are exactly {\"Authorization\": \"Bearer \" + the key, \"Content-Type\": \"application/json\"}, and its body equals draft_request(that asset's page as written).",
+  "cli: expected_exit / expected_stdout": "The return value, and out's lines exactly (split on line breaks, no trailing empty line). In every case, stdout never contains environ's QX_OPENAI_API_KEY value (when not empty), nor any raise message or response text listed in message_must_not_contain.",
+  "cli: expected_drafts": "null: words/headline_drafts.json must not exist, or, if before_files wrote it, must still hold exactly that text. Otherwise: the file's text is exactly json.dumps(value, indent=2, sort_keys=True, allow_nan=False, ensure_ascii=False) + \"\\n\", where value is expected_drafts with each draft given a \"problems\" key equal to check_headline(its text, its claims, that asset's page as written, the registry as written). In every case, words/headline_drafts.json.tmp does not exist afterwards."
+ },
+ "registry": {
+  "about": "Synthetic instrument list for page tests.",
+  "facts_checked": "2026-09-28",
+  "providers": {
+   "prova": {
+    "name": "Provider A",
+    "url": "https://a.example.com"
+   },
+   "provb": {
+    "name": "Provider B",
+    "url": "https://b.example.com"
+   }
+  },
+  "fx": {
+   "label": "US dollars per pound",
+   "data": {
+    "provider": "provb",
+    "kind": "fx",
+    "symbol": "GBP/USD",
+    "field": "4. close",
+    "currency": "USD",
+    "basis": "fx_rate",
+    "start": null
+   }
+  },
+  "instruments": [
+   {
+    "id": "trk",
+    "role": "benchmark",
+    "label": "Test tracker",
+    "identity": {
+     "name": "Test Tracker ETF",
+     "share_class": "USD (Acc)",
+     "type": "etf",
+     "isin": "IE00TEST0001",
+     "ticker": "TRK",
+     "exchange": "Test exchange",
+     "trading_currency": "GBP",
+     "quote_unit": "pence",
+     "income": "accumulating",
+     "currency_hedged": false,
+     "sources": [
+      "https://issuer.example.com/trk"
+     ]
+    },
+    "data": {
+     "provider": "provb",
+     "kind": "equity",
+     "symbol": "TRK.X",
+     "field": "5. adjusted close",
+     "currency": "GBP",
+     "basis": "total_return",
+     "start": null
+    }
+   },
+   {
+    "id": "usa",
+    "role": "asset",
+    "label": "US share",
+    "identity": {
+     "name": "Test US Corp",
+     "share_class": "Common stock",
+     "type": "share",
+     "isin": "US00TEST0002",
+     "ticker": "USA",
+     "exchange": "Test US exchange",
+     "trading_currency": "USD",
+     "quote_unit": "dollars",
+     "income": "dividends",
+     "currency_hedged": null,
+     "sources": [
+      "https://issuer.example.com/usa"
+     ]
+    },
+    "data": {
+     "provider": "prova",
+     "kind": "equity",
+     "symbol": "USA",
+     "field": "adjClose",
+     "currency": "USD",
+     "basis": "total_return",
+     "start": null
+    }
+   },
+   {
+    "id": "gbf",
+    "role": "asset",
+    "label": "UK fund",
+    "identity": {
+     "name": "Test UK Fund",
+     "share_class": "GBP (Dist)",
+     "type": "etf",
+     "isin": "IE00TEST0003",
+     "ticker": "GBF",
+     "exchange": "Test exchange",
+     "trading_currency": "GBP",
+     "quote_unit": "pounds",
+     "income": "distributing",
+     "currency_hedged": false,
+     "sources": [
+      "https://issuer.example.com/gbf"
+     ]
+    },
+    "data": {
+     "provider": "provb",
+     "kind": "equity",
+     "symbol": "GBF.X",
+     "field": "5. adjusted close",
+     "currency": "GBP",
+     "basis": "total_return",
+     "start": null
+    }
+   }
+  ]
+ },
+ "pages": {
+  "P_USA": {
+   "page_version": "1",
+   "instrument": {
+    "id": "usa",
+    "identity": {
+     "currency_hedged": null,
+     "exchange": "Test US exchange",
+     "income": "dividends",
+     "isin": "US00TEST0002",
+     "name": "Test US Corp",
+     "quote_unit": "dollars",
+     "share_class": "Common stock",
+     "sources": [
+      "https://issuer.example.com/usa"
+     ],
+     "ticker": "USA",
+     "trading_currency": "USD",
+     "type": "share"
+    },
+    "label": "US share"
+   },
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "method_version": "1.0",
+   "sources": [
+    {
+     "provider": "Provider A",
+     "url": "https://a.example.com",
+     "used_for": [
+      "US share"
+     ]
+    },
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "Test tracker",
+      "US dollars per pound"
+     ]
+    }
+   ],
+   "cards": [
+    {
+     "id": "bumpy",
+     "title": "How bumpy is the ride?",
+     "sentences": [
+      {
+       "text": "Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.",
+       "claims": [
+        "bumpy.volatility"
+       ]
+      },
+      {
+       "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 43.1% against the tracker's 11.7%.",
+       "claims": [
+        "bumpy.volatility_common",
+        "bumpy.tracker_volatility"
+       ]
+      },
+      {
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "worst",
+     "title": "What's the worst it's been?",
+     "sentences": [
+      {
+       "text": "Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.",
+       "claims": [
+        "worst.fall",
+        "worst.months_to_low"
+       ]
+      },
+      {
+       "text": "£10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.",
+       "claims": [
+        "worst.ten_thousand_left",
+        "worst.ten_thousand_lost"
+       ]
+      },
+      {
+       "text": "It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.",
+       "claims": [
+        "worst.months_to_recover",
+        "worst.months_underwater"
+       ]
+      },
+      {
+       "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "panic",
+     "title": "What happened when markets panicked?",
+     "sentences": [
+      {
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.",
+       "claims": [
+        "panic.gfc"
+       ]
+      },
+      {
+       "text": "The tracker: not covered.",
+       "claims": []
+      },
+      {
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period.",
+       "claims": [
+        "panic.covid"
+       ]
+      },
+      {
+       "text": "The tracker: down 14.5% over the same period.",
+       "claims": [
+        "panic.covid.tracker"
+       ]
+      },
+      {
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.",
+       "claims": [
+        "panic.rate_shock"
+       ]
+      },
+      {
+       "text": "The tracker: down 6.0% over the same period.",
+       "claims": [
+        "panic.rate_shock.tracker"
+       ]
+      },
+      {
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "next",
+     "title": "What does it do next to the tracker?",
+     "sentences": [
+      {
+       "text": "Its correlation with the tracker was 0.47, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.",
+       "claims": [
+        "next.correlation"
+       ]
+      },
+      {
+       "text": "Measured over each 36-month stretch, it ranged from 0.21 (the 36 months to the end of Dec 2013) to 0.67 (the 36 months to the end of Apr 2024).",
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ]
+      },
+      {
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.",
+       "claims": []
+      },
+      {
+       "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 17.5% a year, against 12.5% a year for the tracker alone.",
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ]
+      },
+      {
+       "text": "The mix's volatility was 13.5% against the tracker's 11.7%, and its largest fall at month-end was 17.5% against 15.0%.",
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ]
+      },
+      {
+       "text": "Before fees, trading costs and tax.",
+       "claims": []
+      },
+      {
+       "text": "The tracker already holds these shares, so the 10% adds to a holding it already has.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "pound",
+     "title": "How much of it was the pound?",
+     "sentences": [
+      {
+       "text": "From the end of Aug 2007 to the end of Aug 2026: up 28,171.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 41,992.8%.",
+       "claims": [
+        "pound.local",
+        "pound.currency",
+        "pound.gbp"
+       ]
+      },
+      {
+       "text": "Global financial crisis: down 72.8% in dollars, the dollar rose 43.0%, so down 61.1% in pounds.",
+       "claims": [
+        "pound.gfc.local",
+        "pound.gfc.currency",
+        "pound.gfc.gbp"
+       ]
+      },
+      {
+       "text": "Covid crash: up 11.6% in dollars, the dollar rose 6.5%, so up 18.8% in pounds.",
+       "claims": [
+        "pound.covid.local",
+        "pound.covid.currency",
+        "pound.covid.gbp"
+       ]
+      },
+      {
+       "text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "limits",
+     "title": "What these numbers don't capture",
+     "sentences": [
+      {
+       "text": "A single company's shares can fall a long way and stay down, and the company can fail.",
+       "claims": []
+      },
+      {
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.",
+       "claims": []
+      }
+     ]
+    }
+   ],
+   "claims": [
+    {
+     "id": "bumpy.volatility",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "volatility",
+     "period_start": "2007-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 46.1,
+     "direction": null,
+     "display": "46.1%",
+     "kind": "observed"
+    },
+    {
+     "id": "bumpy.volatility_common",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "volatility",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 43.1,
+     "direction": null,
+     "display": "43.1%",
+     "kind": "observed"
+    },
+    {
+     "id": "bumpy.tracker_volatility",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "volatility",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 11.7,
+     "direction": null,
+     "display": "11.7%",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.fall",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "largest_fall",
+     "period_start": "2007-09",
+     "period_end": "2008-11",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -72.5,
+     "direction": "down",
+     "display": "72.5%",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.months_to_low",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "months_peak_to_trough",
+     "period_start": "2007-09",
+     "period_end": "2008-11",
+     "unit": "months",
+     "currency": null,
+     "value": 14,
+     "direction": null,
+     "display": "14 months",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.ten_thousand_left",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "ten_thousand_at_trough",
+     "period_start": "2007-09",
+     "period_end": "2008-11",
+     "unit": "gbp",
+     "currency": "GBP",
+     "value": 2750,
+     "direction": null,
+     "display": "£2,750",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.ten_thousand_lost",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "ten_thousand_lost",
+     "period_start": "2007-09",
+     "period_end": "2008-11",
+     "unit": "gbp",
+     "currency": "GBP",
+     "value": 7250,
+     "direction": null,
+     "display": "£7,250",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.months_to_recover",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "months_trough_to_recovery",
+     "period_start": "2008-11",
+     "period_end": "2015-10",
+     "unit": "months",
+     "currency": null,
+     "value": 83,
+     "direction": null,
+     "display": "83 months",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.months_underwater",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "months_underwater",
+     "period_start": "2007-09",
+     "period_end": "2015-10",
+     "unit": "months",
+     "currency": null,
+     "value": 97,
+     "direction": null,
+     "display": "97 months",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.gfc",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "stress_window",
+     "period_start": "2007-09",
+     "period_end": "2009-03",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -61.1,
+     "direction": "down",
+     "display": "61.1%",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.covid",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "stress_window",
+     "period_start": "2020-01",
+     "period_end": "2020-03",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 18.8,
+     "direction": "up",
+     "display": "18.8%",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.covid.tracker",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "stress_window",
+     "period_start": "2020-01",
+     "period_end": "2020-03",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -14.5,
+     "direction": "down",
+     "display": "14.5%",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.rate_shock",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "stress_window",
+     "period_start": "2021-12",
+     "period_end": "2022-10",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -7.3,
+     "direction": "down",
+     "display": "7.3%",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.rate_shock.tracker",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "stress_window",
+     "period_start": "2021-12",
+     "period_end": "2022-10",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -6.0,
+     "direction": "down",
+     "display": "6.0%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.correlation",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "correlation",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "ratio",
+     "currency": null,
+     "value": 0.47,
+     "direction": null,
+     "display": "0.47",
+     "kind": "observed"
+    },
+    {
+     "id": "next.rolling_lowest",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "rolling_correlation_36_lowest",
+     "period_start": "2010-12",
+     "period_end": "2013-12",
+     "unit": "ratio",
+     "currency": null,
+     "value": 0.21,
+     "direction": null,
+     "display": "0.21",
+     "kind": "observed"
+    },
+    {
+     "id": "next.rolling_highest",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "rolling_correlation_36_highest",
+     "period_start": "2021-04",
+     "period_end": "2024-04",
+     "unit": "ratio",
+     "currency": null,
+     "value": 0.67,
+     "direction": null,
+     "display": "0.67",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_annualised",
+     "series": "mix",
+     "instrument": "usa",
+     "metric": "annualised_return",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 17.5,
+     "direction": "up",
+     "display": "17.5%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_annualised",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "annualised_return",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 12.5,
+     "direction": "up",
+     "display": "12.5%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_volatility",
+     "series": "mix",
+     "instrument": "usa",
+     "metric": "volatility",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 13.5,
+     "direction": null,
+     "display": "13.5%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_volatility",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "volatility",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 11.7,
+     "direction": null,
+     "display": "11.7%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_fall",
+     "series": "mix",
+     "instrument": "usa",
+     "metric": "largest_fall",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -17.5,
+     "direction": "down",
+     "display": "17.5%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_fall",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "largest_fall",
+     "period_start": "2010-01",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -15.0,
+     "direction": "down",
+     "display": "15.0%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.local",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "local_return",
+     "period_start": "2007-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "USD",
+     "value": 28171.2,
+     "direction": "up",
+     "display": "28,171.2%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.currency",
+     "series": "currency",
+     "instrument": "usa",
+     "metric": "currency_return",
+     "period_start": "2007-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": null,
+     "value": 48.9,
+     "direction": "up",
+     "display": "48.9%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.gbp",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "gbp_return",
+     "period_start": "2007-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 41992.8,
+     "direction": "up",
+     "display": "41,992.8%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.gfc.local",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "local_return",
+     "period_start": "2007-09",
+     "period_end": "2009-03",
+     "unit": "percent",
+     "currency": "USD",
+     "value": -72.8,
+     "direction": "down",
+     "display": "72.8%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.gfc.currency",
+     "series": "currency",
+     "instrument": "usa",
+     "metric": "currency_return",
+     "period_start": "2007-09",
+     "period_end": "2009-03",
+     "unit": "percent",
+     "currency": null,
+     "value": 43.0,
+     "direction": "up",
+     "display": "43.0%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.gfc.gbp",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "gbp_return",
+     "period_start": "2007-09",
+     "period_end": "2009-03",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -61.1,
+     "direction": "down",
+     "display": "61.1%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.covid.local",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "local_return",
+     "period_start": "2020-01",
+     "period_end": "2020-03",
+     "unit": "percent",
+     "currency": "USD",
+     "value": 11.6,
+     "direction": "up",
+     "display": "11.6%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.covid.currency",
+     "series": "currency",
+     "instrument": "usa",
+     "metric": "currency_return",
+     "period_start": "2020-01",
+     "period_end": "2020-03",
+     "unit": "percent",
+     "currency": null,
+     "value": 6.5,
+     "direction": "up",
+     "display": "6.5%",
+     "kind": "observed"
+    },
+    {
+     "id": "pound.covid.gbp",
+     "series": "asset",
+     "instrument": "usa",
+     "metric": "gbp_return",
+     "period_start": "2020-01",
+     "period_end": "2020-03",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 18.8,
+     "direction": "up",
+     "display": "18.8%",
+     "kind": "observed"
+    }
+   ],
+   "headline": null
+  },
+  "P_GBF": {
+   "page_version": "1",
+   "instrument": {
+    "id": "gbf",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "distributing",
+     "isin": "IE00TEST0003",
+     "name": "Test UK Fund",
+     "quote_unit": "pounds",
+     "share_class": "GBP (Dist)",
+     "sources": [
+      "https://issuer.example.com/gbf"
+     ],
+     "ticker": "GBF",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "UK fund"
+   },
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "method_version": "1.0",
+   "sources": [
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "UK fund",
+      "Test tracker"
+     ]
+    }
+   ],
+   "cards": [
+    {
+     "id": "bumpy",
+     "title": "How bumpy is the ride?",
+     "sentences": [
+      {
+       "text": "Its volatility was 3.9% a year, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026.",
+       "claims": [
+        "bumpy.volatility"
+       ]
+      },
+      {
+       "text": "Over the same months, the tracker's was 5.6%.",
+       "claims": [
+        "bumpy.tracker_volatility"
+       ]
+      },
+      {
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "worst",
+     "title": "What's the worst it's been?",
+     "sentences": [
+      {
+       "text": "Since the end of Aug 2021, its largest fall, measured at month-end, was 8.7%: from its high at the end of Sep 2021 to its low at the end of Aug 2026, 59 months later.",
+       "claims": [
+        "worst.fall",
+        "worst.months_to_low"
+       ]
+      },
+      {
+       "text": "£10,000 invested at that high would have been worth £9,130 at the low, £870 less.",
+       "claims": [
+        "worst.ten_thousand_left",
+        "worst.ten_thousand_lost"
+       ]
+      },
+      {
+       "text": "It had not recovered by the end of Aug 2026: it was still 8.7% below its high, 59 months after it.",
+       "claims": [
+        "worst.below_high_at_end",
+        "worst.months_underwater"
+       ]
+      },
+      {
+       "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "panic",
+     "title": "What happened when markets panicked?",
+     "sentences": [
+      {
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): not covered; its history in pounds starts at the end of Aug 2021.",
+       "claims": []
+      },
+      {
+       "text": "The tracker: not covered.",
+       "claims": []
+      },
+      {
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): not covered; its history in pounds starts at the end of Aug 2021.",
+       "claims": []
+      },
+      {
+       "text": "The tracker: not covered.",
+       "claims": []
+      },
+      {
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): up 1.3% over the period.",
+       "claims": [
+        "panic.rate_shock"
+       ]
+      },
+      {
+       "text": "The tracker: up 0.7% over the same period.",
+       "claims": [
+        "panic.rate_shock.tracker"
+       ]
+      },
+      {
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "next",
+     "title": "What does it do next to the tracker?",
+     "sentences": [
+      {
+       "text": "Its correlation with the tracker was 0.02, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.",
+       "claims": [
+        "next.correlation"
+       ]
+      },
+      {
+       "text": "Measured over each 36-month stretch, it ranged from −0.08 (the 36 months to the end of May 2025) to 0.08 (the 36 months to the end of Apr 2026).",
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ]
+      },
+      {
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.",
+       "claims": []
+      },
+      {
+       "text": "As an illustration, not a recommendation: from the end of Aug 2021 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 2.7% a year, against 3.2% a year for the tracker alone.",
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ]
+      },
+      {
+       "text": "The mix's volatility was 5.1% against the tracker's 5.6%, and its largest fall at month-end was 3.0% against 3.1%.",
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ]
+      },
+      {
+       "text": "Before fees, trading costs and tax.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "pound",
+     "title": "How much of it was the pound?",
+     "sentences": [
+      {
+       "text": "It is priced in pounds, so there is no separate currency effect to show.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "limits",
+     "title": "What these numbers don't capture",
+     "sentences": [
+      {
+       "text": "A fund's value moves with what it holds: bond prices, for example, fall when interest rates rise. Its market price can differ slightly from the value of its holdings, and its running charges are already inside these figures.",
+       "claims": []
+      },
+      {
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.",
+       "claims": []
+      }
+     ]
+    }
+   ],
+   "claims": [
+    {
+     "id": "bumpy.volatility",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "volatility",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 3.9,
+     "direction": null,
+     "display": "3.9%",
+     "kind": "observed"
+    },
+    {
+     "id": "bumpy.tracker_volatility",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "volatility",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 5.6,
+     "direction": null,
+     "display": "5.6%",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.fall",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "largest_fall",
+     "period_start": "2021-09",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -8.7,
+     "direction": "down",
+     "display": "8.7%",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.months_to_low",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "months_peak_to_trough",
+     "period_start": "2021-09",
+     "period_end": "2026-08",
+     "unit": "months",
+     "currency": null,
+     "value": 59,
+     "direction": null,
+     "display": "59 months",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.ten_thousand_left",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "ten_thousand_at_trough",
+     "period_start": "2021-09",
+     "period_end": "2026-08",
+     "unit": "gbp",
+     "currency": "GBP",
+     "value": 9130,
+     "direction": null,
+     "display": "£9,130",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.ten_thousand_lost",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "ten_thousand_lost",
+     "period_start": "2021-09",
+     "period_end": "2026-08",
+     "unit": "gbp",
+     "currency": "GBP",
+     "value": 870,
+     "direction": null,
+     "display": "£870",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.below_high_at_end",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "drawdown_at_end",
+     "period_start": "2021-09",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -8.7,
+     "direction": "down",
+     "display": "8.7%",
+     "kind": "observed"
+    },
+    {
+     "id": "worst.months_underwater",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "months_underwater",
+     "period_start": "2021-09",
+     "period_end": "2026-08",
+     "unit": "months",
+     "currency": null,
+     "value": 59,
+     "direction": null,
+     "display": "59 months",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.rate_shock",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "stress_window",
+     "period_start": "2021-12",
+     "period_end": "2022-10",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 1.3,
+     "direction": "up",
+     "display": "1.3%",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.rate_shock.tracker",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "stress_window",
+     "period_start": "2021-12",
+     "period_end": "2022-10",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 0.7,
+     "direction": "up",
+     "display": "0.7%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.correlation",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "correlation",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "ratio",
+     "currency": null,
+     "value": 0.02,
+     "direction": null,
+     "display": "0.02",
+     "kind": "observed"
+    },
+    {
+     "id": "next.rolling_lowest",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "rolling_correlation_36_lowest",
+     "period_start": "2022-05",
+     "period_end": "2025-05",
+     "unit": "ratio",
+     "currency": null,
+     "value": -0.08,
+     "direction": null,
+     "display": "−0.08",
+     "kind": "observed"
+    },
+    {
+     "id": "next.rolling_highest",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "rolling_correlation_36_highest",
+     "period_start": "2023-04",
+     "period_end": "2026-04",
+     "unit": "ratio",
+     "currency": null,
+     "value": 0.08,
+     "direction": null,
+     "display": "0.08",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_annualised",
+     "series": "mix",
+     "instrument": "gbf",
+     "metric": "annualised_return",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 2.7,
+     "direction": "up",
+     "display": "2.7%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_annualised",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "annualised_return",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 3.2,
+     "direction": "up",
+     "display": "3.2%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_volatility",
+     "series": "mix",
+     "instrument": "gbf",
+     "metric": "volatility",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 5.1,
+     "direction": null,
+     "display": "5.1%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_volatility",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "volatility",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 5.6,
+     "direction": null,
+     "display": "5.6%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_fall",
+     "series": "mix",
+     "instrument": "gbf",
+     "metric": "largest_fall",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -3.0,
+     "direction": "down",
+     "display": "3.0%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_fall",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "largest_fall",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -3.1,
+     "direction": "down",
+     "display": "3.1%",
+     "kind": "observed"
+    }
+   ],
+   "headline": null
+  },
+  "P_FLAT": {
+   "page_version": "1",
+   "instrument": {
+    "id": "gbf",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "distributing",
+     "isin": "IE00TEST0003",
+     "name": "Test UK Fund",
+     "quote_unit": "pounds",
+     "share_class": "GBP (Dist)",
+     "sources": [
+      "https://issuer.example.com/gbf"
+     ],
+     "ticker": "GBF",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "UK fund"
+   },
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "method_version": "1.0",
+   "sources": [
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "UK fund",
+      "Test tracker"
+     ]
+    }
+   ],
+   "cards": [
+    {
+     "id": "bumpy",
+     "title": "How bumpy is the ride?",
+     "sentences": [
+      {
+       "text": "Its volatility was 3.9% a year, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026.",
+       "claims": [
+        "bumpy.volatility"
+       ]
+      },
+      {
+       "text": "Over the same months, the tracker's was 5.6%.",
+       "claims": [
+        "bumpy.tracker_volatility"
+       ]
+      },
+      {
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "worst",
+     "title": "What's the worst it's been?",
+     "sentences": [
+      {
+       "text": "Since the end of Aug 2021, it has not been below a previous high at any month-end.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "panic",
+     "title": "What happened when markets panicked?",
+     "sentences": [
+      {
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): not covered; its history in pounds starts at the end of Aug 2021.",
+       "claims": []
+      },
+      {
+       "text": "The tracker: not covered.",
+       "claims": []
+      },
+      {
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): not covered; its history in pounds starts at the end of Aug 2021.",
+       "claims": []
+      },
+      {
+       "text": "The tracker: not covered.",
+       "claims": []
+      },
+      {
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): up 1.3% over the period.",
+       "claims": [
+        "panic.rate_shock"
+       ]
+      },
+      {
+       "text": "The tracker: up 0.7% over the same period.",
+       "claims": [
+        "panic.rate_shock.tracker"
+       ]
+      },
+      {
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "next",
+     "title": "What does it do next to the tracker?",
+     "sentences": [
+      {
+       "text": "Its correlation with the tracker was 0.02, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.",
+       "claims": [
+        "next.correlation"
+       ]
+      },
+      {
+       "text": "Measured over each 36-month stretch, it ranged from −0.08 (the 36 months to the end of May 2025) to 0.08 (the 36 months to the end of Apr 2026).",
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ]
+      },
+      {
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.",
+       "claims": []
+      },
+      {
+       "text": "As an illustration, not a recommendation: from the end of Aug 2021 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 2.7% a year, against 3.2% a year for the tracker alone.",
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ]
+      },
+      {
+       "text": "The mix's volatility was 5.1% against the tracker's 5.6%, and its largest fall at month-end was 3.0% against 3.1%.",
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ]
+      },
+      {
+       "text": "Before fees, trading costs and tax.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "pound",
+     "title": "How much of it was the pound?",
+     "sentences": [
+      {
+       "text": "It is priced in pounds, so there is no separate currency effect to show.",
+       "claims": []
+      }
+     ]
+    },
+    {
+     "id": "limits",
+     "title": "What these numbers don't capture",
+     "sentences": [
+      {
+       "text": "A fund's value moves with what it holds: bond prices, for example, fall when interest rates rise. Its market price can differ slightly from the value of its holdings, and its running charges are already inside these figures.",
+       "claims": []
+      },
+      {
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.",
+       "claims": []
+      }
+     ]
+    }
+   ],
+   "claims": [
+    {
+     "id": "bumpy.volatility",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "volatility",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 3.9,
+     "direction": null,
+     "display": "3.9%",
+     "kind": "observed"
+    },
+    {
+     "id": "bumpy.tracker_volatility",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "volatility",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 5.6,
+     "direction": null,
+     "display": "5.6%",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.rate_shock",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "stress_window",
+     "period_start": "2021-12",
+     "period_end": "2022-10",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 1.3,
+     "direction": "up",
+     "display": "1.3%",
+     "kind": "observed"
+    },
+    {
+     "id": "panic.rate_shock.tracker",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "stress_window",
+     "period_start": "2021-12",
+     "period_end": "2022-10",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 0.7,
+     "direction": "up",
+     "display": "0.7%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.correlation",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "correlation",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "ratio",
+     "currency": null,
+     "value": 0.02,
+     "direction": null,
+     "display": "0.02",
+     "kind": "observed"
+    },
+    {
+     "id": "next.rolling_lowest",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "rolling_correlation_36_lowest",
+     "period_start": "2022-05",
+     "period_end": "2025-05",
+     "unit": "ratio",
+     "currency": null,
+     "value": -0.08,
+     "direction": null,
+     "display": "−0.08",
+     "kind": "observed"
+    },
+    {
+     "id": "next.rolling_highest",
+     "series": "asset",
+     "instrument": "gbf",
+     "metric": "rolling_correlation_36_highest",
+     "period_start": "2023-04",
+     "period_end": "2026-04",
+     "unit": "ratio",
+     "currency": null,
+     "value": 0.08,
+     "direction": null,
+     "display": "0.08",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_annualised",
+     "series": "mix",
+     "instrument": "gbf",
+     "metric": "annualised_return",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 2.7,
+     "direction": "up",
+     "display": "2.7%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_annualised",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "annualised_return",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 3.2,
+     "direction": "up",
+     "display": "3.2%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_volatility",
+     "series": "mix",
+     "instrument": "gbf",
+     "metric": "volatility",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 5.1,
+     "direction": null,
+     "display": "5.1%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_volatility",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "volatility",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": 5.6,
+     "direction": null,
+     "display": "5.6%",
+     "kind": "observed"
+    },
+    {
+     "id": "next.mix_fall",
+     "series": "mix",
+     "instrument": "gbf",
+     "metric": "largest_fall",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -3.0,
+     "direction": "down",
+     "display": "3.0%",
+     "kind": "illustration"
+    },
+    {
+     "id": "next.tracker_fall",
+     "series": "tracker",
+     "instrument": "trk",
+     "metric": "largest_fall",
+     "period_start": "2021-08",
+     "period_end": "2026-08",
+     "unit": "percent",
+     "currency": "GBP",
+     "value": -3.1,
+     "direction": "down",
+     "display": "3.1%",
+     "kind": "observed"
+    }
+   ],
+   "headline": null
+  }
+ },
+ "responses": {
+  "R_USA_OK": {
+   "id": "resp_1",
+   "object": "response",
+   "created_at": 1790000000,
+   "status": "completed",
+   "model": "gpt-6.1-sol",
+   "error": null,
+   "incomplete_details": null,
+   "output": [
+    {
+     "id": "rs_1",
+     "type": "reasoning",
+     "summary": []
+    },
+    {
+     "id": "msg_1",
+     "type": "message",
+     "role": "assistant",
+     "status": "completed",
+     "content": [
+      {
+       "type": "output_text",
+       "text": "{\"text\": \"\\u00a310,000 invested in US share at its high in Sep 2007 was worth \\u00a32,750 at its low in Nov 2008, and it later recovered.\", \"claims\": [\"worst.ten_thousand_left\"]}",
+       "annotations": []
+      }
+     ],
+     "phase": "final_answer"
+    }
+   ],
+   "usage": {
+    "input_tokens": 1500,
+    "output_tokens": 400,
+    "total_tokens": 1900
+   }
+  },
+  "R_GBF_OK": {
+   "id": "resp_1",
+   "object": "response",
+   "created_at": 1790000000,
+   "status": "completed",
+   "model": "gpt-6.1-sol",
+   "error": null,
+   "incomplete_details": null,
+   "output": [
+    {
+     "id": "rs_1",
+     "type": "reasoning",
+     "summary": []
+    },
+    {
+     "id": "msg_1",
+     "type": "message",
+     "role": "assistant",
+     "status": "completed",
+     "content": [
+      {
+       "type": "output_text",
+       "text": "{\"text\": \"UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.\", \"claims\": [\"worst.fall\", \"worst.months_underwater\"]}",
+       "annotations": []
+      }
+     ],
+     "phase": "final_answer"
+    }
+   ],
+   "usage": {
+    "input_tokens": 1500,
+    "output_tokens": 400,
+    "total_tokens": 1900
+   }
+  },
+  "R_GBF_OK_DATED": {
+   "id": "resp_1",
+   "object": "response",
+   "created_at": 1790000000,
+   "status": "completed",
+   "model": "gpt-6.1-sol-2026-09-15",
+   "error": null,
+   "incomplete_details": null,
+   "output": [
+    {
+     "id": "rs_1",
+     "type": "reasoning",
+     "summary": []
+    },
+    {
+     "id": "msg_1",
+     "type": "message",
+     "role": "assistant",
+     "status": "completed",
+     "content": [
+      {
+       "type": "output_text",
+       "text": "{\"text\": \"UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.\", \"claims\": [\"worst.fall\", \"worst.months_underwater\"]}",
+       "annotations": []
+      }
+     ],
+     "phase": "final_answer"
+    }
+   ],
+   "usage": {
+    "input_tokens": 1500,
+    "output_tokens": 400,
+    "total_tokens": 1900
+   }
+  },
+  "R_GBF_BAD": {
+   "id": "resp_1",
+   "object": "response",
+   "created_at": 1790000000,
+   "status": "completed",
+   "model": "gpt-6.1-sol",
+   "error": null,
+   "incomplete_details": null,
+   "output": [
+    {
+     "id": "rs_1",
+     "type": "reasoning",
+     "summary": []
+    },
+    {
+     "id": "msg_1",
+     "type": "message",
+     "role": "assistant",
+     "status": "completed",
+     "content": [
+      {
+       "type": "output_text",
+       "text": "{\"text\": \"UK fund fell 8.7% from Sep 2021 but got back to its high within 12 months.\", \"claims\": [\"worst.fall\"]}",
+       "annotations": []
+      }
+     ],
+     "phase": "final_answer"
+    }
+   ],
+   "usage": {
+    "input_tokens": 1500,
+    "output_tokens": 400,
+    "total_tokens": 1900
+   }
+  },
+  "R_USA_FUTURE": {
+   "id": "resp_1",
+   "object": "response",
+   "created_at": 1790000000,
+   "status": "completed",
+   "model": "gpt-6.1-sol",
+   "error": null,
+   "incomplete_details": null,
+   "output": [
+    {
+     "id": "rs_1",
+     "type": "reasoning",
+     "summary": []
+    },
+    {
+     "id": "msg_1",
+     "type": "message",
+     "role": "assistant",
+     "status": "completed",
+     "content": [
+      {
+       "type": "output_text",
+       "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008 and will recover.\", \"claims\": [\"worst.fall\"]}",
+       "annotations": []
+      }
+     ],
+     "phase": "final_answer"
+    }
+   ],
+   "usage": {
+    "input_tokens": 1500,
+    "output_tokens": 400,
+    "total_tokens": 1900
+   }
+  },
+  "R_REFUSED": {
+   "id": "resp_1",
+   "object": "response",
+   "created_at": 1790000000,
+   "status": "completed",
+   "model": "gpt-6.1-sol",
+   "error": null,
+   "incomplete_details": null,
+   "output": [
+    {
+     "id": "rs_1",
+     "type": "reasoning",
+     "summary": []
+    },
+    {
+     "id": "msg_1",
+     "type": "message",
+     "role": "assistant",
+     "status": "completed",
+     "phase": "final_answer",
+     "content": [
+      {
+       "type": "refusal",
+       "refusal": "I can't help with that SECRETWORD."
+      }
+     ]
+    }
+   ],
+   "usage": {
+    "input_tokens": 1500,
+    "output_tokens": 400,
+    "total_tokens": 1900
+   }
+  },
+  "R_INCOMPLETE": {
+   "id": "resp_1",
+   "object": "response",
+   "created_at": 1790000000,
+   "status": "incomplete",
+   "model": "gpt-6.1-sol",
+   "error": null,
+   "incomplete_details": {
+    "reason": "max_output_tokens"
+   },
+   "output": [
+    {
+     "id": "rs_1",
+     "type": "reasoning",
+     "summary": []
+    }
+   ],
+   "usage": {
+    "input_tokens": 1500,
+    "output_tokens": 400,
+    "total_tokens": 1900
+   }
+  }
+ },
+ "cases": [
+  {
+   "id": "K01",
+   "check": "constants",
+   "expected": {
+    "DRAFT_MODEL": "gpt-6.1-sol",
+    "PROMPT_VERSION": "1"
+   },
+   "derivation": "Avi's model choice (29 Sept) and the first approved prompt (30 Sept). Both are recorded in every drafts file."
+  },
+  {
+   "id": "D01",
+   "check": "draft_request",
+   "page": "P_USA",
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: US share\nFull name: Test US Corp\nTicker: USA\nData to the end of Aug 2026.\n\nWhat its page says:\nHow bumpy is the ride?\n- Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.\nWhat's the worst it's been?\n- Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.\n- £10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.\n- It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.\nWhat happened when markets panicked?\n- Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.\n- Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period.\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nbumpy.volatility | 46.1% | none | Aug 2007 to Aug 2026\nworst.fall | 72.5% | down | Sep 2007 to Nov 2008\nworst.months_to_low | 14 months | none | Sep 2007 to Nov 2008\nworst.ten_thousand_left | £2,750 | none | Sep 2007 to Nov 2008\nworst.ten_thousand_lost | £7,250 | none | Sep 2007 to Nov 2008\nworst.months_to_recover | 83 months | none | Nov 2008 to Oct 2015\nworst.months_underwater | 97 months | none | Sep 2007 to Oct 2015\npanic.gfc | 61.1% | down | Sep 2007 to Mar 2009\npanic.covid | 18.8% | up | Jan 2020 to Mar 2020\npanic.rate_shock | 7.3% | down | Dec 2021 to Oct 2022\n\nIts largest fall recovered.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bumpy.volatility",
+           "worst.fall",
+           "worst.months_to_low",
+           "worst.ten_thousand_left",
+           "worst.ten_thousand_lost",
+           "worst.months_to_recover",
+           "worst.months_underwater",
+           "panic.gfc",
+           "panic.covid",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "A recovered fall. Offered: cards 1 to 3's sentences whose every claim is the asset's observed history. Left out: the tracker comparison (bumpy), the claimless sentences, 'The tracker: ...' lines, and every sentence of cards 5 to 7 (next.correlation's sentence is the asset's own observed figure but is card 5). Directions null are written 'none'. Recovery line: 'recovered' (worst.months_to_recover is on the page). The enum lists the offered ids in order first cited."
+  },
+  {
+   "id": "D02",
+   "check": "draft_request",
+   "page": "P_GBF",
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: UK fund\nFull name: Test UK Fund\nTicker: GBF\nData to the end of Aug 2026.\n\nWhat its page says:\nHow bumpy is the ride?\n- Its volatility was 3.9% a year, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026.\nWhat's the worst it's been?\n- Since the end of Aug 2021, its largest fall, measured at month-end, was 8.7%: from its high at the end of Sep 2021 to its low at the end of Aug 2026, 59 months later.\n- £10,000 invested at that high would have been worth £9,130 at the low, £870 less.\n- It had not recovered by the end of Aug 2026: it was still 8.7% below its high, 59 months after it.\nWhat happened when markets panicked?\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): up 1.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nbumpy.volatility | 3.9% | none | Aug 2021 to Aug 2026\nworst.fall | 8.7% | down | Sep 2021 to Aug 2026\nworst.months_to_low | 59 months | none | Sep 2021 to Aug 2026\nworst.ten_thousand_left | £9,130 | none | Sep 2021 to Aug 2026\nworst.ten_thousand_lost | £870 | none | Sep 2021 to Aug 2026\nworst.below_high_at_end | 8.7% | down | Sep 2021 to Aug 2026\nworst.months_underwater | 59 months | none | Sep 2021 to Aug 2026\npanic.rate_shock | 1.3% | up | Dec 2021 to Oct 2022\n\nIts largest fall had not recovered by the end of the data.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bumpy.volatility",
+           "worst.fall",
+           "worst.months_to_low",
+           "worst.ten_thousand_left",
+           "worst.ten_thousand_lost",
+           "worst.below_high_at_end",
+           "worst.months_underwater",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "A fall that had not recovered (worst.below_high_at_end is on the page): the page's own 'had not recovered' sentence is offered, and the recovery line says so. Two stress windows are not covered: their claimless sentences are left out."
+  },
+  {
+   "id": "D03",
+   "check": "draft_request",
+   "page": "P_FLAT",
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: UK fund\nFull name: Test UK Fund\nTicker: GBF\nData to the end of Aug 2026.\n\nWhat its page says:\nHow bumpy is the ride?\n- Its volatility was 3.9% a year, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026.\nWhat happened when markets panicked?\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): up 1.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nbumpy.volatility | 3.9% | none | Aug 2021 to Aug 2026\npanic.rate_shock | 1.3% | up | Dec 2021 to Oct 2022\n\nIt had not fallen below a previous high at any month-end.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bumpy.volatility",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "No fall: the worst card has only a claimless sentence, so its title is left out too. Recovery line: no fall."
+  },
+  {
+   "id": "D04",
+   "check": "draft_request",
+   "page": "P_USA",
+   "page_edits": [
+    {
+     "path": [
+      "claims",
+      32
+     ],
+     "set": {
+      "currency": "GBP",
+      "direction": "up",
+      "display": "9.9%",
+      "id": "test.asset_illustration",
+      "instrument": "usa",
+      "kind": "illustration",
+      "metric": "annualised_return",
+      "period_end": "2026-08",
+      "period_start": "2010-01",
+      "series": "asset",
+      "unit": "percent",
+      "value": 9.9
+     }
+    },
+    {
+     "path": [
+      "cards",
+      2,
+      "sentences",
+      2,
+      "claims"
+     ],
+     "set": [
+      "panic.covid",
+      "test.asset_illustration"
+     ]
+    }
+   ],
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: US share\nFull name: Test US Corp\nTicker: USA\nData to the end of Aug 2026.\n\nWhat its page says:\nHow bumpy is the ride?\n- Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.\nWhat's the worst it's been?\n- Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.\n- £10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.\n- It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.\nWhat happened when markets panicked?\n- Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nbumpy.volatility | 46.1% | none | Aug 2007 to Aug 2026\nworst.fall | 72.5% | down | Sep 2007 to Nov 2008\nworst.months_to_low | 14 months | none | Sep 2007 to Nov 2008\nworst.ten_thousand_left | £2,750 | none | Sep 2007 to Nov 2008\nworst.ten_thousand_lost | £7,250 | none | Sep 2007 to Nov 2008\nworst.months_to_recover | 83 months | none | Nov 2008 to Oct 2015\nworst.months_underwater | 97 months | none | Sep 2007 to Oct 2015\npanic.gfc | 61.1% | down | Sep 2007 to Mar 2009\npanic.rate_shock | 7.3% | down | Dec 2021 to Oct 2022\n\nIts largest fall recovered.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bumpy.volatility",
+           "worst.fall",
+           "worst.months_to_low",
+           "worst.ten_thousand_left",
+           "worst.ten_thousand_lost",
+           "worst.months_to_recover",
+           "worst.months_underwater",
+           "panic.gfc",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "The covid sentence now also cites an illustration on the asset's own series: kind matters as well as series, so the sentence and panic.covid are left out."
+  },
+  {
+   "id": "D05",
+   "check": "draft_request",
+   "page": "P_GBF",
+   "page_edits": [
+    {
+     "path": [
+      "cards",
+      1,
+      "sentences",
+      2,
+      "claims"
+     ],
+     "set": [
+      "worst.below_high_at_end",
+      "worst.months_underwater",
+      "bumpy.tracker_volatility"
+     ]
+    }
+   ],
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: UK fund\nFull name: Test UK Fund\nTicker: GBF\nData to the end of Aug 2026.\n\nWhat its page says:\nHow bumpy is the ride?\n- Its volatility was 3.9% a year, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026.\nWhat's the worst it's been?\n- Since the end of Aug 2021, its largest fall, measured at month-end, was 8.7%: from its high at the end of Sep 2021 to its low at the end of Aug 2026, 59 months later.\n- £10,000 invested at that high would have been worth £9,130 at the low, £870 less.\nWhat happened when markets panicked?\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): up 1.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nbumpy.volatility | 3.9% | none | Aug 2021 to Aug 2026\nworst.fall | 8.7% | down | Sep 2021 to Aug 2026\nworst.months_to_low | 59 months | none | Sep 2021 to Aug 2026\nworst.ten_thousand_left | £9,130 | none | Sep 2021 to Aug 2026\nworst.ten_thousand_lost | £870 | none | Sep 2021 to Aug 2026\npanic.rate_shock | 1.3% | up | Dec 2021 to Oct 2022\n\nIts largest fall had not recovered by the end of the data.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bumpy.volatility",
+           "worst.fall",
+           "worst.months_to_low",
+           "worst.ten_thousand_left",
+           "worst.ten_thousand_lost",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "The 'had not recovered' sentence also cites a tracker claim, so it is not offered. The recovery line still says the fall had not recovered: the state comes from all the page's claims, as in rule 15, not only the offered ones."
+  },
+  {
+   "id": "D06",
+   "check": "draft_request",
+   "page": "P_USA",
+   "page_edits": [
+    {
+     "path": [
+      "claims",
+      32
+     ],
+     "set": {
+      "currency": "GBP",
+      "direction": "down",
+      "display": "5.0%",
+      "id": "worst.below_high_at_end",
+      "instrument": "usa",
+      "kind": "observed",
+      "metric": "drawdown_at_end",
+      "period_end": "2026-08",
+      "period_start": "2007-09",
+      "series": "asset",
+      "unit": "percent",
+      "value": -5.0
+     }
+    }
+   ],
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: US share\nFull name: Test US Corp\nTicker: USA\nData to the end of Aug 2026.\n\nWhat its page says:\nHow bumpy is the ride?\n- Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.\nWhat's the worst it's been?\n- Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.\n- £10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.\n- It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.\nWhat happened when markets panicked?\n- Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.\n- Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period.\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nbumpy.volatility | 46.1% | none | Aug 2007 to Aug 2026\nworst.fall | 72.5% | down | Sep 2007 to Nov 2008\nworst.months_to_low | 14 months | none | Sep 2007 to Nov 2008\nworst.ten_thousand_left | £2,750 | none | Sep 2007 to Nov 2008\nworst.ten_thousand_lost | £7,250 | none | Sep 2007 to Nov 2008\nworst.months_to_recover | 83 months | none | Nov 2008 to Oct 2015\nworst.months_underwater | 97 months | none | Sep 2007 to Oct 2015\npanic.gfc | 61.1% | down | Sep 2007 to Mar 2009\npanic.covid | 18.8% | up | Jan 2020 to Mar 2020\npanic.rate_shock | 7.3% | down | Dec 2021 to Oct 2022\n\nIts largest fall had not recovered by the end of the data.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bumpy.volatility",
+           "worst.fall",
+           "worst.months_to_low",
+           "worst.ten_thousand_left",
+           "worst.ten_thousand_lost",
+           "worst.months_to_recover",
+           "worst.months_underwater",
+           "panic.gfc",
+           "panic.covid",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "Both recovery claims on the page: 'not recovered' wins, as in rule 15. The added claim is citable but no sentence cites it, so it is not offered (the enum is D01's)."
+  },
+  {
+   "id": "D07",
+   "check": "draft_request",
+   "page": "P_USA",
+   "page_edits": [
+    {
+     "path": [
+      "cards",
+      1,
+      "sentences",
+      0,
+      "claims"
+     ],
+     "set": [
+      "worst.months_to_low",
+      "worst.fall"
+     ]
+    },
+    {
+     "path": [
+      "cards",
+      2,
+      "sentences",
+      0,
+      "claims"
+     ],
+     "set": [
+      "panic.gfc",
+      "worst.fall"
+     ]
+    }
+   ],
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: US share\nFull name: Test US Corp\nTicker: USA\nData to the end of Aug 2026.\n\nWhat its page says:\nHow bumpy is the ride?\n- Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.\nWhat's the worst it's been?\n- Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.\n- £10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.\n- It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.\nWhat happened when markets panicked?\n- Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.\n- Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period.\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nbumpy.volatility | 46.1% | none | Aug 2007 to Aug 2026\nworst.months_to_low | 14 months | none | Sep 2007 to Nov 2008\nworst.fall | 72.5% | down | Sep 2007 to Nov 2008\nworst.ten_thousand_left | £2,750 | none | Sep 2007 to Nov 2008\nworst.ten_thousand_lost | £7,250 | none | Sep 2007 to Nov 2008\nworst.months_to_recover | 83 months | none | Nov 2008 to Oct 2015\nworst.months_underwater | 97 months | none | Sep 2007 to Oct 2015\npanic.gfc | 61.1% | down | Sep 2007 to Mar 2009\npanic.covid | 18.8% | up | Jan 2020 to Mar 2020\npanic.rate_shock | 7.3% | down | Dec 2021 to Oct 2022\n\nIts largest fall recovered.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bumpy.volatility",
+           "worst.months_to_low",
+           "worst.fall",
+           "worst.ten_thousand_left",
+           "worst.ten_thousand_lost",
+           "worst.months_to_recover",
+           "worst.months_underwater",
+           "panic.gfc",
+           "panic.covid",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "Offered claims come in the order first cited (worst.months_to_low before worst.fall, not the claims list's order), and a claim cited twice is listed once."
+  },
+  {
+   "id": "D08",
+   "check": "draft_request",
+   "page": "P_USA",
+   "page_edits": [
+    {
+     "path": [
+      "cards"
+     ],
+     "set": [
+      {
+       "id": "worst",
+       "title": "What's the worst it's been?",
+       "sentences": [
+        {
+         "text": "Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.",
+         "claims": [
+          "worst.fall",
+          "worst.months_to_low"
+         ]
+        },
+        {
+         "text": "£10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.",
+         "claims": [
+          "worst.ten_thousand_left",
+          "worst.ten_thousand_lost"
+         ]
+        },
+        {
+         "text": "It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.",
+         "claims": [
+          "worst.months_to_recover",
+          "worst.months_underwater"
+         ]
+        },
+        {
+         "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high.",
+         "claims": []
+        }
+       ]
+      },
+      {
+       "id": "bumpy",
+       "title": "How bumpy is the ride?",
+       "sentences": [
+        {
+         "text": "Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.",
+         "claims": [
+          "bumpy.volatility"
+         ]
+        },
+        {
+         "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 43.1% against the tracker's 11.7%.",
+         "claims": [
+          "bumpy.volatility_common",
+          "bumpy.tracker_volatility"
+         ]
+        },
+        {
+         "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.",
+         "claims": []
+        }
+       ]
+      },
+      {
+       "id": "panic",
+       "title": "What happened when markets panicked?",
+       "sentences": [
+        {
+         "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.",
+         "claims": [
+          "panic.gfc"
+         ]
+        },
+        {
+         "text": "The tracker: not covered.",
+         "claims": []
+        },
+        {
+         "text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period.",
+         "claims": [
+          "panic.covid"
+         ]
+        },
+        {
+         "text": "The tracker: down 14.5% over the same period.",
+         "claims": [
+          "panic.covid.tracker"
+         ]
+        },
+        {
+         "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.",
+         "claims": [
+          "panic.rate_shock"
+         ]
+        },
+        {
+         "text": "The tracker: down 6.0% over the same period.",
+         "claims": [
+          "panic.rate_shock.tracker"
+         ]
+        },
+        {
+         "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered.",
+         "claims": []
+        }
+       ]
+      },
+      {
+       "id": "next",
+       "title": "What does it do next to the tracker?",
+       "sentences": [
+        {
+         "text": "Its correlation with the tracker was 0.47, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.",
+         "claims": [
+          "next.correlation"
+         ]
+        },
+        {
+         "text": "Measured over each 36-month stretch, it ranged from 0.21 (the 36 months to the end of Dec 2013) to 0.67 (the 36 months to the end of Apr 2024).",
+         "claims": [
+          "next.rolling_lowest",
+          "next.rolling_highest"
+         ]
+        },
+        {
+         "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.",
+         "claims": []
+        },
+        {
+         "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 17.5% a year, against 12.5% a year for the tracker alone.",
+         "claims": [
+          "next.mix_annualised",
+          "next.tracker_annualised"
+         ]
+        },
+        {
+         "text": "The mix's volatility was 13.5% against the tracker's 11.7%, and its largest fall at month-end was 17.5% against 15.0%.",
+         "claims": [
+          "next.mix_volatility",
+          "next.tracker_volatility",
+          "next.mix_fall",
+          "next.tracker_fall"
+         ]
+        },
+        {
+         "text": "Before fees, trading costs and tax.",
+         "claims": []
+        },
+        {
+         "text": "The tracker already holds these shares, so the 10% adds to a holding it already has.",
+         "claims": []
+        }
+       ]
+      },
+      {
+       "id": "pound",
+       "title": "How much of it was the pound?",
+       "sentences": [
+        {
+         "text": "From the end of Aug 2007 to the end of Aug 2026: up 28,171.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 41,992.8%.",
+         "claims": [
+          "pound.local",
+          "pound.currency",
+          "pound.gbp"
+         ]
+        },
+        {
+         "text": "Global financial crisis: down 72.8% in dollars, the dollar rose 43.0%, so down 61.1% in pounds.",
+         "claims": [
+          "pound.gfc.local",
+          "pound.gfc.currency",
+          "pound.gfc.gbp"
+         ]
+        },
+        {
+         "text": "Covid crash: up 11.6% in dollars, the dollar rose 6.5%, so up 18.8% in pounds.",
+         "claims": [
+          "pound.covid.local",
+          "pound.covid.currency",
+          "pound.covid.gbp"
+         ]
+        },
+        {
+         "text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds.",
+         "claims": []
+        }
+       ]
+      },
+      {
+       "id": "limits",
+       "title": "What these numbers don't capture",
+       "sentences": [
+        {
+         "text": "A single company's shares can fall a long way and stay down, and the company can fail.",
+         "claims": []
+        },
+        {
+         "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.",
+         "claims": []
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: US share\nFull name: Test US Corp\nTicker: USA\nData to the end of Aug 2026.\n\nWhat its page says:\nWhat's the worst it's been?\n- Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.\n- £10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.\n- It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.\nHow bumpy is the ride?\n- Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.\nWhat happened when markets panicked?\n- Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.\n- Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period.\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nworst.fall | 72.5% | down | Sep 2007 to Nov 2008\nworst.months_to_low | 14 months | none | Sep 2007 to Nov 2008\nworst.ten_thousand_left | £2,750 | none | Sep 2007 to Nov 2008\nworst.ten_thousand_lost | £7,250 | none | Sep 2007 to Nov 2008\nworst.months_to_recover | 83 months | none | Nov 2008 to Oct 2015\nworst.months_underwater | 97 months | none | Sep 2007 to Oct 2015\nbumpy.volatility | 46.1% | none | Aug 2007 to Aug 2026\npanic.gfc | 61.1% | down | Sep 2007 to Mar 2009\npanic.covid | 18.8% | up | Jan 2020 to Mar 2020\npanic.rate_shock | 7.3% | down | Dec 2021 to Oct 2022\n\nIts largest fall recovered.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "worst.fall",
+           "worst.months_to_low",
+           "worst.ten_thousand_left",
+           "worst.ten_thousand_lost",
+           "worst.months_to_recover",
+           "worst.months_underwater",
+           "bumpy.volatility",
+           "panic.gfc",
+           "panic.covid",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "Cards are read in the page's order, not a fixed order: worst comes before bumpy here."
+  },
+  {
+   "id": "D09",
+   "check": "draft_request",
+   "page": "P_USA",
+   "page_edits": [
+    {
+     "path": [
+      "cards",
+      0,
+      "sentences",
+      0,
+      "claims"
+     ],
+     "set": [
+      "bumpy.volatility",
+      "no.such.claim"
+     ]
+    }
+   ],
+   "expected_error": "WordsError",
+   "expected_message": "no.such.claim is not a claim on the page.",
+   "derivation": "A sentence in cards 1 to 3 citing an id that is not a claim on the page: the page is broken."
+  },
+  {
+   "id": "D10",
+   "check": "draft_request",
+   "page": "P_FLAT",
+   "page_edits": [
+    {
+     "path": [
+      "cards"
+     ],
+     "set": []
+    }
+   ],
+   "expected_error": "WordsError",
+   "expected_message": "page has no figures to cite.",
+   "derivation": "No cards, nothing to offer."
+  },
+  {
+   "id": "D11",
+   "check": "draft_request",
+   "page": "P_FLAT",
+   "page_edits": [
+    {
+     "path": [
+      "cards",
+      0,
+      "sentences",
+      0,
+      "claims"
+     ],
+     "set": [
+      "bumpy.tracker_volatility"
+     ]
+    },
+    {
+     "path": [
+      "cards",
+      2,
+      "sentences",
+      4,
+      "claims"
+     ],
+     "set": [
+      "panic.rate_shock.tracker"
+     ]
+    }
+   ],
+   "expected_error": "WordsError",
+   "expected_message": "page has no figures to cite.",
+   "derivation": "Every sentence with claims cites the tracker: nothing is offered, so no request is built."
+  },
+  {
+   "id": "D12",
+   "check": "draft_request",
+   "page": "P_USA",
+   "page_edits": [
+    {
+     "path": [
+      "cards",
+      3,
+      "sentences",
+      0,
+      "claims"
+     ],
+     "set": [
+      "next.correlation",
+      "no.such.claim"
+     ]
+    }
+   ],
+   "expected": {
+    "model": "gpt-6.1-sol",
+    "instructions": "You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.\n\nWrite one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as \"text\" and the ids of the figures it uses as \"claims\".\n\nRules:\n1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.\n2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.\n3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and \"2022 rate shock\" when citing that period's figure.\n4. If a cited figure's direction is down, use one of these words: fall, falls, fell, fallen, falling, drop, drops, dropped, down, decline, declined, declines, lost, lose, loss, losses, below, lower. If it is up, use one of these: rise, rises, rose, risen, rising, gain, gains, gained, up, grew, grow, grown, growth, increase, increased, increases, higher, above.\n5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.\n6. Words about recovery (recover, recovers, recovered, recovering, recovery, regain, regains, regained, regaining, back) must agree with the page. If its largest fall had not recovered, put \"not\" just before them, as in \"had not recovered\". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.\n7. Never use these words or phrases:\n- advice: buy, buys, buying, bought, sell, sells, selling, sold, should, attractive, cheap, cheaper, cheapest, safe, safer, safest, safety, guarantee, guaranteed, guarantees, recommend, recommends, recommended, recommendation, diversifier, diversify, diversifies, diversification, hedge, hedges, protect, protects, protected, protection, limited to\n- the future: will, won't, shall, expect, expects, expected, expecting, forecast, forecasts, predict, predicts, predicted, prediction, future, likely, could, may, might, outlook, poised, ahead, soon, going to, set to\n- numbers in words: zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million, billion, dozen, twice, thrice, double, doubled, doubling, triple, tripled, quadruple, half, halved, halving, quarter, third, percent, per cent, or any word ending in \"fold\"\n- comparisons: than, versus, vs, compared, comparison, relative, outperform, outperformed, outperforming, underperform, underperformed, beat, beats, beating, tracker, benchmark, index\n- loaded words: only, just, merely, huge, massive, enormous, extreme, extremely, dramatic, dramatically, stunning, incredible, impressive, spectacular, terrible, disastrous, catastrophic, soared, soaring, plunged, plummeted, crashed, skyrocketed, rocketed, collapse, collapsed, never",
+    "input": "Investment: US share\nFull name: Test US Corp\nTicker: USA\nData to the end of Aug 2026.\n\nWhat its page says:\nHow bumpy is the ride?\n- Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.\nWhat's the worst it's been?\n- Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later.\n- £10,000 invested at that high would have been worth £2,750 at the low, £7,250 less.\n- It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high.\nWhat happened when markets panicked?\n- Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period.\n- Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period.\n- 2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period.\n\nFigures you may cite (id | figure | direction | period):\nbumpy.volatility | 46.1% | none | Aug 2007 to Aug 2026\nworst.fall | 72.5% | down | Sep 2007 to Nov 2008\nworst.months_to_low | 14 months | none | Sep 2007 to Nov 2008\nworst.ten_thousand_left | £2,750 | none | Sep 2007 to Nov 2008\nworst.ten_thousand_lost | £7,250 | none | Sep 2007 to Nov 2008\nworst.months_to_recover | 83 months | none | Nov 2008 to Oct 2015\nworst.months_underwater | 97 months | none | Sep 2007 to Oct 2015\npanic.gfc | 61.1% | down | Sep 2007 to Mar 2009\npanic.covid | 18.8% | up | Jan 2020 to Mar 2020\npanic.rate_shock | 7.3% | down | Dec 2021 to Oct 2022\n\nIts largest fall recovered.",
+    "text": {
+     "format": {
+      "type": "json_schema",
+      "name": "headline",
+      "strict": true,
+      "schema": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "claims": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bumpy.volatility",
+           "worst.fall",
+           "worst.months_to_low",
+           "worst.ten_thousand_left",
+           "worst.ten_thousand_lost",
+           "worst.months_to_recover",
+           "worst.months_underwater",
+           "panic.gfc",
+           "panic.covid",
+           "panic.rate_shock"
+          ]
+         }
+        }
+       },
+       "required": [
+        "text",
+        "claims"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "max_output_tokens": 8000,
+    "store": false
+   },
+   "derivation": "An unknown id in card 5 is not read: only cards 1 to 3 are. The request is D01's."
+  },
+  {
+   "id": "A01",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     },
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected": {
+    "text": "US share fell 72.5% from Sep 2007 to Nov 2008.",
+    "claims": [
+     "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol"
+   },
+   "derivation": "A reasoning item, then the final answer."
+  },
+  {
+   "id": "A02",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     },
+     {
+      "id": "msg_0",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "Checking the figures first.",
+        "annotations": []
+       }
+      ],
+      "phase": "commentary"
+     },
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected": {
+    "text": "US share fell 72.5% from Sep 2007 to Nov 2008.",
+    "claims": [
+     "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol"
+   },
+   "derivation": "A commentary message before the final answer is not an answer."
+  },
+  {
+   "id": "A03",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     },
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ]
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected": {
+    "text": "US share fell 72.5% from Sep 2007 to Nov 2008.",
+    "claims": [
+     "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol"
+   },
+   "derivation": "A message with no phase counts as an answer."
+  },
+  {
+   "id": "A04",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_0",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ]
+     },
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "2 answers",
+   "derivation": "Two answers: which one is meant is unclear, so refuse."
+  },
+  {
+   "id": "A05",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "0 answers",
+   "derivation": "No message at all."
+  },
+  {
+   "id": "A06",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     },
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "commentary"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "0 answers",
+   "derivation": "Commentary only: no answer."
+  },
+  {
+   "id": "A07",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     },
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "phase": "final_answer",
+      "content": [
+       {
+        "type": "refusal",
+        "refusal": "I can't help with that SECRETWORD."
+       }
+      ]
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "the model refused",
+   "message_must_not_contain": [
+    "SECRETWORD"
+   ],
+   "derivation": "A refusal, never echoed."
+  },
+  {
+   "id": "A08",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "phase": "final_answer",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       },
+       {
+        "type": "refusal",
+        "refusal": "I can't help with that SECRETWORD."
+       }
+      ]
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "the model refused",
+   "message_must_not_contain": [
+    "SECRETWORD"
+   ],
+   "derivation": "Text and a refusal together is a refusal."
+  },
+  {
+   "id": "A09",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share f",
+        "annotations": []
+       },
+       {
+        "type": "output_text",
+        "text": "ell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected": {
+    "text": "US share fell 72.5% from Sep 2007 to Nov 2008.",
+    "claims": [
+     "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol"
+   },
+   "derivation": "Several text parts are joined in order before reading the JSON."
+  },
+  {
+   "id": "A10",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "answer has no content",
+   "derivation": "Empty content."
+  },
+  {
+   "id": "A11",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "answer has no content",
+   "derivation": "No content key."
+  },
+  {
+   "id": "A12",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_audio",
+        "data": "x"
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "unexpected content",
+   "derivation": "Content of another type."
+  },
+  {
+   "id": "A13",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": null,
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "unexpected content",
+   "derivation": "Text that isn't text."
+  },
+  {
+   "id": "A14",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}"
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "unexpected content",
+   "derivation": "A content item that isn't an object."
+  },
+  {
+   "id": "A15",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "Microsoft fell SECRETWORD.",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "answer is not a headline object",
+   "message_must_not_contain": [
+    "SECRETWORD",
+    "Microsoft"
+   ],
+   "derivation": "Plain text, not JSON: never echoed."
+  },
+  {
+   "id": "A16",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "[\"{\\\"text\\\": \\\"US share fell 72.5% from Sep 2007 to Nov 2008.\\\", \\\"claims\\\": [\\\"worst.fall\\\"]}\"]",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "answer is not a headline object",
+   "derivation": "A JSON list."
+  },
+  {
+   "id": "A17",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"x.\", \"claims\": [], \"note\": \"y\"}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "answer is not a headline object",
+   "derivation": "An extra key."
+  },
+  {
+   "id": "A18",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"x.\"}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "answer is not a headline object",
+   "derivation": "A missing key."
+  },
+  {
+   "id": "A19",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": 5, \"claims\": \"worst.fall\"}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected": {
+    "text": 5,
+    "claims": "worst.fall",
+    "drafted_by": "gpt-6.1-sol"
+   },
+   "derivation": "Types are not checked here: check_headline reports a bad text or claims list."
+  },
+  {
+   "id": "A20",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "incomplete",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": {
+     "reason": "max_output_tokens"
+    },
+    "output": [
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status incomplete (max_output_tokens)",
+   "derivation": "The token cap was hit."
+  },
+  {
+   "id": "A21",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "failed",
+    "model": "gpt-6.1-sol",
+    "error": {
+     "code": "server_error",
+     "message": "SECRETWORD went wrong"
+    },
+    "incomplete_details": null,
+    "output": [],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status failed (server_error)",
+   "message_must_not_contain": [
+    "SECRETWORD"
+   ],
+   "derivation": "A failed response names its error code, never its message."
+  },
+  {
+   "id": "A22",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "in_progress",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status in_progress",
+   "derivation": "Not finished, no details."
+  },
+  {
+   "id": "A23",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status unreadable",
+   "derivation": "No status."
+  },
+  {
+   "id": "A24",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "Completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status unreadable",
+   "derivation": "Only exactly 'completed' will do; 'Completed' is not an identifier."
+  },
+  {
+   "id": "A25",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "incomplete",
+    "model": "gpt-6.1-sol",
+    "error": {
+     "code": "rate_limit_exceeded",
+     "message": "m"
+    },
+    "incomplete_details": {
+     "reason": "Max Output"
+    },
+    "output": [],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status incomplete (rate_limit_exceeded)",
+   "derivation": "The first identifier among incomplete_details.reason and error.code."
+  },
+  {
+   "id": "A26",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "incomplete",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": "max_output_tokens",
+    "output": [],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status incomplete",
+   "derivation": "incomplete_details is read only if it is an object."
+  },
+  {
+   "id": "A27",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "incomplete",
+    "model": "gpt-6.1-sol",
+    "error": {
+     "code": "server_error",
+     "message": "m"
+    },
+    "incomplete_details": {
+     "reason": "content_filter"
+    },
+    "output": [],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status incomplete (content_filter)",
+   "derivation": "Both are identifiers: incomplete_details.reason comes first."
+  },
+  {
+   "id": "A28",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "model missing",
+   "derivation": "No model: drafted_by can't be recorded."
+  },
+  {
+   "id": "A29",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": " gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "model missing",
+   "derivation": "Whitespace at an end."
+  },
+  {
+   "id": "A30",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "model missing",
+   "derivation": "Empty model."
+  },
+  {
+   "id": "A31",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "incomplete",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "status incomplete",
+   "derivation": "Order: status is checked before model."
+  },
+  {
+   "id": "A32",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "error": null,
+    "incomplete_details": null,
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "model missing",
+   "derivation": "Order: model is checked before output."
+  },
+  {
+   "id": "A33",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "output missing",
+   "derivation": "No output."
+  },
+  {
+   "id": "A34",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": {
+     "0": {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    },
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected_error": "WordsError",
+   "expected_message": "output missing",
+   "derivation": "Output that isn't a list."
+  },
+  {
+   "id": "A35",
+   "check": "read_draft",
+   "response": [
+    {
+     "id": "resp_1",
+     "object": "response",
+     "created_at": 1790000000,
+     "status": "completed",
+     "model": "gpt-6.1-sol",
+     "error": null,
+     "incomplete_details": null,
+     "output": [
+      {
+       "id": "msg_1",
+       "type": "message",
+       "role": "assistant",
+       "status": "completed",
+       "content": [
+        {
+         "type": "output_text",
+         "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+         "annotations": []
+        }
+       ],
+       "phase": "final_answer"
+      }
+     ],
+     "usage": {
+      "input_tokens": 1500,
+      "output_tokens": 400,
+      "total_tokens": 1900
+     }
+    }
+   ],
+   "expected_error": "WordsError",
+   "expected_message": "response is not an object",
+   "derivation": "A response that isn't an object."
+  },
+  {
+   "id": "A36",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     "stray",
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     },
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected": {
+    "text": "US share fell 72.5% from Sep 2007 to Nov 2008.",
+    "claims": [
+     "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol"
+   },
+   "derivation": "Items that aren't objects are not answers."
+  },
+  {
+   "id": "A37",
+   "check": "read_draft",
+   "response": {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1790000000,
+    "status": "completed",
+    "model": "gpt-6.1-sol-2026-09-15",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+     {
+      "id": "rs_1",
+      "type": "reasoning",
+      "summary": []
+     },
+     {
+      "id": "msg_1",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+       {
+        "type": "output_text",
+        "text": "{\"text\": \"US share fell 72.5% from Sep 2007 to Nov 2008.\", \"claims\": [\"worst.fall\"]}",
+        "annotations": []
+       }
+      ],
+      "phase": "final_answer"
+     }
+    ],
+    "usage": {
+     "input_tokens": 1500,
+     "output_tokens": 400,
+     "total_tokens": 1900
+    }
+   },
+   "expected": {
+    "text": "US share fell 72.5% from Sep 2007 to Nov 2008.",
+    "claims": [
+     "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol-2026-09-15"
+   },
+   "derivation": "drafted_by is the model that actually answered, which may be a dated version."
+  },
+  {
+   "id": "P01",
+   "check": "http_post_json",
+   "network": "body",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "body_text": "{\"status\": \"completed\", \"output\": []}",
+   "expected": {
+    "status": "completed",
+    "output": []
+   },
+   "expected_request": {
+    "url": "https://api.openai.com/v1/responses",
+    "method": "POST",
+    "headers": {
+     "Authorization": "Bearer sk-test_KEY-123",
+     "Content-Type": "application/json"
+    },
+    "timeout": 120,
+    "body": {
+     "model": "gpt-6.1-sol",
+     "input": "£10,000 − a test",
+     "store": false,
+     "max_output_tokens": 8000
+    }
+   },
+   "derivation": "One POST with the JSON body in UTF-8, the headers as given, a 120-second timeout and Python's default certificate checking (no context)."
+  },
+  {
+   "id": "P02",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 401,
+   "error_body_text": "{\"error\": {\"message\": \"Incorrect API key provided: sk-test***123. SECRETWORD\", \"type\": \"invalid_request_error\", \"param\": null, \"code\": \"invalid_api_key\"}}",
+   "expected_message": "HTTP 401 (invalid_api_key)",
+   "derivation": "The error code says what to fix; the message (which quotes part of the key) is never shown.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P03",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 429,
+   "error_body_text": "{\"error\": {\"message\": \"You exceeded your current quota SECRETWORD\", \"type\": \"insufficient_quota\", \"param\": null, \"code\": \"insufficient_quota\"}}",
+   "expected_message": "HTTP 429 (insufficient_quota)",
+   "derivation": "The $5 hard limit reached.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P04",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 400,
+   "error_body_text": "{\"error\": {\"message\": \"SECRETWORD\", \"type\": \"invalid_request_error\", \"param\": \"text.format\", \"code\": null}}",
+   "expected_message": "HTTP 400 (invalid_request_error)",
+   "derivation": "No code: the type instead.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P05",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 404,
+   "error_body_text": "<html>SECRETWORD Not Found</html>",
+   "expected_message": "HTTP 404",
+   "derivation": "An error body that isn't JSON: the status only, and the body is never shown.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P06",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 500,
+   "error_body_text": "{\"error\": {\"message\": \"m\", \"type\": null, \"code\": \"Server Error!\"}}",
+   "expected_message": "HTTP 500",
+   "derivation": "Neither code nor type is an identifier.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P07",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 502,
+   "error_body_text": null,
+   "expected_message": "HTTP 502",
+   "derivation": "No error body at all.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P08",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 503,
+   "error_body_raises": true,
+   "expected_message": "HTTP 503",
+   "derivation": "Reading the error body fails: that never raises, the detail is left out.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P09",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 400,
+   "error_body_text": "{\"error\": \"SECRETWORD\"}",
+   "expected_message": "HTTP 400",
+   "derivation": "error is not an object.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P10",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 400,
+   "error_body_text": "{\"error\": {\"message\": \"m\", \"type\": \"invalid_request_error\", \"code\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}",
+   "expected_message": "HTTP 400 (invalid_request_error)",
+   "derivation": "A 65-character code is not an identifier (1 to 64): the type instead.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P11",
+   "check": "http_post_json",
+   "network": "http_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "code": 404,
+   "error_body_text": "[1]",
+   "expected_message": "HTTP 404",
+   "derivation": "A JSON body that isn't an object.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P12",
+   "check": "http_post_json",
+   "network": "url_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "expected_message": "connection problem (SSLError)",
+   "derivation": "A certificate problem is named by type; verification is never switched off.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P13",
+   "check": "http_post_json",
+   "network": "socket_timeout",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "expected_message": "timed out",
+   "derivation": "On Python 3.9 socket.timeout is not TimeoutError: both count.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P14",
+   "check": "http_post_json",
+   "network": "timeout_error",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "expected_message": "timed out",
+   "derivation": "TimeoutError raised directly.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P15",
+   "check": "http_post_json",
+   "network": "url_error_timeout",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "expected_message": "timed out",
+   "derivation": "A URLError whose reason is a timeout.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P16",
+   "check": "http_post_json",
+   "network": "reset",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "expected_message": "connection problem (ConnectionResetError)",
+   "derivation": "Any other failure is named by type.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P17",
+   "check": "http_post_json",
+   "network": "body",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "body_text": "<html>SECRETWORD busy</html>",
+   "expected_message": "response was not JSON",
+   "derivation": "A success body that isn't JSON is never shown: it could hold anything.",
+   "expected_error": "ProviderError",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "api.openai.com",
+    "SECRETWORD"
+   ]
+  },
+  {
+   "id": "P18",
+   "check": "http_post_json",
+   "network": "body",
+   "url": "https://api.openai.com/v1/responses",
+   "headers": {
+    "Authorization": "Bearer sk-test_KEY-123",
+    "Content-Type": "application/json"
+   },
+   "body": {
+    "model": "gpt-6.1-sol",
+    "input": "£10,000 − a test",
+    "store": false,
+    "max_output_tokens": 8000
+   },
+   "body_nan_key": "value",
+   "body_text": "{}",
+   "expected_error": "ValueError",
+   "expected_no_call": true,
+   "derivation": "A body that can't be written as strict JSON (here a NaN) is an error before anything is sent: allow_nan=False."
+  },
+  {
+   "id": "C01",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [
+    "R_USA_OK",
+    "R_GBF_OK_DATED"
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Drafted 2 headlines with gpt-6.1-sol for data as of 2026-08.",
+    "usa: passes the checks",
+    "gbf: passes the checks",
+    "Wrote words/headline_drafts.json. Review every draft before copying it into words/headlines.json."
+   ],
+   "expected_drafts": {
+    "data_as_of": "2026-08",
+    "generated_on": "2026-09-29",
+    "drafted_on": "2026-09-30",
+    "model": "gpt-6.1-sol",
+    "prompt_version": "1",
+    "drafts": {
+     "usa": {
+      "text": "£10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+      "claims": [
+       "worst.ten_thousand_left"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     },
+     "gbf": {
+      "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+      "claims": [
+       "worst.fall",
+       "worst.months_underwater"
+      ],
+      "drafted_by": "gpt-6.1-sol-2026-09-15"
+     }
+    }
+   },
+   "derivation": "Every asset, in list order. drafted_by is the model that answered (a dated version for gbf); 'model' is the one asked for.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C02",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [
+    "R_USA_OK",
+    "R_GBF_BAD"
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Drafted 2 headlines with gpt-6.1-sol for data as of 2026-08.",
+    "usa: passes the checks",
+    "gbf: fails uncited_number, recovery",
+    "Wrote words/headline_drafts.json. Review every draft before copying it into words/headlines.json."
+   ],
+   "expected_drafts": {
+    "data_as_of": "2026-08",
+    "generated_on": "2026-09-29",
+    "drafted_on": "2026-09-30",
+    "model": "gpt-6.1-sol",
+    "prompt_version": "1",
+    "drafts": {
+     "usa": {
+      "text": "£10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+      "claims": [
+       "worst.ten_thousand_left"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     },
+     "gbf": {
+      "text": "UK fund fell 8.7% from Sep 2021 but got back to its high within 12 months.",
+      "claims": [
+       "worst.fall"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     }
+    }
+   },
+   "derivation": "A draft that fails the checks is recorded with its problems, not an error: Avi sees it. Rule names each once, in order found.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C03",
+   "check": "cli",
+   "argv": [
+    "gbf",
+    "usa"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [
+    "R_USA_OK",
+    "R_GBF_OK"
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Drafted 2 headlines with gpt-6.1-sol for data as of 2026-08.",
+    "usa: passes the checks",
+    "gbf: passes the checks",
+    "Wrote words/headline_drafts.json. Review every draft before copying it into words/headlines.json."
+   ],
+   "expected_drafts": {
+    "data_as_of": "2026-08",
+    "generated_on": "2026-09-29",
+    "drafted_on": "2026-09-30",
+    "model": "gpt-6.1-sol",
+    "prompt_version": "1",
+    "drafts": {
+     "usa": {
+      "text": "£10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+      "claims": [
+       "worst.ten_thousand_left"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     },
+     "gbf": {
+      "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+      "claims": [
+       "worst.fall",
+       "worst.months_underwater"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     }
+    }
+   },
+   "derivation": "Named out of order: drafted in the instrument list's order.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C04",
+   "check": "cli",
+   "argv": [
+    "gbf"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "gbf": "P_GBF"
+   },
+   "responses": [
+    "R_GBF_OK"
+   ],
+   "expected_calls": [
+    "gbf"
+   ],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Drafted 1 headline with gpt-6.1-sol for data as of 2026-08.",
+    "gbf: passes the checks",
+    "Wrote words/headline_drafts.json. Review every draft before copying it into words/headlines.json."
+   ],
+   "expected_drafts": {
+    "data_as_of": "2026-08",
+    "generated_on": "2026-09-29",
+    "drafted_on": "2026-09-30",
+    "model": "gpt-6.1-sol",
+    "prompt_version": "1",
+    "drafts": {
+     "gbf": {
+      "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+      "claims": [
+       "worst.fall",
+       "worst.months_underwater"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     }
+    }
+   },
+   "derivation": "One asset named: one request, and the drafts file holds only that draft. Only the named asset's page is read.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C05",
+   "check": "cli",
+   "argv": [
+    "--list"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Plan: 2 requests to gpt-6.1-sol, one per asset: usa, gbf.",
+    "Pages: data as of 2026-08, generated on 2026-09-29.",
+    "No requests made."
+   ],
+   "expected_drafts": null,
+   "derivation": "--list: every page loaded and every request built, but nothing sent and no key read.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C06",
+   "check": "cli",
+   "argv": [
+    "--list"
+   ],
+   "environ": {},
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA"
+   },
+   "registry_edits": [
+    {
+     "path": [
+      "instruments",
+      2
+     ],
+     "delete": true
+    }
+   ],
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Plan: 1 request to gpt-6.1-sol, one per asset: usa.",
+    "Pages: data as of 2026-08, generated on 2026-09-29.",
+    "No requests made."
+   ],
+   "expected_drafts": null,
+   "derivation": "--list with one asset in the list: '1 request'.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C07",
+   "check": "cli",
+   "argv": [
+    "--list",
+    "usa"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 2,
+   "expected_stdout": [
+    "Usage: python3 scripts/draft_headlines.py [--list | <asset id> ...]"
+   ],
+   "expected_drafts": null,
+   "derivation": "--list can't be combined with names.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C08",
+   "check": "cli",
+   "argv": [
+    "usa",
+    "usa"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 2,
+   "expected_stdout": [
+    "Usage: python3 scripts/draft_headlines.py [--list | <asset id> ...]"
+   ],
+   "expected_drafts": null,
+   "derivation": "A name given twice.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C09",
+   "check": "cli",
+   "argv": [
+    "-h"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 2,
+   "expected_stdout": [
+    "Usage: python3 scripts/draft_headlines.py [--list | <asset id> ...]"
+   ],
+   "expected_drafts": null,
+   "derivation": "Any other option.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C10",
+   "check": "cli",
+   "argv": [
+    "usa",
+    "zzz",
+    "trk"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: zzz is not an asset in the instrument list.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "Names are checked in the order given; the first that isn't an asset is named (the benchmark isn't an asset either).",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C11",
+   "check": "cli",
+   "argv": [
+    "trk"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: trk is not an asset in the instrument list.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "The benchmark named alone.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C12",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "registry_text": "{ not json",
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: registry: load: JSONDecodeError",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "An unreadable instrument list: the error type only.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C13",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "registry_edits": [
+    {
+     "path": [
+      "instruments",
+      1,
+      "identity",
+      "quote_unit"
+     ],
+     "set": "pence"
+    }
+   ],
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: registry: check: RegistryError: instrument usa identity quote_unit does not match trading_currency.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "The instrument list is checked before it is used (message from section 8.1's check).",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C14",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: load: FileNotFoundError",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "A missing page.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C15",
+   "check": "cli",
+   "argv": [
+    "gbf",
+    "usa"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {},
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: usa: load: FileNotFoundError",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "Both pages missing, named in reverse: usa is loaded first (list order).",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C16",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_USA"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: page: not this asset's page",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "gbf's file holds usa's page.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C17",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA"
+   },
+   "page_text": {
+    "gbf": "[1, 2]"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: page: not this asset's page",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "A page that isn't an object: its instrument can't be read.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C18",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "page_edits": {
+    "gbf": [
+     {
+      "path": [
+       "generated_on"
+      ],
+      "set": "2026-09-30"
+     }
+    ]
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: page: data_as_of or generated_on differs",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "Pages from different builds (generated_on).",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C19",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "page_edits": {
+    "gbf": [
+     {
+      "path": [
+       "data_as_of"
+      ],
+      "set": "2026-09"
+     }
+    ]
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: page: data_as_of or generated_on differs",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "Pages from different months (data_as_of).",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C20",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "page_edits": {
+    "usa": [
+     {
+      "path": [
+       "cards"
+      ],
+      "set": []
+     }
+    ]
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: usa: request: WordsError: page has no figures to cite.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "A request can't be built: nothing is sent.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C21",
+   "check": "cli",
+   "argv": [
+    "--list"
+   ],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "page_edits": {
+    "gbf": [
+     {
+      "path": [
+       "cards"
+      ],
+      "set": []
+     }
+    ]
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: request: WordsError: page has no figures to cite.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "--list builds every request too, so a bad page shows before any money is spent.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C22",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: QX_OPENAI_API_KEY is not set in this terminal.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "No key: nothing sent.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C23",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": ""
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: QX_OPENAI_API_KEY is not set in this terminal.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "An empty key.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C24",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test KEY9"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: QX_OPENAI_API_KEY is not a valid key.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "A pasted space: refused, never echoed.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C25",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123\n"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: QX_OPENAI_API_KEY is not a valid key.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "A pasted line break at the end.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C32",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "page_edits": {
+    "gbf": [
+     {
+      "path": [
+       "cards"
+      ],
+      "set": []
+     }
+    ]
+   },
+   "responses": [],
+   "expected_calls": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: request: WordsError: page has no figures to cite.",
+    "Nothing was sent or written."
+   ],
+   "expected_drafts": null,
+   "derivation": "Order: every page and request is checked before the key, so a bad page is reported the same way with or without --list.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C26",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "before_files": {
+    "words/headline_drafts.json": "OLD\n"
+   },
+   "responses": [
+    "R_USA_OK",
+    {
+     "raise": "ProviderError",
+     "message": "HTTP 429 (insufficient_quota)"
+    }
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: post: ProviderError: HTTP 429 (insufficient_quota)",
+    "Nothing was written. 2 requests sent."
+   ],
+   "expected_drafts": null,
+   "derivation": "A connection error on the second request: nothing written, the old drafts file untouched, and the count of requests sent.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C27",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [
+    {
+     "raise": "RuntimeError",
+     "message": "boom sk-test_KEY-123 12.3456"
+    }
+   ],
+   "expected_calls": [
+    "usa"
+   ],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: usa: post: RuntimeError",
+    "Nothing was written. 1 request sent."
+   ],
+   "expected_drafts": null,
+   "derivation": "Any other error type is named alone: its message could hold anything, even the key.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C28",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [
+    "R_REFUSED"
+   ],
+   "expected_calls": [
+    "usa"
+   ],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: usa: response: WordsError: the model refused",
+    "Nothing was written. 1 request sent."
+   ],
+   "expected_drafts": null,
+   "derivation": "A refusal stops the run.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C29",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [
+    "R_USA_OK",
+    "R_INCOMPLETE"
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: response: WordsError: status incomplete (max_output_tokens)",
+    "Nothing was written. 2 requests sent."
+   ],
+   "expected_drafts": null,
+   "derivation": "The token cap hit on the second asset.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C30",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "before_files": {
+    "words/headline_drafts.json": "OLD\n",
+    "words/headline_drafts.json.tmp": "junk"
+   },
+   "responses": [
+    "R_USA_OK",
+    "R_GBF_OK"
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Drafted 2 headlines with gpt-6.1-sol for data as of 2026-08.",
+    "usa: passes the checks",
+    "gbf: passes the checks",
+    "Wrote words/headline_drafts.json. Review every draft before copying it into words/headlines.json."
+   ],
+   "expected_drafts": {
+    "data_as_of": "2026-08",
+    "generated_on": "2026-09-29",
+    "drafted_on": "2026-09-30",
+    "model": "gpt-6.1-sol",
+    "prompt_version": "1",
+    "drafts": {
+     "usa": {
+      "text": "£10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+      "claims": [
+       "worst.ten_thousand_left"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     },
+     "gbf": {
+      "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+      "claims": [
+       "worst.fall",
+       "worst.months_underwater"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     }
+    }
+   },
+   "derivation": "Success replaces the old drafts file and a leftover temporary file.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C31",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "words_missing": true,
+   "responses": [
+    "R_USA_OK",
+    "R_GBF_OK"
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: drafts: write: FileNotFoundError",
+    "Nothing was written. 2 requests sent."
+   ],
+   "expected_drafts": null,
+   "derivation": "The write fails after both requests (no words folder): nothing written, and the count says what was spent.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C33",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "drafts_is_folder": true,
+   "responses": [
+    "R_USA_OK",
+    "R_GBF_OK"
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: drafts: write: IsADirectoryError",
+    "Nothing was written. 2 requests sent."
+   ],
+   "expected_drafts": null,
+   "derivation": "The final rename fails (a folder is in the way) after the temporary file was written and read back: the temporary file is removed.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  },
+  {
+   "id": "C34",
+   "check": "cli",
+   "argv": [],
+   "environ": {
+    "QX_OPENAI_API_KEY": "sk-test_KEY-123",
+    "HOME": "/Users/test"
+   },
+   "today": "2026-09-30",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "responses": [
+    "R_USA_FUTURE",
+    "R_GBF_OK"
+   ],
+   "expected_calls": [
+    "usa",
+    "gbf"
+   ],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Drafted 2 headlines with gpt-6.1-sol for data as of 2026-08.",
+    "usa: fails future",
+    "gbf: passes the checks",
+    "Wrote words/headline_drafts.json. Review every draft before copying it into words/headlines.json."
+   ],
+   "expected_drafts": {
+    "data_as_of": "2026-08",
+    "generated_on": "2026-09-29",
+    "drafted_on": "2026-09-30",
+    "model": "gpt-6.1-sol",
+    "prompt_version": "1",
+    "drafts": {
+     "usa": {
+      "text": "US share fell 72.5% from Sep 2007 to Nov 2008 and will recover.",
+      "claims": [
+       "worst.fall"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     },
+     "gbf": {
+      "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+      "claims": [
+       "worst.fall",
+       "worst.months_underwater"
+      ],
+      "drafted_by": "gpt-6.1-sol"
+     }
+    }
+   },
+   "derivation": "A draft with a single problem says 'fails' too.",
+   "message_must_not_contain": [
+    "sk-test_KEY-123",
+    "12.3456",
+    "SECRETWORD",
+    "boom"
+   ]
+  }
+ ]
+}
