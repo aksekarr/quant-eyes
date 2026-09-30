@@ -1,0 +1,72 @@
+{
+  "data_as_of": "2026-08",
+  "drafted_on": "2026-09-30",
+  "drafts": {
+    "aapl": {
+      "claims": [
+        "worst.fall",
+        "worst.months_to_recover"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "problems": [],
+      "text": "Apple’s largest fall was 41.5%, and it recovered to its previous high 8 months after the low."
+    },
+    "azn": {
+      "claims": [
+        "worst.fall",
+        "worst.months_to_recover"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "problems": [],
+      "text": "AstraZeneca’s largest fall was 41.0%, and it recovered to its previous high 24 months after the low."
+    },
+    "btc": {
+      "claims": [
+        "worst.fall",
+        "worst.months_to_recover"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "problems": [],
+      "text": "Bitcoin’s largest fall was 74.2%, and it recovered 21 months after reaching its low."
+    },
+    "iglt": {
+      "claims": [
+        "worst.fall",
+        "worst.below_high_at_end"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "problems": [],
+      "text": "The UK government bond fund fell 31.9% from its high and remained 25.9% below that high at the end of Aug 2026."
+    },
+    "msft": {
+      "claims": [
+        "worst.fall",
+        "worst.months_to_recover"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "problems": [],
+      "text": "Microsoft’s largest fall was 35.5%, and it recovered to its previous high 9 months after the low."
+    },
+    "nvda": {
+      "claims": [
+        "worst.fall",
+        "worst.months_to_recover"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "problems": [],
+      "text": "Nvidia fell 72.5% in its largest decline and regained its previous high 83 months after the low."
+    },
+    "sgln": {
+      "claims": [
+        "worst.fall",
+        "worst.months_underwater"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "problems": [],
+      "text": "The physical gold fund’s largest fall was 38.2%, and it took 95 months to regain its previous high."
+    }
+  },
+  "generated_on": "2026-09-29",
+  "model": "gpt-6.1-sol",
+  "prompt_version": "1"
+}
