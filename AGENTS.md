@@ -126,7 +126,8 @@ Site
 - `scripts/build_pages.py` is the page writer (METHODOLOGY section 14) and the only
   thing that writes `site/data/`. It is offline: no network, no keys, no environment
   variables, no clock. It writes only in the output folder it is given, and its command
-  writes only in `site/data`.
+  writes only in `site/data`. It reads `words/headlines.json` (METHODOLOGY section 15.4)
+  and never edits it.
 - `site/data/` is generated output that Avi commits. Never create, edit or delete
   anything in it by hand, and never run `scripts/build_pages.py` against this repo: the
   tests run it on temporary folders. Avi runs it.

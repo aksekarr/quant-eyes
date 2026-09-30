@@ -24,7 +24,7 @@ section is written here only once its conventions are confirmed.
 | 12. Card text (cards 5 to 7) | Words 2 | `cards_567.json` | Written |
 | 13. Page data | Words 3 | `page.json` | Written |
 | 14. Writing the site's data | Site 1 | `build_pages.json` | Written |
-| 15. The headline (15.1 to 15.3) | Words 4 | `headline.json`, `draft_headlines.json` | Written |
+| 15. The headline (15.1 to 15.4) | Words 4 | `headline.json`, `draft_headlines.json`, `build_pages.json` | Written |
 
 ## General rules
 
@@ -964,7 +964,7 @@ field, never repeating a URL) unless:
 | `sources` | Copied from the document. |
 | `cards` | Cards 1 to 3 (section 11) then 5 to 7 (section 12): `bumpy`, `worst`, `panic`, `next`, `pound`, `limits`. |
 | `claims` | Section 11's claims, then section 12's. Claim ids must be unique. |
-| `headline` | Empty. Section 15 fills it with a checked, human-reviewed headline. |
+| `headline` | Empty (null). The page writer fills it with the asset's approved headline, if there is one (section 14.1 step 6, section 15.4). |
 
 A missing `data_as_of`, `generated_on`, `sources` or `method_version` is a `WordsError`.
 
@@ -990,7 +990,7 @@ environment variables and no clock. It reads committed files and writes only in
 `site/data`. The same inputs always give byte-identical files, so a run with nothing new
 shows no change in `git status`.
 
-### 14.1 `write_pages(registry, context, documents, out_dir)`
+### 14.1 `write_pages(registry, context, documents, approvals, out_dir)`
 
 `documents` maps each asset id to its published document (section 8), as read from
 `data/derived/<id>.json`. In order:
@@ -1010,8 +1010,11 @@ shows no change in `git status`.
    `check_document(document, registry)` (section 8.3); the document's instrument must be
    that asset; then `build_page(document, facts)` (section 13.2), where `facts` is the
    asset's context entry without `why`.
-6. **Index:** `build_index(registry, pages)` (section 13.3), with the pages in list order.
-7. **Write, all or nothing**, as in section 10.2 step 6. Each page and the index becomes
+6. **Headlines** (section 15.4): `check_approvals(approvals, pages, registry)` (section
+   15.2), with the pages in list order. Each page's `headline` becomes its asset's approved
+   headline, or stays empty (null) if it has none.
+7. **Index:** `build_index(registry, pages)` (section 13.3), with the pages in list order.
+8. **Write, all or nothing**, as in section 10.2 step 6. Each page and the index becomes
    `json.dumps(value, indent=2, sort_keys=True, allow_nan=False, ensure_ascii=False) + "\n"`
    in UTF-8 (so `£` and `−` stay readable in `git diff`), written to `<id>.json.tmp` and
    `index.json.tmp`. Every temporary file is then read back and parsed, and must equal the
@@ -1019,8 +1022,10 @@ shows no change in `git status`.
    into place, the pages in list order and `index.json` last. If anything fails before
    the first rename, every temporary file created is removed and the folder is exactly as
    it was.
-8. **Return** `{"data_as_of", "generated_on", "method_version", "written"}`: the index's
-   shared values, and the file names in the order they were renamed.
+9. **Return** `{"data_as_of", "generated_on", "method_version", "headlines",
+   "headlines_as_of", "written"}`: the index's shared values; the ids of the assets whose
+   page has a headline, in list order; the approvals file's `data_as_of`; and the file
+   names in the order they were renamed.
 
 **Errors** are a `PageError` (defined in `scripts/build_pages.py`), in the form
 `<who>: <step>: <ErrorType>: <message>`, as in section 10.2. The message is included only
@@ -1034,8 +1039,9 @@ design; any other type is named alone (`usa: page: RuntimeError`).
 | 3 | `output folder: does not exist`, `output folder: unexpected <name>` |
 | 4 | `<id>: document: missing`, `documents: unexpected <name>` |
 | 5 | `<id>: check: PublishError: <message>`, `<id>: document: for <other id>`, `<id>: page: WordsError: <message>` |
-| 6 | `index: build: WordsError: <message>` |
-| 7 | `<file>: write: <ErrorType>` for the file being written or read back (`usa.json`, `index.json`), with the message only for the three types above; `<file>: write: read back differently` |
+| 6 | `headlines: check: WordsError: <message>` |
+| 7 | `index: build: WordsError: <message>` |
+| 8 | `<file>: write: <ErrorType>` for the file being written or read back (`usa.json`, `index.json`), with the message only for the three types above; `<file>: write: read back differently` |
 
 ### 14.2 The command: `python3 scripts/build_pages.py`
 
@@ -1053,10 +1059,15 @@ traceback or a value.
   2. `root/words/context.json`: `FAILED: context: load: <ErrorType>`.
   3. `root/data/derived/<id>.json` for each asset, in list order:
      `FAILED: <id>: load: <ErrorType>`.
+  4. `root/words/headlines.json` (section 15.4): `FAILED: headlines: load: <ErrorType>`.
 - Create `root/site/data` if it doesn't exist (and `root/site`).
-- `write_pages(registry, context, documents, root/site/data)`. On success it prints
-  `Data as of <data_as_of>, generated on <generated_on>, method <method_version>.` then
-  `Wrote <n> files to site/data.` and returns 0.
+- `write_pages(registry, context, documents, approvals, root/site/data)`. On success it
+  prints `Data as of <data_as_of>, generated on <generated_on>, method <method_version>.`,
+  then one headlines line, then `Wrote <n> files to site/data.`, and returns 0. The
+  headlines line is `Headlines: <k> of <n> pages have an approved headline.` when the
+  approvals file is for the pages' month (`<n>` is the number of assets), and otherwise
+  `Headlines: none, because words/headlines.json is for <its data_as_of>; draft and review
+  headlines for <data_as_of>.`
 - On a `PageError`: `FAILED: <message>`. On anything else: `FAILED: unexpected
   <ErrorType>.` Either way, then `Check git status --short before committing anything.`
   and exit code 1.
@@ -1071,8 +1082,8 @@ dropped until he approves new ones. Nothing reaches a page any other way.
 
 The checker and approvals (15.1, 15.2) are in `words/headline.py`, pure like sections 11 to
 13; drafting (15.3) adds to it, plus a POST in `pipeline/network.py` and the command
-`scripts/draft_headlines.py`. The page writer's use of approved headlines (15.4) is written
-with its own task.
+`scripts/draft_headlines.py`. The page writer publishes approved headlines (15.4, which
+amends section 14).
 
 ### 15.1 The checker: `check_headline(text, claim_ids, page, registry)`
 
@@ -1409,3 +1420,24 @@ Error messages have the form `<who>: <step>: <ErrorType>: <message>`. The messag
 Anything else that goes wrong prints `FAILED: unexpected <ErrorType>.`, followed by the second line as above.
 
 `words/headline_drafts.json` is generated output, and the page writer never reads it. The only route to a page is Avi copying a draft into `words/headlines.json` (section 15.2), adding `reviewed_on`, and committing it. Avi commits the drafts file with it, as the record of what the model proposed.
+
+### 15.4 Publishing approved headlines
+
+The page writer (section 14) is the only route from `words/headlines.json` to a page. After
+building every page, and before the index, it runs `check_approvals` against those pages
+(section 14.1 step 6):
+
+- An approved headline appears on its page exactly as approved: `text`, `claims`,
+  `drafted_by` and `reviewed_on`, so the page records who drafted it and when it was
+  reviewed.
+- An asset without one gets none: its `headline` stays null.
+- If the file is for another month, every page is written without a headline, and the
+  command says so. Old words never sit on new numbers.
+- An approved headline that fails any check stops the run, and nothing is written. It is
+  never published, and never silently dropped.
+- The file is required. A missing file is a mistake, not an absence of headlines; an empty
+  set is `{"data_as_of": "<month>", "headlines": {}}`.
+
+Each month, in order: refresh the data (section 10); build the pages, which then have no
+headlines; draft against those pages (15.3); review and approve (15.2); build the pages
+again, now with headlines; commit `site/data`.
