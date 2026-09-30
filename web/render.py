@@ -296,19 +296,23 @@ def _source_text(source):
 def _footer(out, data, sources, identity=None):
     out.start("footer")
     out.text("footer-data", data["data_as_of_text"] + " · Method " + data["method_version"])
+    out.start("div", {"data-layout": "sources"})
     out.text("sources-label", "Sources")
     for source in sources:
         out.text("source", _source_text(source), source["provider"], tag="a", attrs={"href": source["url"]})
+    out.end("div")
     if identity is not None:
         name = identity["name"]
         if identity["isin"]:
             name += " · ISIN " + identity["isin"]
         out.text("identity", name)
         if identity["sources"]:
+            out.start("div", {"data-layout": "identity-sources"})
             out.text("identity-label", "Identity from")
             for i, url in enumerate(identity["sources"], 1):
                 out.text("identity-source", url[len("https://"):].split("/", 1)[0], str(i),
                          tag="a", attrs={"href": url})
+            out.end("div")
     out.text("disclaimer", _DISCLAIMER)
     out.end("footer")
     out.end("body")
@@ -379,19 +383,30 @@ def _maths(out, page, card_id, claims):
 
 def _bumpy(out, page, card, claims):
     asset_id = page["instrument"]["id"]
+    out.start("div", {"data-layout": "card-lead"})
+    out.start("div", {"data-layout": "lead-copy"})
     out.text("figure", claims["bumpy.volatility"]["display"], "bumpy.volatility")
     _sentences(out, card, 0, 1)
+    out.end("div")
     own = claims.get("bumpy.volatility_common", claims["bumpy.volatility"])
     tracker = claims["bumpy.tracker_volatility"]
+    out.start("div", {"data-layout": "bars"})
+    out.start("div", {"data-layout": "bar-visual"})
     out.text("bars-label", "Same months: " + _period(own))
     for key, claim, label in (("bumpy.asset", own, page["instrument"]["label"]),
                               ("bumpy.tracker", tracker, page["benchmark"]["label"])):
-        out.start("div")
+        out.start("div", {"data-layout": "bar"})
         out.text("bar-label", label, key)
         out.text("bar-value", claim["display"], key)
+        out.start("div", {"data-layout": "bar-track"})
         out.size(asset_id, key, lambda: claim["value"] / max(own["value"], tracker["value"]))
         out.end("div")
-    _sentences(out, card, 1)
+        out.end("div")
+    out.end("div")
+    _sentences(out, card, 1, 2)
+    out.end("div")
+    out.end("div")
+    _sentences(out, card, 2)
 
 
 def _worst(out, page, card, claims):
@@ -404,19 +419,30 @@ def _worst(out, page, card, claims):
     low = claims["worst.months_to_low"]
     under = claims["worst.months_underwater"]
     recovery = claims.get("worst.months_to_recover")
+    out.start("div", {"data-layout": "card-lead"})
+    out.start("div", {"data-layout": "lead-copy"})
     out.text("figure", fall["display"], "worst.fall")
     _sentences(out, card, 0, 1)
+    out.end("div")
+    out.start("div", {"data-layout": "drain"})
     out.text("drain-label", "£10,000 invested at the high")
     out.text("figure", left["display"], "worst.ten_thousand_left", attrs={"data-qx-from": "10000"})
     out.text("drain-period", _period(fall))
+    out.start("div", {"data-layout": "drain-track"})
     out.size(asset_id, "worst.drain", lambda: left["value"] / 10000)
+    out.end("div")
     out.text("drain-left", left["display"] + " at the low")
     out.text("drain-lost", claims["worst.ten_thousand_lost"]["display"] + " less")
+    out.end("div")
+    out.end("div")
+    out.start("div", {"data-layout": "timeline"})
     if recovery is not None:
         out.text("timeline-label", "High to back at the high: " + under["display"])
     else:
         out.text("timeline-label", "Below its high: " + under["display"]
                  + ", to the end of " + _month(under["period_end"]))
+    out.start("div", {"data-layout": "timeline-container"})
+    out.start("div", {"data-layout": "timeline-track"})
     out.text("segment", low["display"], "worst.fall")
     out.size(asset_id, "worst.fall", lambda: low["value"] / under["value"])
     if recovery is not None:
@@ -430,8 +456,13 @@ def _worst(out, page, card, claims):
         end_point = ("end", "Not recovered by", under["period_end"])
     for key, label, month in (("high", "High", fall["period_start"]),
                                ("low", "Low", fall["period_end"]), end_point):
+        out.start("div", {"data-layout": "timeline-point", "data-point": key})
         out.text("point-label", label, key)
         out.text("point-date", "end of " + _month(month), key)
+        out.end("div")
+    out.end("div")
+    out.end("div")
+    out.end("div")
     _sentences(out, card, 1)
 
 
@@ -445,14 +476,22 @@ def _direction(claim):
 
 def _panic(out, page, card, claims):
     for i, window in enumerate(_WINDOWS):
+        out.start("div", {"data-layout": "episode"})
+        out.start("div", {"data-layout": "episode-copy"})
         _sentences(out, card, 2 * i, 2 * i + 2)
+        out.end("div")
+        out.start("div", {"data-layout": "chips"})
         if i == 0:
             out.text("chips-label", "Over the period")
         for series, label, suffix in (("asset", page["instrument"]["label"], ""),
                                        ("tracker", "Tracker", ".tracker")):
             key = window + "." + series
+            out.start("div", {"data-layout": "chip"})
             out.text("chip-label", label, key)
             out.text("chip-value", _direction(claims.get("panic." + window + suffix)), key)
+            out.end("div")
+        out.end("div")
+        out.end("div")
     _sentences(out, card, 6)
 
 
@@ -461,23 +500,35 @@ def _next(out, page, card, claims):
     correlation = claims["next.correlation"]
     lowest = claims["next.rolling_lowest"]
     highest = claims["next.rolling_highest"]
+    out.start("div", {"data-layout": "card-lead"})
+    out.start("div", {"data-layout": "lead-copy"})
     out.text("figure", correlation["display"], "next.correlation")
     _sentences(out, card, 0, 1)
+    out.end("div")
+    out.start("div", {"data-layout": "correlation"})
     out.text("scale-label", "Correlation with the tracker")
     out.text("scale-value", correlation["display"], "next.correlation")
     out.size(asset_id, "next.correlation", lambda: (correlation["value"] + 1) / 2)
+    out.start("div", {"data-layout": "scale-points"})
     for key, mark, note in (("low", "−1", "always opposite"), ("mid", "0", "no pattern"),
                              ("high", "1", "always in step")):
+        out.start("div", {"data-layout": "scale-point"})
         out.text("scale-mark", mark, key)
         out.text("scale-note", note, key)
+        out.end("div")
+    out.end("div")
     out.text("range", "Range across 36-month stretches: " + lowest["display"] + " to " + highest["display"])
     out.size(asset_id, "next.range-low", lambda: (lowest["value"] + 1) / 2)
     out.size(asset_id, "next.range-high", lambda: (highest["value"] + 1) / 2)
+    out.end("div")
+    out.end("div")
     _sentences(out, card, 1, 3)
+    out.start("div", {"data-layout": "mix"})
     out.text("mix-part", "Tracker 90%", "next.tracker")
     out.size(asset_id, "next.tracker", lambda: 0.9)
     out.text("mix-part", page["instrument"]["label"] + " 10%", "next.asset")
     out.size(asset_id, "next.asset", lambda: 0.1)
+    out.end("div")
     _sentences(out, card, 3)
 
 
@@ -491,55 +542,77 @@ def render_page(page, index):
     out = _Markup()
     _head(out, instrument["label"] + ", in pounds · " + SITE_NAME,
           headline["text"] if headline is not None else _TAGLINE, "../")
-    out.start("main")
+    out.start("main", {"data-layout": "asset"})
     out.text("back", "All " + _COUNTS[len(index["assets"]) - 1], tag="a", attrs={"href": "../"})
+    out.start("div", {"data-layout": "asset-intro"})
+    out.start("div", {"data-layout": "identity"})
     kicker = _TYPES[identity["type"]]
     if identity["exchange"]:
         kicker += " · " + identity["exchange"]
     out.text("kicker", kicker)
     out.text("asset-label", instrument["label"], tag="h1")
     out.text("asset-name", identity["name"] + " · " + identity["ticker"])
+    out.start("div", {"data-layout": "tags"})
     out.text("tag", "Priced in US dollars" if identity["trading_currency"] == "USD"
              else "Priced in pounds", "priced")
     out.text("tag", "Figures in pounds", "figures")
     out.text("tag", page["data_as_of_text"], "data")
+    out.end("div")
+    out.end("div")
+    out.start("div", {"data-layout": "headline"})
     out.text("section-label", "The headline", "headline")
     if headline is None:
         out.text("no-headline", "No reviewed headline for this data yet. A headline appears "
                  "here only after a person has reviewed it.")
     else:
         out.text("headline", headline["text"], instrument["id"])
+        out.start("div", {"data-layout": "chain"})
         for key, label, detail in (
             ("drafted", "Drafted by AI", headline["drafted_by"]),
             ("checked", "Checked by code", _rules_passed()),
             ("reviewed", "Reviewed by a person", _day(headline["reviewed_on"])),
         ):
+            out.start("div", {"data-layout": "chain-step"})
             out.text("chain", label, key)
             out.text("chain-detail", detail, key)
-    out.start("nav")
+            out.end("div")
+        out.end("div")
+    out.end("div")
+    out.end("div")
+    out.start("div", {"data-layout": "asset-body"})
+    out.start("nav", {"data-layout": "rail"})
     out.text("rail-label", "The questions")
+    out.start("div", {"data-layout": "rail-links"})
     for i, card in enumerate(page["cards"], 1):
         out.start("a", {"href": "#" + card["id"]})
         out.text("rail-number", format(i, "02d"), card["id"], tag="span")
         out.text("rail-title", card["title"], card["id"], tag="span")
         out.end("a")
+    out.end("div")
+    out.start("div", {"data-layout": "benchmark"})
     out.text("compared-label", "Compared with")
     out.text("benchmark-label", page["benchmark"]["label"])
     benchmark = page["benchmark"]["identity"]
     out.text("benchmark-name", benchmark["name"] + " · " + benchmark["ticker"])
+    out.end("div")
     out.end("nav")
+    out.start("div", {"data-layout": "cards"})
     renderers = {"bumpy": _bumpy, "worst": _worst, "panic": _panic, "next": _next}
     for i, card in enumerate(page["cards"], 1):
         card_id = card["id"]
         out.start("section", {"id": card_id})
+        out.start("div", {"data-layout": "card-heading"})
         out.text("card-number", format(i, "02d"), card_id)
         out.text("card-title", card["title"], card_id, tag="h2")
+        out.end("div")
         if card_id in renderers:
             renderers[card_id](out, page, card, claims)
             _maths(out, page, card_id, claims)
         else:
             _sentences(out, card)
         out.end("section")
+    out.end("div")
+    out.end("div")
     out.end("main")
     _footer(out, page, page["sources"], identity)
     return out.finish()
@@ -581,16 +654,25 @@ def render_landing(index, pages):
     count = _COUNTS[len(assets) - 1]
     out = _Markup()
     _head(out, SITE_NAME + ": " + count + " investments in plain English", _TAGLINE, "")
-    out.start("main")
+    out.start("main", {"data-layout": "landing"})
+    out.start("div", {"data-layout": "landing-intro"})
     as_of = index["data_as_of_text"]
     out.text("kicker", count.capitalize() + " investments · in pounds · " + as_of[:1].lower() + as_of[1:])
-    out.text("hero", "What am I actually getting into?", tag="h1")
+    out.start("h1", {"data-qx": "hero"})
+    out.parts[-1] += html.escape("What am I ", quote=True)
+    out.start("span", {"data-layout": "hero-accent"})
+    out.parts[-1] += html.escape("actually", quote=True)
+    out.end("span")
+    out.parts[-1] += html.escape(" getting into?", quote=True)
+    out.end("h1")
     out.text("tagline", _TAGLINE)
-    out.start("div", {"hidden": None})
+    out.start("div", {"data-layout": "search", "hidden": None})
     out.text("search-label", "Look up an investment", tag="label", attrs={"for": "asset-search"})
+    out.start("div", {"data-layout": "search-field"})
     out.text("search-hint", "Try " + assets[0]["label"] + " or " + assets[0]["ticker"],
              tag="input", attrs={"id": "asset-search", "type": "search"}, text_attr="placeholder")
     out.text("search-count", str(len(assets)) + " covered")
+    out.end("div")
     out.start("ul")
     for asset in assets:
         key = asset["id"]
@@ -601,30 +683,35 @@ def render_landing(index, pages):
         out.end("a")
         out.end("li")
     out.end("ul")
-    out.start("div", {"hidden": None})
+    out.start("div", {"data-layout": "not-covered", "hidden": None})
     out.text("not-covered-title", "Not covered yet")
     out.text("not-covered-text", "This site covers " + count + " investments in depth rather than "
              "many in outline. Every figure comes from tested code, and every headline is reviewed by a person.")
     out.end("div")
     out.end("div")
+    out.end("div")
     headlines = [(asset, page["headline"]) for asset, page in zip(assets, pages) if page["headline"] is not None]
     if headlines:
-        out.start("section")
+        out.start("section", {"data-layout": "headlines"})
         out.text("section-label", "Headlines", "headlines")
         for i, (asset, headline) in enumerate(headlines, 1):
             key = asset["id"]
             out.start("article")
+            out.start("div", {"data-layout": "slide-heading"})
             out.text("slide-position", "{} / {}".format(i, len(headlines)), key)
             out.text("slide-label", asset["label"], key)
             out.text("slide-ticker", asset["ticker"], key)
+            out.end("div")
             out.text("headline", headline["text"], key)
             out.text("slide-meta", headline["drafted_by"] + " · reviewed " + _day(headline["reviewed_on"]), key)
             out.text("slide-open", "Open " + asset["label"], key, tag="a", attrs={"href": key + "/"})
             out.end("article")
+        out.start("div", {"data-layout": "chain"})
         out.text("chain", "Drafted by AI", "drafted")
         out.text("chain", "Checked by code: " + _rules_passed(), "checked")
         out.text("chain", "Reviewed by a person", "reviewed")
-        out.start("div", {"hidden": None})
+        out.end("div")
+        out.start("div", {"data-layout": "headline-controls", "hidden": None})
         out.start("button", {"type": "button"})
         out.text("pause", "Pause the headlines", tag="span")
         out.text("play", "Play the headlines", tag="span", attrs={"hidden": None})
@@ -634,13 +721,17 @@ def render_landing(index, pages):
                      tag="button", attrs={"type": "button"}, text_attr="aria-label")
         out.end("div")
         out.end("section")
+    out.start("div", {"data-layout": "tiles"})
     out.text("tiles-label", "Or pick one of the " + count)
+    out.start("div", {"data-layout": "tile-grid"})
     for asset in assets:
         key = asset["id"]
         out.start("a", {"href": key + "/"})
         out.text("tile-ticker", asset["ticker"], key, tag="span")
         out.text("tile-label", asset["label"], key, tag="span")
         out.end("a")
+    out.end("div")
+    out.end("div")
     out.text("strip", "Every figure comes from tested code. Every headline is reviewed by a person.")
     out.end("main")
     _footer(out, index, sources)
