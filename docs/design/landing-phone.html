@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Landing, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Sora:wght@500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#050A1C;color:#EEF2FF;font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:#9AD4FF}a:hover{color:#CBEAFF}
+@property --qa{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes qx-spin{to{--qa:360deg}}
+@keyframes qx-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes qx-rise{from{opacity:0;transform:translateY(14px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.qx-beam{background:conic-gradient(from var(--qa),rgba(255,255,255,.10) 0deg,rgba(255,255,255,.10) 240deg,var(--qx-accent,#86CCFF) 300deg,#FFFFFF 322deg,rgba(255,255,255,.10) 350deg);animation:qx-spin 8s linear infinite}
+.qx-fill{transform-origin:left center;animation:qx-fill 6s linear forwards}
+.qx-rise{animation:qx-rise .8s cubic-bezier(.2,.7,.2,1) both}
+.qx-lift{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.qx-lift:active,.qx-lift:focus-visible{transform:scale(.98);border-color:rgba(255,255,255,.30)!important;box-shadow:0 0 0 1px rgba(255,255,255,.05),0 18px 40px -20px var(--qx-glow,rgba(134,204,255,.55))}
+.qx-press{transition:background-color .2s ease,box-shadow .2s ease}
+.qx-press:active{background-color:rgba(255,255,255,.08)}
+.qx-field{transition:border-color .2s ease,box-shadow .2s ease}
+.qx-field:focus-within{border-color:var(--qx-accent,#86CCFF)!important;box-shadow:0 0 0 4px var(--qx-soft,rgba(134,204,255,.16)),0 0 40px -8px var(--qx-glow,rgba(134,204,255,.55))}
+:focus-visible{outline:2px solid #9AD4FF;outline-offset:3px}
+input::placeholder{color:#7F8BB5}
+@media (prefers-reduced-motion: reduce){.qx-beam,.qx-fill,.qx-rise{animation:none!important}.qx-lift,.qx-press,.qx-field{transition:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 1520px; box-sizing: border-box; position: relative; overflow: hidden; background-color: #050A1C; background-image: radial-gradient(520px 420px at 0% -6%, rgba(70, 100, 255, 0.32), transparent 62%), radial-gradient(420px 380px at 100% 38%, rgba(150, 110, 255, 0.18), transparent 60%), radial-gradient(520px 400px at 50% 100%, rgba(60, 150, 255, 0.14), transparent 60%); color: #EEF2FF; --qx-accent: {{accent}}; --qx-glow: {{glow}}; --qx-soft: {{soft}}">
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; right: 0; height: 620px; background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.4px); background-size: 24px 24px; -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 25%, #000 20%, transparent 80%); mask-image: radial-gradient(ellipse 80% 70% at 50% 25%, #000 20%, transparent 80%); pointer-events: none"></div>
+
+  <div style="position: relative; box-sizing: border-box; padding: 16px 20px 28px 20px; display: flex; flex-direction: column; gap: 28px">
+
+    <header style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+      <a href="PhoneLanding.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #EEF2FF; min-height: 44px">
+        <span style="width: 32px; height: 32px; border-radius: 10px; background-image: linear-gradient(145deg, {{accent}}, #5B5BFF); box-shadow: 0 0 22px -2px {{glow}}, inset 0 1px 0 rgba(255, 255, 255, 0.5); display: flex; align-items: center; justify-content: center">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#050A1C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="5.5"></circle><circle cx="15" cy="12" r="5.5"></circle></svg>
+        </span>
+        <span style="font-family: Sora, system-ui, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: -0.02em">[Product name]</span>
+      </a>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.12em; color: #C9D2EE; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.04); padding: 7px 10px; border-radius: 999px">NOT ADVICE</span>
+    </header>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; padding-top: 4px">
+      <div style="display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.14em; color: #A9B6E0">
+        <span style="width: 7px; height: 7px; border-radius: 2px; background: {{accent}}; box-shadow: 0 0 10px {{accent}}"></span>
+        SEVEN INVESTMENTS · IN POUNDS
+      </div>
+      <h1 style="margin: 0; font-family: Sora, system-ui, sans-serif; font-size: 40px; line-height: 1.08; font-weight: 700; letter-spacing: -0.035em; text-wrap: balance">What am I <span style="background-image: linear-gradient(92deg, #FFFFFF 0%, {{accent}} 55%, #B8A4FF 100%); -webkit-background-clip: text; background-clip: text; color: transparent">actually</span> getting into?</h1>
+      <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #B6C1E2">How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.</p>
+    </div>
+
+    <div style="position: relative; display: flex; flex-direction: column; gap: 8px">
+      <label for="qx-find-m" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.14em; color: #A9B6E0">LOOK UP AN INVESTMENT</label>
+      <div class="qx-field" style="display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(10, 18, 48, 0.72); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A9B6E0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <input id="qx-find-m" type="text" autocomplete="off" placeholder="Try Microsoft or MSFT" value="{{q}}" onChange="{{onQ}}" style="flex-grow: 1; min-width: 0; border: none; outline: none; background: transparent; font: inherit; font-size: 16px; color: #EEF2FF">
+      </div>
+
+      <sc-if value="{{showResults}}" hint-placeholder-val="{{ false }}">
+        <div style="position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; z-index: 10; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(9, 16, 42, 0.97); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.7), 0 0 40px -20px {{glow}}; padding: 6px">
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px">
+            <sc-for list="{{results}}" as="r" hint-placeholder-count="2">
+              <li style="display: flex; flex-direction: column">
+                <a href="{{r.href}}" class="qx-press" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 12px; border-radius: 12px; text-decoration: none; color: #EEF2FF">
+                  <span style="display: flex; align-items: baseline; gap: 10px"><span style="font-size: 16px; font-weight: 600">{{r.label}}</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8E9AC2">{{r.ticker}}</span></span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A9B6E0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>
+                </a>
+              </li>
+            </sc-for>
+          </ul>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{showMiss}}" hint-placeholder-val="{{ false }}">
+        <div role="status" style="position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; z-index: 10; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(9, 16, 42, 0.97); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.7), 0 0 40px -20px {{glow}}; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+            <span style="font-family: Sora, system-ui, sans-serif; font-size: 17px; font-weight: 600">Not covered yet</span>
+          </div>
+          <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #B6C1E2">[Draft] This covers seven investments in depth rather than many in outline: every figure is checked and every headline is reviewed by a person. “{{qShown}}” isn't one of them.</p>
+        </div>
+      </sc-if>
+    </div>
+
+    <section aria-label="This month's headlines" class="{{beamClass}}" style="border-radius: 24px; padding: 1px; background-color: rgba(255, 255, 255, 0.12); box-shadow: 0 30px 70px -36px {{glow}}">
+      <div style="border-radius: 23px; background-image: linear-gradient(180deg, rgba(17, 27, 66, 0.97) 0%, rgba(8, 13, 36, 0.98) 100%); padding: 18px 20px 16px 20px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; justify-content: space-between">
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.14em; color: #A9B6E0">THIS MONTH'S HEADLINES</span>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #C9D2EE">{{pos}} / 7</span>
+            <button type="button" aria-label="{{pauseLabel}}" onClick="{{togglePause}}" class="qx-press" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.04); display: flex; align-items: center; justify-content: center; padding: 0; color: #EEF2FF; cursor: pointer">
+              <sc-if value="{{paused}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z"></path></svg></sc-if>
+              <sc-if value="{{playing}}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg></sc-if>
+            </button>
+          </div>
+        </div>
+
+        <div style="position: relative; height: 292px">
+          <sc-for list="{{reel}}" as="h" hint-placeholder-count="1">
+            <sc-if value="{{h.active}}" hint-placeholder-val="{{ true }}">
+              <div style="position: absolute; inset: 0; display: flex; flex-direction: column; gap: 10px">
+                <div class="{{riseClass}}" style="display: flex; align-items: baseline; gap: 8px">
+                  <span style="font-family: Sora, system-ui, sans-serif; font-size: 15px; font-weight: 600; color: {{accent}}">{{h.label}}</span>
+                  <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; color: #8E9AC2">{{h.ticker}}</span>
+                </div>
+                <p class="{{riseClass}}" style="margin: 0; font-family: Sora, system-ui, sans-serif; font-size: 21px; line-height: 1.36; font-weight: 600; letter-spacing: -0.015em; color: #F4F6FF; animation-delay: 0.08s">{{h.text}}</p>
+                <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
+                  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+                    <span class="{{riseClass}}" style="display: flex; align-items: center; gap: 6px; animation-delay: 0.30s">
+                      <span style="width: 24px; height: 24px; border-radius: 8px; background: {{soft}}; border: 1px solid {{line}}; display: flex; align-items: center; justify-content: center; color: {{accent}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2z"></path></svg></span>
+                      <span style="font-size: 12.5px; font-weight: 600; color: #DCE3F7">Drafted by AI</span>
+                    </span>
+                    <span class="{{riseClass}}" style="display: flex; align-items: center; gap: 6px; animation-delay: 0.50s">
+                      <span style="width: 24px; height: 24px; border-radius: 8px; background: {{soft}}; border: 1px solid {{line}}; display: flex; align-items: center; justify-content: center; color: {{accent}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg></span>
+                      <span style="font-size: 12.5px; font-weight: 600; color: #DCE3F7">16 checks passed</span>
+                    </span>
+                    <span class="{{riseClass}}" style="display: flex; align-items: center; gap: 6px; animation-delay: 0.70s">
+                      <span style="width: 24px; height: 24px; border-radius: 8px; background: {{soft}}; border: 1px solid {{line}}; display: flex; align-items: center; justify-content: center; color: {{accent}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><path d="M16 11l2 2 4-4"></path></svg></span>
+                      <span style="font-size: 12.5px; font-weight: 600; color: #DCE3F7">Reviewed by a person</span>
+                    </span>
+                  </div>
+                  <div class="{{riseClass}}" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.04em; color: #8E9AC2; animation-delay: 0.85s">gpt-6.1-sol · reviewed 30 Sep 2026 · <a href="#how">How this works</a></div>
+                </div>
+              </div>
+            </sc-if>
+          </sc-for>
+        </div>
+
+        <div role="group" aria-label="Choose a headline" style="display: flex; gap: 5px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 4px">
+          <sc-for list="{{reel}}" as="h" hint-placeholder-count="7">
+            <button type="button" aria-label="{{h.aria}}" aria-current="{{h.current}}" onClick="{{h.pick}}" style="flex: 1 1 0px; min-width: 0; height: 44px; padding: 0; border: none; background: transparent; cursor: pointer; display: flex; align-items: center">
+              <span style="position: relative; display: block; width: 100%; height: 3px; border-radius: 2px; background: rgba(255, 255, 255, 0.14); overflow: hidden">
+                <sc-if value="{{h.done}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; inset: 0; background: rgba(255, 255, 255, 0.45)"></span></sc-if>
+                <sc-if value="{{h.active}}" hint-placeholder-val="{{ false }}"><span class="{{fillClass}}" onAnimationEnd="{{next}}" style="position: absolute; inset: 0; background: {{accent}}; box-shadow: 0 0 10px {{accent}}; animation-play-state: {{playState}}"></span></sc-if>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+        <a href="{{reelHref}}" class="qx-press" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 14px; background-color: {{accent}}; color: #050A1C; font-weight: 600; font-size: 15px; text-decoration: none">Open {{reelLabel}} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#050A1C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
+      </div>
+    </section>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; color: #A9B6E0">OR PICK ONE OF THE SEVEN</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{tiles}}" as="t" hint-placeholder-count="7">
+          <a href="{{t.href}}" class="qx-lift" style="height: 76px; box-sizing: border-box; padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.10); background: rgba(255, 255, 255, 0.035); display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: #EEF2FF">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: {{accent}}">{{t.ticker}}</span>
+            <span style="font-family: Sora, system-ui, sans-serif; font-size: 15px; line-height: 1.2; font-weight: 600; letter-spacing: -0.01em">{{t.label}}</span>
+          </a>
+        </sc-for>
+      </div>
+      <span style="font-size: 13px; color: #8E9AC2">Every figure checked. Every headline reviewed by a person.</span>
+    </div>
+
+    <footer style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px">
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9B6E0">DATA TO THE END OF AUG 2026 · METHOD 1.0</span>
+      <span style="font-size: 12.5px; line-height: 1.55; color: #8E9AC2">Past results in pounds, measured at month-ends. Descriptive, never advice. Past behaviour does not predict future results.</span>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#86CCFF","options":["#86CCFF","#A9B8FF","#C7A9FF","#FFC07A"]},"motion":{"editor":"boolean","default":true},"$preview":{"width":390,"height":1520}}'>
+class Component extends DCLogic {
+  componentDidMount() {
+    try { this.reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { this.reduce = false; }
+    this.forceUpdate();
+  }
+  rgba(hex, a) {
+    let h = String(hex || '#86CCFF').replace('#', '');
+    if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+    const n = parseInt(h.slice(0, 6), 16);
+    return 'rgba(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ', ' + a + ')';
+  }
+  renderVals() {
+    const s = this.state || {};
+    const accent = this.props.accent ?? '#86CCFF';
+    const motion = (this.props.motion ?? true) && !this.reduce;
+    const i = s.i ?? 0;
+    const paused = !!s.paused;
+    const assets = [
+      { id: 'msft', label: 'Microsoft', name: 'Microsoft Corporation', ticker: 'MSFT', href: 'PhoneAsset.dc.html', text: 'Microsoft fell 35.5% in pounds from Dec 2007 to Feb 2009, leaving £10,000 invested at the high worth £6,450 at the low.' },
+      { id: 'aapl', label: 'Apple', name: 'Apple Inc.', ticker: 'AAPL', href: '#', text: 'Apple fell 41.5% in pounds from Dec 2007 to Dec 2008.' },
+      { id: 'nvda', label: 'Nvidia', name: 'NVIDIA Corporation', ticker: 'NVDA', href: '#', text: 'Nvidia’s value in pounds fell 72.5% from Sep 2007 to Nov 2008, and its annual volatility was 46.1%.' },
+      { id: 'sgln', label: 'Physical gold fund', name: 'iShares Physical Gold ETC', ticker: 'SGLN', href: '#', text: 'The physical gold fund fell 38.2% in pounds from Aug 2011 to Jul 2015.' },
+      { id: 'iglt', label: 'UK government bond fund', name: 'iShares Core UK Gilts UCITS ETF', ticker: 'IGLT', href: '#', text: 'The fund fell 31.9% from May 2020 to Oct 2023 and remained 25.9% below its high at the end of Aug 2026.' },
+      { id: 'azn', label: 'AstraZeneca', name: 'AstraZeneca PLC', ticker: 'AZN', href: '#', text: 'AstraZeneca fell 41.0% from Aug 2006 to Mar 2008, spending 43 months below its previous high before recovering.' },
+      { id: 'btc', label: 'Bitcoin', name: 'Bitcoin', ticker: 'BTC', href: '#', text: 'Bitcoin’s volatility was 72.5% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019.' }
+    ];
+    const reel = assets.map((a, k) => ({
+      ...a,
+      active: k === i,
+      done: k < i,
+      current: k === i ? 'true' : 'false',
+      aria: 'Show the headline for ' + a.label,
+      pick: () => this.setState({ i: k })
+    }));
+    const q = s.q ?? '';
+    const qq = q.trim().toLowerCase();
+    const results = qq ? assets.filter((a) => (a.label + ' ' + a.ticker + ' ' + a.name).toLowerCase().includes(qq)) : [];
+    return {
+      accent: accent,
+      glow: this.rgba(accent, 0.55),
+      soft: this.rgba(accent, 0.14),
+      line: this.rgba(accent, 0.45),
+      beamClass: motion ? 'qx-beam' : '',
+      riseClass: motion ? 'qx-rise' : '',
+      fillClass: motion ? 'qx-fill' : '',
+      playState: paused ? 'paused' : 'running',
+      paused: paused,
+      playing: !paused,
+      pauseLabel: paused ? 'Play the headlines' : 'Pause the headlines',
+      togglePause: () => this.setState({ paused: !((this.state || {}).paused) }),
+      next: () => this.setState({ i: (((this.state || {}).i ?? 0) + 1) % 7 }),
+      pos: String(i + 1),
+      reel: reel,
+      reelHref: assets[i].href,
+      reelLabel: assets[i].label,
+      q: q,
+      qShown: q.trim(),
+      onQ: (e) => this.setState({ q: e.target.value }),
+      results: results,
+      showResults: results.length > 0,
+      showMiss: qq.length > 0 && results.length === 0,
+      tiles: assets
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Microsoft, desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Sora:wght@500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#050A1C;color:#EEF2FF;font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:#9AD4FF}a:hover{color:#CBEAFF}
+@property --qa{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes qx-spin{to{--qa:360deg}}
+@keyframes qx-rise{from{opacity:0;transform:translateY(14px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.qx-beam{background:conic-gradient(from var(--qa),rgba(255,255,255,.10) 0deg,rgba(255,255,255,.10) 240deg,var(--qx-accent,#86CCFF) 300deg,#FFFFFF 322deg,rgba(255,255,255,.10) 350deg);animation:qx-spin 8s linear infinite}
+.qx-rise{animation:qx-rise .8s cubic-bezier(.2,.7,.2,1) both}
+.qx-press{transition:background-color .2s ease,box-shadow .2s ease,color .2s ease}
+.qx-press:hover{background-color:rgba(255,255,255,.07);box-shadow:0 0 28px -6px var(--qx-glow,rgba(134,204,255,.55))}
+.qx-card{transition:border-color .3s ease}
+:focus-visible{outline:2px solid #9AD4FF;outline-offset:3px}
+@media (prefers-reduced-motion: reduce){.qx-beam,.qx-rise{animation:none!important}.qx-press,.qx-card{transition:none}}
+</style>
+</helmet>
+<div style="width: 1440px; height: 5000px; box-sizing: border-box; position: relative; background-color: #050A1C; background-image: radial-gradient(1000px 700px at 8% -6%, rgba(70, 100, 255, 0.28), transparent 62%), radial-gradient(800px 600px at 100% 6%, rgba(150, 110, 255, 0.16), transparent 60%), radial-gradient(900px 700px at 0% 45%, rgba(60, 130, 255, 0.10), transparent 60%), radial-gradient(900px 700px at 100% 75%, rgba(140, 110, 255, 0.10), transparent 60%); color: #EEF2FF; --qx-accent: {{accent}}; --qx-glow: {{glow}}">
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; right: 0; height: 900px; background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.4px); background-size: 28px 28px; -webkit-mask-image: radial-gradient(ellipse 70% 70% at 60% 25%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 70% 70% at 60% 25%, #000 20%, transparent 75%); pointer-events: none"></div>
+
+  <div style="position: relative; box-sizing: border-box; padding: 28px 80px 64px 80px; display: flex; flex-direction: column">
+
+    <header style="display: flex; align-items: center; justify-content: space-between; height: 56px">
+      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: #EEF2FF; min-height: 44px">
+        <span style="width: 38px; height: 38px; border-radius: 12px; background-image: linear-gradient(145deg, {{accent}}, #5B5BFF); box-shadow: 0 0 26px -2px {{glow}}, inset 0 1px 0 rgba(255, 255, 255, 0.5); display: flex; align-items: center; justify-content: center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050A1C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="5.5"></circle><circle cx="15" cy="12" r="5.5"></circle></svg>
+        </span>
+        <span style="font-family: Sora, system-ui, sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.02em">[Product name]</span>
+      </a>
+      <nav aria-label="Main" style="display: flex; align-items: center; gap: 12px">
+        <a href="Main.dc.html" class="qx-press" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14); background-color: rgba(255, 255, 255, 0.04); font-size: 15px; font-weight: 500; color: #C9D2EE; text-decoration: none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9D2EE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+          Look up an investment
+        </a>
+        <a href="#how" class="qx-press" style="display: flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-size: 15px; font-weight: 500; color: #C9D2EE; text-decoration: none">How this works</a>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #C9D2EE; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.04); padding: 8px 12px; border-radius: 999px">NOT ADVICE</span>
+      </nav>
+    </header>
+
+    <a href="Main.dc.html" style="align-self: flex-start; margin-top: 28px; display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 15px; font-weight: 500; color: #A9B6E0; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A9B6E0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+      All seven
+    </a>
+
+    <div style="display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: end; margin-top: 16px">
+      <div style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 12px">
+        <div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; letter-spacing: 0.14em; color: #A9B6E0">SHARE · NASDAQ · COMMON STOCK</div>
+        <h1 style="margin: 0; font-family: Sora, system-ui, sans-serif; font-size: 88px; line-height: 1; font-weight: 700; letter-spacing: -0.045em; background-image: linear-gradient(180deg, #FFFFFF 30%, #B9C6F0 100%); -webkit-background-clip: text; background-clip: text; color: transparent">Microsoft</h1>
+        <div style="font-size: 18px; color: #B6C1E2">Microsoft Corporation · MSFT</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 6px">
+          <span style="font-size: 13px; font-weight: 500; color: #C9D2EE; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.04); padding: 7px 12px; border-radius: 999px">Trades in US dollars</span>
+          <span style="font-size: 13px; font-weight: 500; color: #C9D2EE; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.04); padding: 7px 12px; border-radius: 999px">Figures in pounds</span>
+          <span style="font-size: 13px; font-weight: 500; color: #C9D2EE; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.04); padding: 7px 12px; border-radius: 999px">Data to the end of Aug 2026</span>
+        </div>
+      </div>
+
+      <section aria-label="The headline" class="{{beamClass}}" style="border-radius: 30px; padding: 1px; background-color: rgba(255, 255, 255, 0.12); box-shadow: 0 50px 100px -50px {{glow}}">
+        <div style="border-radius: 29px; background-image: linear-gradient(180deg, rgba(17, 27, 66, 0.97), rgba(8, 13, 36, 0.98)); padding: 30px 36px 22px 36px; display: flex; flex-direction: column; gap: 22px">
+          <div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.14em; color: #A9B6E0">THE HEADLINE</div>
+          <p class="{{riseClass}}" style="margin: 0; font-family: Sora, system-ui, sans-serif; font-size: 30px; line-height: 1.3; font-weight: 600; letter-spacing: -0.02em; color: #F4F6FF; text-wrap: pretty">Microsoft fell 35.5% in pounds from Dec 2007 to Feb 2009, leaving £10,000 invested at the high worth £6,450 at the low.</p>
+          <ol aria-label="How this headline was made" style="list-style: none; margin: 0; padding: 20px 0 0 0; border-top: 1px solid rgba(255, 255, 255, 0.08); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0">
+            <li style="display: flex; flex-direction: column; gap: 12px">
+              <div style="display: flex; align-items: center">
+                <span style="flex-shrink: 0; width: 38px; height: 38px; box-sizing: border-box; border-radius: 12px; border: 1px solid {{st1.border}}; background: {{st1.bg}}; box-shadow: {{st1.shadow}}; color: {{st1.color}}; display: flex; align-items: center; justify-content: center; transition: box-shadow .4s ease, border-color .4s ease, color .4s ease"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2z"></path></svg></span>
+                <span aria-hidden="true" style="flex-grow: 1; height: 2px; margin: 0 12px; border-radius: 1px; background: rgba(255, 255, 255, 0.10); position: relative; overflow: hidden"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{cn1}}%; background: {{accent}}"></span></span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 14px; font-weight: 600; color: #EEF2FF">Drafted by AI</span>
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #8E9AC2">GPT-6.1-SOL</span>
+              </div>
+            </li>
+            <li style="display: flex; flex-direction: column; gap: 12px">
+              <div style="display: flex; align-items: center">
+                <span style="flex-shrink: 0; width: 38px; height: 38px; box-sizing: border-box; border-radius: 12px; border: 1px solid {{st2.border}}; background: {{st2.bg}}; box-shadow: {{st2.shadow}}; color: {{st2.color}}; display: flex; align-items: center; justify-content: center; transition: box-shadow .4s ease, border-color .4s ease, color .4s ease"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg></span>
+                <span aria-hidden="true" style="flex-grow: 1; height: 2px; margin: 0 12px; border-radius: 1px; background: rgba(255, 255, 255, 0.10); position: relative; overflow: hidden"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{cn2}}%; background: {{accent}}"></span></span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 14px; font-weight: 600; color: #EEF2FF">Checked by code</span>
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #8E9AC2">16 RULES · ALL PASSED</span>
+              </div>
+            </li>
+            <li style="display: flex; flex-direction: column; gap: 12px">
+              <div style="display: flex; align-items: center">
+                <span style="flex-shrink: 0; width: 38px; height: 38px; box-sizing: border-box; border-radius: 12px; border: 1px solid {{st3.border}}; background: {{st3.bg}}; box-shadow: {{st3.shadow}}; color: {{st3.color}}; display: flex; align-items: center; justify-content: center; transition: box-shadow .4s ease, border-color .4s ease, color .4s ease"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><path d="M16 11l2 2 4-4"></path></svg></span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 14px; font-weight: 600; color: #EEF2FF">Reviewed by a person</span>
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #8E9AC2">30 SEP 2026</span>
+              </div>
+            </li>
+          </ol>
+          <a href="#how" style="align-self: flex-start; display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 600; text-decoration: none; color: {{accent}}">How this works <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </section>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 256px minmax(0, 1fr); gap: 56px; align-items: start; margin-top: 72px">
+
+      <aside style="position: sticky; top: 24px; display: flex; flex-direction: column; gap: 28px">
+        <nav aria-label="Questions" style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.14em; color: #A9B6E0; padding: 0 12px 10px 12px">SIX QUESTIONS</div>
+          <sc-for list="{{rail}}" as="r" hint-placeholder-count="6">
+            <a href="{{r.href}}" onClick="{{r.pick}}" aria-current="{{r.current}}" class="qx-press" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; box-sizing: border-box; padding: 11px 12px; border-radius: 14px; text-decoration: none; color: {{r.color}}; background-color: {{r.bg}}; border: 1px solid {{r.border}}">
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; padding-top: 2px; color: {{r.numColor}}">{{r.num}}</span>
+              <span style="font-size: 15px; line-height: 1.4; font-weight: {{r.weight}}">{{r.title}}</span>
+            </a>
+          </sc-for>
+        </nav>
+        <div style="display: flex; flex-direction: column; gap: 6px; padding: 18px 12px 0 12px; border-top: 1px solid rgba(255, 255, 255, 0.08)">
+          <div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.14em; color: #A9B6E0">COMPARED WITH</div>
+          <div style="font-size: 15px; font-weight: 600">Developed-world tracker</div>
+          <div style="font-size: 13px; line-height: 1.5; color: #A3AFD4">iShares Core MSCI World UCITS ETF · SWDA</div>
+        </div>
+      </aside>
+
+      <div onMouseLeave="{{leave}}" style="display: flex; flex-direction: column; gap: 24px">
+
+        <section id="bumpy" class="qx-card" onMouseMove="{{c1.move}}" style="scroll-margin-top: 24px; border-radius: 28px; border: 1px solid {{c1.border}}; background: {{c1.bg}}; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 40px 80px -50px rgba(0, 0, 0, 0.8); padding: 36px 40px 28px 40px; display: flex; flex-direction: column; gap: 28px">
+          <div style="display: flex; align-items: baseline; gap: 16px">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; letter-spacing: 0.06em; color: {{accent}}">01</span>
+            <h2 style="margin: 0; font-family: Sora, system-ui, sans-serif; font-size: 30px; line-height: 1.2; font-weight: 600; letter-spacing: -0.02em">How bumpy is the ride?</h2>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: start">
+            <div style="display: flex; flex-direction: column; gap: 18px">
+              <div aria-hidden="true" style="font-family: Sora, system-ui, sans-serif; font-size: 104px; line-height: 0.95; font-weight: 700; letter-spacing: -0.045em; background-image: linear-gradient(180deg, #FFFFFF 25%, {{accent}} 140%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 30px {{soft}})">{{f1}}</div>
+              <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #DCE3F7">Its volatility was 22.6% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.</p>
+            </div>
+            <figure style="margin: 0; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(5, 10, 28, 0.55); padding: 24px; display: flex; flex-direction: column; gap: 18px">
+              <figcaption style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #A9B6E0">SAME MONTHS · JAN 2010 TO AUG 2026</figcaption>
+              <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 8px">
+                <div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 14px; color: #DCE3F7">Microsoft</span><span style="font-family: Sora, system-ui, sans-serif; font-size: 18px; font-weight: 600">21.3%</span></div>
+                <div style="height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); overflow: hidden"><div style="height: 12px; border-radius: 6px; width: {{b1}}%; background-image: linear-gradient(90deg, {{deep}}, {{accent}}); box-shadow: 0 0 18px {{glow}}"></div></div>
+              </div>
+              <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 8px">
+                <div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 14px; color: #DCE3F7">Developed-world tracker</span><span style="font-family: Sora, system-ui, sans-serif; font-size: 18px; font-weight: 600">11.7%</span></div>
+                <div style="height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); overflow: hidden"><div style="height: 12px; border-radius: 6px; width: {{b2}}%; background: rgba(238, 242, 255, 0.42)"></div></div>
+              </div>
+              <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #DCE3F7">Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 21.3% against the tracker's 11.7%.</p>
+            </figure>
+          </div>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future.</p>
+          <div style="display: flex; flex-direction: column; gap: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px">
+            <button type="button" aria-expanded="{{m1.exp}}" onClick="{{m1.toggle}}" class="qx-press" style="align-self: flex-start; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px 0 12px; margin-left: -12px; border: none; border-radius: 12px; background-color: transparent; font: inherit; font-size: 15px; font-weight: 600; color: {{accent}}; cursor: pointer">
+              {{m1.label}}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{m1.rot}}deg); transition: transform .3s ease"><path d="M6 9l6 6 6-6"></path></svg>
+            </button>
+            <sc-if value="{{m1.open}}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-direction: column; gap: 16px">
+                <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #FFD9A8; background: rgba(255, 192, 122, 0.06); border: 1px dashed rgba(255, 192, 122, 0.55); border-radius: 12px; padding: 12px 14px">[Method text for this card: to write and approve]</p>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px">
+                  <thead>
+                    <tr><th scope="col" style="text-align: left; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: #A9B6E0; padding: 0 0 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.10)">FIGURE</th><th scope="col" style="text-align: right; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: #A9B6E0; padding: 0 0 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.10)">VALUE</th><th scope="col" style="text-align: right; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: #A9B6E0; padding: 0 0 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.10)">PERIOD</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); color: #DCE3F7">Volatility, a year</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; font-weight: 600">22.6%</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; color: #A9B6E0">Aug 2007 to Aug 2026</td></tr>
+                    <tr><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); color: #DCE3F7">Same months as the tracker</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; font-weight: 600">21.3%</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; color: #A9B6E0">Jan 2010 to Aug 2026</td></tr>
+                    <tr><td style="padding: 11px 0; color: #DCE3F7">The tracker, same months</td><td style="padding: 11px 0; text-align: right; font-weight: 600">11.7%</td><td style="padding: 11px 0; text-align: right; color: #A9B6E0">Jan 2010 to Aug 2026</td></tr>
+                  </tbody>
+                </table>
+                <div style="font-size: 13px; line-height: 1.5; color: #A3AFD4">Monthly total returns in pounds. Sources: Tiingo (Microsoft), Alpha Vantage (developed-world tracker, US dollars per pound). Method 1.0.</div>
+              </div>
+            </sc-if>
+          </div>
+        </section>
+
+        <section id="worst" class="qx-card" onMouseMove="{{c2.move}}" style="scroll-margin-top: 24px; border-radius: 28px; border: 1px solid {{c2.border}}; background: {{c2.bg}}; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 40px 80px -50px rgba(0, 0, 0, 0.8); padding: 36px 40px 28px 40px; display: flex; flex-direction: column; gap: 28px">
+          <div style="display: flex; align-items: baseline; gap: 16px">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; letter-spacing: 0.06em; color: {{accent}}">02</span>
+            <h2 style="margin: 0; font-family: Sora, system-ui, sans-serif; font-size: 30px; line-height: 1.2; font-weight: 600; letter-spacing: -0.02em">What's the worst it's been?</h2>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: start">
+            <div style="display: flex; flex-direction: column; gap: 18px">
+              <div aria-hidden="true" style="font-family: Sora, system-ui, sans-serif; font-size: 104px; line-height: 0.95; font-weight: 700; letter-spacing: -0.045em; background-image: linear-gradient(180deg, #FFFFFF 25%, {{accent}} 140%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 30px {{soft}})">{{f2}}</div>
+              <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #DCE3F7">Since the end of Aug 2007, its largest fall, measured at month-end, was 35.5%: from its high at the end of Dec 2007 to its low at the end of Feb 2009, 14 months later.</p>
+            </div>
+            <figure style="margin: 0; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(5, 10, 28, 0.55); padding: 24px; display: flex; flex-direction: column; gap: 16px">
+              <figcaption style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #A9B6E0">£10,000 INVESTED AT THE HIGH</figcaption>
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px">
+                <span aria-hidden="true" style="font-family: Sora, system-ui, sans-serif; font-size: 56px; line-height: 1; font-weight: 700; letter-spacing: -0.03em; color: #F4F6FF">{{pounds}}</span>
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #A9B6E0; text-align: right">DEC 2007 TO FEB 2009</span>
+              </div>
+              <div aria-hidden="true" style="position: relative; height: 28px; box-sizing: border-box; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.14); background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0px, rgba(255, 255, 255, 0.10) 6px, transparent 6px, transparent 12px)">
+                <div style="position: absolute; top: 0; left: 0; bottom: 0; width: {{fillW}}%; background-image: linear-gradient(90deg, {{deep}}, {{accent}}); box-shadow: 0 0 24px {{glow}}"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 14px">
+                <span style="color: #DCE3F7">£6,450 at the low</span>
+                <span style="color: #A3AFD4">£3,550 less</span>
+              </div>
+            </figure>
+          </div>
+
+          <figure style="margin: 0; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(5, 10, 28, 0.55); padding: 24px 28px 28px 28px; display: flex; flex-direction: column; gap: 14px">
+            <figcaption style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #A9B6E0">HIGH TO BACK AT THE HIGH: 23 MONTHS</figcaption>
+            <div aria-hidden="true" style="display: flex; align-items: center; padding-top: 10px">
+              <span style="width: 16px; flex-shrink: 0"></span>
+              <span style="flex: 14 1 0px; text-align: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.06em; color: #C9D2EE">14 MONTHS</span>
+              <span style="width: 16px; flex-shrink: 0"></span>
+              <span style="flex: 9 1 0px; text-align: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.06em; color: #C9D2EE">9 MONTHS</span>
+              <span style="width: 16px; flex-shrink: 0"></span>
+            </div>
+            <div aria-hidden="true" style="display: flex; align-items: center">
+              <span style="width: 16px; height: 16px; box-sizing: border-box; flex-shrink: 0; border-radius: 50%; border: 2px solid {{accent}}; background: #050A1C; box-shadow: 0 0 14px {{glow}}"></span>
+              <span style="flex: 14 1 0px; height: 2px; background: rgba(255, 255, 255, 0.10); position: relative"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{segA}}%; background: {{accent}}; box-shadow: 0 0 10px {{accent}}"></span></span>
+              <span style="width: 16px; height: 16px; box-sizing: border-box; flex-shrink: 0; border-radius: 50%; border: 2px solid {{n2.border}}; background: #050A1C; box-shadow: {{n2.shadow}}; transition: box-shadow .4s ease, border-color .4s ease"></span>
+              <span style="flex: 9 1 0px; height: 2px; background: rgba(255, 255, 255, 0.10); position: relative"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{segB}}%; background: {{accent}}; box-shadow: 0 0 10px {{accent}}"></span></span>
+              <span style="width: 16px; height: 16px; box-sizing: border-box; flex-shrink: 0; border-radius: 50%; border: 2px solid {{n3.border}}; background: #050A1C; box-shadow: {{n3.shadow}}; transition: box-shadow .4s ease, border-color .4s ease"></span>
+            </div>
+            <div aria-hidden="true" style="display: flex; align-items: flex-start; height: 44px">
+              <span style="width: 16px; flex-shrink: 0; position: relative"><span style="position: absolute; left: 0; top: 0; white-space: nowrap; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 14px; font-weight: 600">High</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: #A9B6E0">END OF DEC 2007</span></span></span>
+              <span style="flex: 14 1 0px"></span>
+              <span style="width: 16px; flex-shrink: 0; position: relative"><span style="position: absolute; left: 8px; top: 0; transform: translateX(-50%); white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 4px"><span style="font-size: 14px; font-weight: 600">Low</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: #A9B6E0">END OF FEB 2009</span></span></span>
+              <span style="flex: 9 1 0px"></span>
+              <span style="width: 16px; flex-shrink: 0; position: relative"><span style="position: absolute; right: 0; top: 0; white-space: nowrap; display: flex; flex-direction: column; align-items: flex-end; gap: 4px"><span style="font-size: 14px; font-weight: 600">Back at the high</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: #A9B6E0">END OF NOV 2009</span></span></span>
+            </div>
+          </figure>
+
+          <div style="display: flex; flex-direction: column; gap: 12px">
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #DCE3F7">£10,000 invested at that high would have been worth £6,450 at the low, £3,550 less.</p>
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #DCE3F7">It was back at that high by the end of Nov 2009, 9 months after the low and 23 months after the high.</p>
+            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high.</p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px">
+            <button type="button" aria-expanded="{{m2.exp}}" onClick="{{m2.toggle}}" class="qx-press" style="align-self: flex-start; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px 0 12px; margin-left: -12px; border: none; border-radius: 12px; background-color: transparent; font: inherit; font-size: 15px; font-weight: 600; color: {{accent}}; cursor: pointer">
+              {{m2.label}}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{m2.rot}}deg); transition: transform .3s ease"><path d="M6 9l6 6 6-6"></path></svg>
+            </button>
+            <sc-if value="{{m2.open}}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; flex-direction: column; gap: 16px">
+                <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #FFD9A8; background: rgba(255, 192, 122, 0.06); border: 1px dashed rgba(255, 192, 122, 0.55); border-radius: 12px; padding: 12px 14px">[Method text for this card: to write and approve]</p>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px">
+                  <thead>
+                    <tr><th scope="col" style="text-align: left; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: #A9B6E0; padding: 0 0 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.10)">FIGURE</th><th scope="col" style="text-align: right; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: #A9B6E0; padding: 0 0 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.10)">VALUE</th><th scope="col" style="text-align: right; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: #A9B6E0; padding: 0 0 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.10)">PERIOD</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); color: #DCE3F7">Largest fall</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; font-weight: 600">35.5%</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; color: #A9B6E0">Dec 2007 to Feb 2009</td></tr>
+                    <tr><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); color: #DCE3F7">High to low</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; font-weight: 600">14 months</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; color: #A9B6E0">Dec 2007 to Feb 2009</td></tr>
+                    <tr><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); color: #DCE3F7">£10,000 at the low</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; font-weight: 600">£6,450</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; color: #A9B6E0">Dec 2007 to Feb 2009</td></tr>
+                    <tr><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); color: #DCE3F7">Less than £10,000</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; font-weight: 600">£3,550</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; color: #A9B6E0">Dec 2007 to Feb 2009</td></tr>
+                    <tr><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); color: #DCE3F7">Low to back at the high</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; font-weight: 600">9 months</td><td style="padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: right; color: #A9B6E0">Feb 2009 to Nov 2009</td></tr>
+                    <tr><td style="padding: 11px 0; color: #DCE3F7">High to back at the high</td><td style="padding: 11px 0; text-align: right; font-weight: 600">23 months</td><td style="padding: 11px 0; text-align: right; color: #A9B6E0">Dec 2007 to Nov 2009</td></tr>
+                  </tbody>
+                </table>
+                <div style="font-size: 13px; line-height: 1.5; color: #A3AFD4">Monthly total returns in pounds. Sources: Tiingo (Microsoft), Alpha Vantage (US dollars per pound). Method 1.0.</div>
+              </div>
+            </sc-if>
+          </div>
+        </section>
+
+        <section id="panic" class="qx-card" onMouseMove="{{c3.move}}" style="scroll-margin-top: 24px; border-radius: 28px; border: 1px solid {{c3.border}}; background: {{c3.bg}}; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 40px 80px -50px rgba(0, 0, 0, 0.8); padding: 36px 40px 28px 40px; display: flex; flex-direction: column; gap: 20px">
+          <div style="display: flex; align-items: baseline; gap: 16px; padding-bottom: 4px">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; letter-spacing: 0.06em; color: {{accent}}">03</span>
+            <h2 style="margin: 0; font-family: Sora, system-ui, sans-serif; font-size: 30px; line-height: 1.2; font-weight: 600; letter-spacing: -0.02em">What happened when markets panicked?</h2>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: center; padding: 20px 0; border-top: 1px solid rgba(255, 255, 255, 0.07)">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #DCE3F7">Global financial crisis (end of Sep 2007 to end of Mar 2009): down 8.3% over the period.</p>
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">The tracker: not covered.</p>
+            </div>
+            <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 12px">
+              <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 96px; align-items: center; gap: 12px">
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9B6E0">MICROSOFT</span>
+                <span style="height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.05); overflow: hidden; display: flex"><span style="height: 12px; border-radius: 6px; width: {{pg1}}%; background-image: linear-gradient(90deg, {{deep}}, {{accent}}); box-shadow: 0 0 16px {{glow}}"></span></span>
+                <span style="text-align: right; font-size: 15px; font-weight: 600">down 8.3%</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 96px; align-items: center; gap: 12px">
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9B6E0">TRACKER</span>
+                <span style="height: 12px; box-sizing: border-box; border-radius: 6px; border: 1px dashed rgba(255, 255, 255, 0.22)"></span>
+                <span style="text-align: right; font-size: 13px; color: #A9B6E0">not covered</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: center; padding: 20px 0; border-top: 1px solid rgba(255, 255, 255, 0.07)">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #DCE3F7">Covid crash (end of Jan 2020 to end of Mar 2020): down 1.1% over the period.</p>
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">The tracker: down 14.5% over the same period.</p>
+            </div>
+            <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 12px">
+              <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 96px; align-items: center; gap: 12px">
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9B6E0">MICROSOFT</span>
+                <span style="height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.05); overflow: hidden; display: flex"><span style="height: 12px; border-radius: 6px; width: {{pc1}}%; background-image: linear-gradient(90deg, {{deep}}, {{accent}}); box-shadow: 0 0 16px {{glow}}"></span></span>
+                <span style="text-align: right; font-size: 15px; font-weight: 600">down 1.1%</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 96px; align-items: center; gap: 12px">
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9B6E0">TRACKER</span>
+                <span style="height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.05); overflow: hidden; display: flex"><span style="height: 12px; border-radius: 6px; width: {{pc2}}%; background: rgba(238, 242, 255, 0.42)"></span></span>
+                <span style="text-align: right; font-size: 15px; font-weight: 600">down 14.5%</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: center; padding: 20px 0; border-top: 1px solid rgba(255, 255, 255, 0.07)">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #DCE3F7">2022 rate shock (end of Dec 2021 to end of Oct 2022): down 18.1% over the period.</p>
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">The tracker: down 6.0% over the same period.</p>
+            </div>
+            <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 12px">
+              <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 96px; align-items: center; gap: 12px">
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9B6E0">MICROSOFT</span>
+                <span style="height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.05); overflow: hidden; display: flex"><span style="height: 12px; border-radius: 6px; width: {{pr1}}%; background-image: linear-gradient(90deg, {{deep}}, {{accent}}); box-shadow: 0 0 16px {{glow}}"></span></span>
+                <span style="text-align: right; font-size: 15px; font-weight: 600">down 18.1%</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 96px; align-items: center; gap: 12px">
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9B6E0">TRACKER</span>
+                <span style="height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.05); overflow: hidden; display: flex"><span style="height: 12px; border-radius: 6px; width: {{pr2}}%; background: rgba(238, 242, 255, 0.42)"></span></span>
+                <span style="text-align: right; font-size: 15px; font-weight: 600">down 6.0%</span>
+              </div>
+            </div>
+          </div>
+
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4; border-top: 1px solid rgba(255, 255, 255, 0.07); padding-top: 20px">Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered.</p>
+          <div style="display: flex; flex-direction: column; gap: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px">
+            <button type="button" aria-expanded="{{m3.exp}}" onClick="{{m3.toggle}}" class="qx-press" style="align-self: flex-start; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px 0 12px; margin-left: -12px; border: none; border-radius: 12px; background-color: transparent; font: inherit; font-size: 15px; font-weight: 600; color: {{accent}}; cursor: pointer">
+              {{m3.label}}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{m3.rot}}deg); transition: transform .3s ease"><path d="M6 9l6 6 6-6"></path></svg>
+            </button>
+            <sc-if value="{{m3.open}}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-direction: column; gap: 16px">
+                <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #FFD9A8; background: rgba(255, 192, 122, 0.06); border: 1px dashed rgba(255, 192, 122, 0.55); border-radius: 12px; padding: 12px 14px">[Method text for this card: to write and approve]</p>
+                <div style="font-size: 13px; line-height: 1.5; color: #A3AFD4">Monthly total returns in pounds. Sources: Tiingo (Microsoft), Alpha Vantage (developed-world tracker, US dollars per pound). Method 1.0.</div>
+              </div>
+            </sc-if>
+          </div>
+        </section>
+
+        <section id="next" class="qx-card" onMouseMove="{{c4.move}}" style="scroll-margin-top: 24px; border-radius: 28px; border: 1px solid {{c4.border}}; background: {{c4.bg}}; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 40px 80px -50px rgba(0, 0, 0, 0.8); padding: 36px 40px 28px 40px; display: flex; flex-direction: column; gap: 28px">
+          <div style="display: flex; align-items: baseline; gap: 16px">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; letter-spacing: 0.06em; color: {{accent}}">04</span>
+            <h2 style="margin: 0; font-family: Sora, system-ui, sans-serif; font-size: 30px; line-height: 1.2; font-weight: 600; letter-spacing: -0.02em">What does it do next to the tracker?</h2>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: start">
+            <div style="display: flex; flex-direction: column; gap: 18px">
+              <div aria-hidden="true" style="font-family: Sora, system-ui, sans-serif; font-size: 104px; line-height: 0.95; font-weight: 700; letter-spacing: -0.045em; background-image: linear-gradient(180deg, #FFFFFF 25%, {{accent}} 140%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 30px {{soft}})">{{f4}}</div>
+              <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #DCE3F7">Its correlation with the tracker was 0.53, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.</p>
+            </div>
+            <figure style="margin: 0; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(5, 10, 28, 0.55); padding: 24px; display: flex; flex-direction: column; gap: 16px">
+              <figcaption style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #A9B6E0">CORRELATION WITH THE TRACKER</figcaption>
+              <div aria-hidden="true" style="position: relative; height: 64px; margin: 10px 8px 0 8px">
+                <div style="position: absolute; left: 0; right: 0; top: 30px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.12)"></div>
+                <div style="position: absolute; left: 0; top: 24px; width: 1px; height: 16px; background: rgba(255, 255, 255, 0.35)"></div>
+                <div style="position: absolute; left: 50%; top: 22px; width: 1px; height: 20px; background: rgba(255, 255, 255, 0.45)"></div>
+                <div style="position: absolute; right: 0; top: 24px; width: 1px; height: 16px; background: rgba(255, 255, 255, 0.35)"></div>
+                <div style="position: absolute; left: 53.5%; top: 24px; height: 16px; width: {{bandW}}%; box-sizing: border-box; border-radius: 8px; background: {{soft}}; border: 1px solid {{line}}"></div>
+                <div style="position: absolute; left: {{markX}}%; top: 18px; width: 28px; height: 28px; margin-left: -14px; border-radius: 50%; background: {{accent}}; box-shadow: 0 0 0 6px {{soft}}, 0 0 30px {{glow}}"></div>
+                <div style="position: absolute; left: {{markX}}%; top: -12px; transform: translateX(-50%); font-family: Sora, system-ui, sans-serif; font-size: 16px; font-weight: 600; color: #F4F6FF">0.53</div>
+              </div>
+              <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-size: 13px; line-height: 1.4; color: #A3AFD4">
+                <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #DCE3F7">−1</span><span>always opposite</span></div>
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #DCE3F7">0</span><span>no pattern</span></div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 2px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #DCE3F7">1</span><span>always in step</span></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #C9D2EE; padding-top: 4px"><span aria-hidden="true" style="width: 28px; height: 12px; box-sizing: border-box; border-radius: 6px; background: {{soft}}; border: 1px solid {{line}}; flex-shrink: 0"></span>Range across 36-month stretches: 0.07 to 0.79</div>
+            </figure>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px">
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #DCE3F7">Measured over each 36-month stretch, it ranged from 0.07 (the 36 months to the end of May 2015) to 0.79 (the 36 months to the end of Jun 2019).</p>
+            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection.</p>
+          </div>
+          <div style="border-radius: 20px; border: 1px dashed rgba(255, 255, 255, 0.20); padding: 24px 28px; display: flex; flex-direction: column; gap: 14px">
+            <div aria-hidden="true" style="display: flex; height: 38px; border-radius: 10px; overflow: hidden; gap: 3px">
+              <div style="flex: 90 1 0px; background: rgba(238, 242, 255, 0.14); display: flex; align-items: center; padding-left: 14px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; color: #DCE3F7">TRACKER 90%</div>
+              <div style="flex: 10 1 0px; background-image: linear-gradient(90deg, {{deep}}, {{accent}}); display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; color: #050A1C">10%</div>
+            </div>
+            <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #DCE3F7">As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 13.6% a year, against 12.5% a year for the tracker alone.</p>
+            <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #DCE3F7">The mix's volatility was 11.8% against the tracker's 11.7%, and its largest fall at month-end was 13.2% against 15.0%.</p>
+            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">Before fees, trading costs and tax.</p>
+            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">The tracker already holds these shares, so the 10% adds to a holding it already has.</p>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px">
+            <button type="button" aria-expanded="{{m4.exp}}" onClick="{{m4.toggle}}" class="qx-press" style="align-self: flex-start; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px 0 12px; margin-left: -12px; border: none; border-radius: 12px; background-color: transparent; font: inherit; font-size: 15px; font-weight: 600; color: {{accent}}; cursor: pointer">
+              {{m4.label}}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{m4.rot}}deg); transition: transform .3s ease"><path d="M6 9l6 6 6-6"></path></svg>
+            </button>
+            <sc-if value="{{m4.open}}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-direction: column; gap: 16px">
+                <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #FFD9A8; background: rgba(255, 192, 122, 0.06); border: 1px dashed rgba(255, 192, 122, 0.55); border-radius: 12px; padding: 12px 14px">[Method text for this card: to write and approve]</p>
+                <div style="font-size: 13px; line-height: 1.5; color: #A3AFD4">Monthly total returns in pounds. Sources: Tiingo (Microsoft), Alpha Vantage (developed-world tracker, US dollars per pound). Method 1.0.</div>
+              </div>
+            </sc-if>
+          </div>
+        </section>
+
+        <section id="pound" class="qx-card" onMouseMove="{{c5.move}}" style="scroll-margin-top: 24px; border-radius: 28px; border: 1px solid {{c5.border}}; background: {{c5.bg}}; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 40px 80px -50px rgba(0, 0, 0, 0.8); padding: 8px 40px; display: flex; flex-direction: column">
+          <h2 style="margin: 0">
+            <button type="button" aria-expanded="{{a5.exp}}" onClick="{{a5.toggle}}" style="width: 100%; min-height: 88px; display: flex; align-items: center; gap: 16px; border: none; background: transparent; padding: 0; color: #EEF2FF; font: inherit; cursor: pointer; text-align: left">
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; letter-spacing: 0.06em; color: {{accent}}">05</span>
+              <span style="flex-grow: 1; font-family: Sora, system-ui, sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">How much of it was the pound?</span>
+              <span style="width: 44px; height: 44px; box-sizing: border-box; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14); display: flex; align-items: center; justify-content: center; transform: rotate({{a5.rot}}deg); transition: transform .3s ease"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EEF2FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span>
+            </button>
+          </h2>
+          <sc-if value="{{a5.open}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 12px; padding: 4px 0 32px 0">
+              <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #DCE3F7">From the end of Aug 2007 to the end of Aug 2026: up 2,386.5% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 3,602.2%.</p>
+              <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #DCE3F7">Global financial crisis: down 35.8% in dollars, the dollar rose 43.0%, so down 8.3% in pounds.</p>
+              <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #DCE3F7">Covid crash: down 7.1% in dollars, the dollar rose 6.5%, so down 1.1% in pounds.</p>
+              <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #DCE3F7">2022 rate shock: down 30.5% in dollars, the dollar rose 17.9%, so down 18.1% in pounds.</p>
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">The two parts multiply rather than add, so they never simply add up to the figure in pounds.</p>
+            </div>
+          </sc-if>
+        </section>
+
+        <section id="limits" class="qx-card" onMouseMove="{{c6.move}}" style="scroll-margin-top: 24px; border-radius: 28px; border: 1px solid {{c6.border}}; background: {{c6.bg}}; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 40px 80px -50px rgba(0, 0, 0, 0.8); padding: 8px 40px; display: flex; flex-direction: column">
+          <h2 style="margin: 0">
+            <button type="button" aria-expanded="{{a6.exp}}" onClick="{{a6.toggle}}" style="width: 100%; min-height: 88px; display: flex; align-items: center; gap: 16px; border: none; background: transparent; padding: 0; color: #EEF2FF; font: inherit; cursor: pointer; text-align: left">
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; letter-spacing: 0.06em; color: {{accent}}">06</span>
+              <span style="flex-grow: 1; font-family: Sora, system-ui, sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">What these numbers don't capture</span>
+              <span style="width: 44px; height: 44px; box-sizing: border-box; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14); display: flex; align-items: center; justify-content: center; transform: rotate({{a6.rot}}deg); transition: transform .3s ease"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EEF2FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span>
+            </button>
+          </h2>
+          <sc-if value="{{a6.open}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 12px; padding: 4px 0 32px 0">
+              <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #DCE3F7">A single company's shares can fall a long way and stay down, and the company can fail.</p>
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A3AFD4">These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results.</p>
+            </div>
+          </sc-if>
+        </section>
+      </div>
+    </div>
+
+    <footer style="margin-top: 80px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 28px; display: flex; flex-direction: column; gap: 24px">
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; font-size: 14px; line-height: 1.6; color: #A3AFD4">
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #C9D2EE">DATA</div><div>Data to the end of Aug 2026 · Method 1.0 · Generated 29 Sep 2026</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #C9D2EE">SOURCES</div><div><a href="#">Tiingo</a> (Microsoft); <a href="#">Alpha Vantage</a> (developed-world tracker, US dollars per pound).</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #C9D2EE">IDENTITY</div><div>Microsoft Corporation, ISIN US5949181045, from a <a href="#">Morgan Stanley product page</a>.</div></div>
+      </div>
+      <p style="margin: 0; max-width: 900px; font-size: 13px; line-height: 1.6; color: #8E9AC2">Past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results. Descriptive, never advice.</p>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#86CCFF","options":["#86CCFF","#A9B8FF","#C7A9FF","#FFC07A"]},"motion":{"editor":"boolean","default":true},"$preview":{"width":1440,"height":5000}}'>
+class Component extends DCLogic {
+  componentDidMount() {
+    try { this.reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { this.reduce = false; }
+    this.play();
+  }
+  componentDidUpdate(prev) {
+    if (prev.motion !== this.props.motion) this.play();
+  }
+  componentWillUnmount() {
+    if (this.raf) cancelAnimationFrame(this.raf);
+  }
+  play() {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    const motion = (this.props.motion ?? true) && !this.reduce;
+    if (!motion) { this.setState({ ms: 99999 }); return; }
+    const start = performance.now();
+    const tick = (now) => {
+      const ms = now - start;
+      this.setState({ ms: ms });
+      if (ms < 3600) this.raf = requestAnimationFrame(tick);
+    };
+    this.setState({ ms: 0 });
+    this.raf = requestAnimationFrame(tick);
+  }
+  ease(ms, delay, dur) {
+    const t = Math.min(1, Math.max(0, (ms - delay) / dur));
+    return 1 - Math.pow(1 - t, 3);
+  }
+  rgba(hex, a) {
+    let h = String(hex || '#86CCFF').replace('#', '');
+    if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+    const n = parseInt(h.slice(0, 6), 16);
+    return 'rgba(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ', ' + a + ')';
+  }
+  renderVals() {
+    const s = this.state || {};
+    const accent = this.props.accent ?? '#86CCFF';
+    const motion = (this.props.motion ?? true) && !this.reduce;
+    const ms = s.ms ?? 99999;
+    const P = (d, u) => this.ease(ms, d, u);
+    const glow = this.rgba(accent, 0.55);
+    const soft = this.rgba(accent, 0.14);
+    const line = this.rgba(accent, 0.45);
+
+    const stepStyle = (lit) => lit
+      ? { border: line, bg: soft, shadow: '0 0 22px ' + glow, color: accent }
+      : { border: 'rgba(255, 255, 255, 0.14)', bg: 'rgba(255, 255, 255, 0.03)', shadow: 'none', color: '#7F8BB5' };
+    const k1 = P(300, 700);
+    const k2 = P(1100, 700);
+
+    const nodeStyle = (lit) => lit
+      ? { border: accent, shadow: '0 0 14px ' + glow }
+      : { border: 'rgba(255, 255, 255, 0.22)', shadow: 'none' };
+    const ta = P(1500, 900);
+    const tb = P(2450, 700);
+    const pd = P(700, 1700);
+
+    const card = (id) => {
+      const on = s.spot === id;
+      return {
+        border: on ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.09)',
+        bg: (on ? 'radial-gradient(640px circle at ' + s.sx + '% ' + s.sy + '%, ' + this.rgba(accent, 0.09) + ', transparent 45%), ' : '') + 'linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015))',
+        move: (e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          const sx = Math.round(((e.clientX - r.left) / r.width) * 100);
+          const sy = Math.round(((e.clientY - r.top) / r.height) * 100);
+          const st = this.state || {};
+          if (st.spot !== id || st.sx !== sx || st.sy !== sy) this.setState({ spot: id, sx: sx, sy: sy });
+        }
+      };
+    };
+
+    const toggle = (key, fallback) => {
+      const open = s[key] ?? fallback;
+      return {
+        open: open,
+        exp: open ? 'true' : 'false',
+        label: open ? 'Hide the maths' : 'Show the maths',
+        rot: open ? 180 : 0,
+        toggle: () => this.setState({ [key]: !(((this.state || {})[key]) ?? fallback) })
+      };
+    };
+
+    const qs = [
+      { id: 'bumpy', num: '01', title: 'How bumpy is the ride?' },
+      { id: 'worst', num: '02', title: "What's the worst it's been?" },
+      { id: 'panic', num: '03', title: 'What happened when markets panicked?' },
+      { id: 'next', num: '04', title: 'What does it do next to the tracker?' },
+      { id: 'pound', num: '05', title: 'How much of it was the pound?' },
+      { id: 'limits', num: '06', title: "What these numbers don't capture" }
+    ];
+    const act = s.active ?? 'bumpy';
+    const rail = qs.map((x) => {
+      const on = x.id === act;
+      return {
+        ...x,
+        href: '#' + x.id,
+        current: on ? 'true' : 'false',
+        color: on ? '#F4F6FF' : '#A9B6E0',
+        bg: on ? 'rgba(255, 255, 255, 0.06)' : 'transparent',
+        border: on ? line : 'transparent',
+        numColor: on ? accent : '#7F8BB5',
+        weight: on ? '600' : '500',
+        pick: () => {
+          const u = { active: x.id };
+          if (x.id === 'pound') u.a5 = true;
+          if (x.id === 'limits') u.a6 = true;
+          this.setState(u);
+        }
+      };
+    });
+
+    const acc = (key) => {
+      const open = !!s[key];
+      return { open: open, exp: open ? 'true' : 'false', rot: open ? 180 : 0, toggle: () => this.setState({ [key]: !((this.state || {})[key]) }) };
+    };
+
+    return {
+      accent: accent,
+      glow: glow,
+      soft: soft,
+      line: line,
+      deep: this.rgba(accent, 0.35),
+      beamClass: motion ? 'qx-beam' : '',
+      riseClass: motion ? 'qx-rise' : '',
+      st1: stepStyle(true),
+      st2: stepStyle(k1 >= 1),
+      st3: stepStyle(k2 >= 1),
+      cn1: (100 * k1).toFixed(1),
+      cn2: (100 * k2).toFixed(1),
+      f1: (22.6 * P(200, 1200)).toFixed(1) + '%',
+      f2: (35.5 * P(300, 1300)).toFixed(1) + '%',
+      f4: (0.53 * P(400, 1200)).toFixed(2),
+      b1: (100 * P(500, 1000)).toFixed(1),
+      b2: (54.9 * P(600, 1000)).toFixed(1),
+      pounds: '£' + (Math.round((10000 - 3550 * pd) / 10) * 10).toLocaleString('en-GB'),
+      fillW: (100 - 35.5 * pd).toFixed(2),
+      segA: (100 * ta).toFixed(1),
+      segB: (100 * tb).toFixed(1),
+      n2: nodeStyle(ta >= 1),
+      n3: nodeStyle(tb >= 1),
+      pg1: (45.9 * P(800, 1000)).toFixed(1),
+      pc1: (6.1 * P(900, 1000)).toFixed(1),
+      pc2: (80.1 * P(1000, 1000)).toFixed(1),
+      pr1: (100 * P(1100, 1000)).toFixed(1),
+      pr2: (33.1 * P(1200, 1000)).toFixed(1),
+      bandW: (36 * P(900, 1000)).toFixed(1),
+      markX: (50 + 26.5 * P(1100, 1200)).toFixed(2),
+      c1: card('bumpy'),
+      c2: card('worst'),
+      c3: card('panic'),
+      c4: card('next'),
+      c5: card('pound'),
+      c6: card('limits'),
+      m1: toggle('m1', false),
+      m2: toggle('m2', true),
+      m3: toggle('m3', false),
+      m4: toggle('m4', false),
+      a5: acc('a5'),
+      a6: acc('a6'),
+      rail: rail,
+      leave: () => this.setState({ spot: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

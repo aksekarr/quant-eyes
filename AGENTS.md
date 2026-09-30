@@ -153,3 +153,8 @@ Site
   temporary folders. Avi runs it.
 - `site/index.html` and `site/<id>/index.html` are generated output that Avi commits.
   Never create, edit or delete them by hand.
+- `docs/SITE-DESIGN.md` is the spec for the site's look, with the approved design boards
+  in `docs/design/` as reference only. `site/assets/site.css` is the only stylesheet.
+- `site/assets/fonts/` and `site/assets/icons/` hold assets Avi chose and recorded in
+  `ASSETS.md`. Never add, edit, remove or download an asset; if a slot has no approved
+  asset, leave it plain and say so.
