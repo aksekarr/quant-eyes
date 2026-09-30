@@ -1,0 +1,647 @@
+"""Render section 16's checked page data to HTML strings, without I/O."""
+
+import datetime
+import html
+import math
+import re
+
+
+SITE_NAME = "Quant explainer"
+HEADLINE_RULE_COUNT = 16
+
+_MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+_COUNTS = "one two three four five six seven eight nine ten eleven twelve".split()
+_CARD_IDS = ("bumpy", "worst", "panic", "next", "pound", "limits")
+_WINDOWS = ("gfc", "covid", "rate_shock")
+_TYPES = {
+    "share": "Share",
+    "etf": "Exchange-traded fund",
+    "etc": "Exchange-traded commodity",
+    "cryptocurrency": "Cryptocurrency",
+}
+_SHARED_KEYS = ("data_as_of", "data_as_of_text", "generated_on", "method_version")
+_TAGLINE = (
+    "How one more investment has behaved, and what it did next to a developed-world "
+    "tracker. In plain English, in pounds."
+)
+_DISCLAIMER = (
+    "Past results in pounds, measured at month-ends. Descriptive, never advice. "
+    "Past behaviour does not predict future results."
+)
+_METHODS = {
+    "bumpy": (
+        "A month's return is the change in value from one month-end to the next, in "
+        "pounds, with any income reinvested. Volatility is the standard deviation of "
+        "those monthly returns (the sample version, dividing by one fewer than the "
+        "number of months), multiplied by √12 to make it a yearly figure. That step "
+        "treats months as independent, which is an approximation."
+    ),
+    "worst": (
+        "At each month-end the value is compared with the highest month-end value so "
+        "far. The largest fall is the deepest drop below that high; if two are equally "
+        "deep, the earlier counts. The first month in the data counts as a high, so a "
+        "fall that began earlier is measured only from there. The high is the last "
+        "month-end at that level before the low; back at the high is the first "
+        "month-end at or above it. Months are counted between month-ends. The £10,000 "
+        "figure is £10,000 × (1 − the fall), rounded to the nearest £10."
+    ),
+    "panic": (
+        "Each window runs from the month-end before it starts to the month-end it "
+        "finishes: the 2022 rate shock runs from the end of Dec 2021 to the end of "
+        "Oct 2022. The figure is the change between those two month-ends, not the "
+        "largest fall inside the window. A window is shown only if the data covers "
+        "both month-ends; it is never shortened to fit."
+    ),
+    "next": (
+        "Correlation is the Pearson correlation of the two sets of monthly returns "
+        "in pounds, over the months both cover. The 36-month range repeats it for "
+        "every run of 36 consecutive months and shows the lowest and highest. The "
+        "90/10 mix starts at 90% tracker and 10% this investment; each part grows or "
+        "shrinks with its own returns, and at the end of every December the mix is "
+        "reset to 90/10. A yearly figure is the total return turned into a compound "
+        "rate: (1 + total return)^(12 ÷ months) − 1. Before fees, with no trading "
+        "costs or tax."
+    ),
+}
+_TABLE_LABELS = {
+    "bumpy.volatility": "Volatility, a year",
+    "bumpy.volatility_common": "Same months as the tracker",
+    "bumpy.tracker_volatility": "The tracker, same months",
+    "worst.months_to_low": "High to low",
+    "worst.ten_thousand_left": "£10,000 at the high, worth at the low",
+    "worst.ten_thousand_lost": "£10,000 at the high, less at the low",
+    "worst.months_to_recover": "Low to back at the high",
+    "worst.months_underwater": "Time below the high",
+    "worst.below_high_at_end": "Still below its high at the end",
+}
+
+
+class SiteError(Exception):
+    """Page data cannot be rendered under section 16's contract."""
+
+
+def _nonblank(value):
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _url(value):
+    return isinstance(value, str) and value.startswith("https://") and not re.search(r"\s", value)
+
+
+def _check_index(index):
+    for key in ("assets", "benchmark") + _SHARED_KEYS:
+        if key not in index:
+            raise SiteError("index: missing " + key)
+    assets = index["assets"]
+    if not isinstance(assets, list) or not 2 <= len(assets) <= 12:
+        raise SiteError("index: assets: count")
+    for asset in assets:
+        for field in ("id", "label", "name", "ticker", "type"):
+            if not isinstance(asset, dict) or not _nonblank(asset.get(field)):
+                raise SiteError("index: assets: missing " + field)
+    ids = set()
+    for asset in assets:
+        if asset["id"] in ids:
+            raise SiteError("index: assets: duplicate " + asset["id"])
+        ids.add(asset["id"])
+
+
+def _check_page(page, index):
+    """Validate in the specified order, returning a local claim lookup."""
+    for key in ("instrument", "benchmark") + _SHARED_KEYS + (
+        "sources", "cards", "claims", "headline"
+    ):
+        if key not in page:
+            raise SiteError("page: missing " + key)
+    instrument = page["instrument"]
+    asset_id = instrument["id"]
+    prefix = asset_id + ": "
+    entry = next((a for a in index["assets"] if a["id"] == asset_id), None)
+    if entry is None:
+        raise SiteError(prefix + "not in the index")
+    for key in _SHARED_KEYS:
+        if page[key] != index[key]:
+            raise SiteError(prefix + key + " differs from the index")
+    identity = instrument["identity"]
+    for key, value in (("label", instrument["label"]), ("name", identity["name"]),
+                       ("ticker", identity["ticker"])):
+        if value != entry[key]:
+            raise SiteError(prefix + key + " differs from the index")
+    if identity.get("type") not in _TYPES:
+        raise SiteError(prefix + "identity: type")
+    if identity.get("trading_currency") not in ("USD", "GBP"):
+        raise SiteError(prefix + "identity: trading_currency")
+    if any(not _url(url) for url in identity["sources"]):
+        raise SiteError(prefix + "identity: sources")
+    for source in page["sources"]:
+        if not isinstance(source, dict) or not _nonblank(source.get("provider")):
+            raise SiteError(prefix + "sources: provider")
+        if not _url(source.get("url")):
+            raise SiteError(prefix + "sources: url")
+        labels = source.get("used_for")
+        if not isinstance(labels, list) or not labels or not all(map(_nonblank, labels)):
+            raise SiteError(prefix + "sources: used_for")
+    cards = page["cards"]
+    if (not isinstance(cards, list) or any(not isinstance(c, dict) for c in cards)
+            or [c.get("id") for c in cards] != list(_CARD_IDS)):
+        raise SiteError(prefix + "cards: order")
+    for card in cards:
+        sentences = card.get("sentences")
+        if (not _nonblank(card.get("title")) or not isinstance(sentences, list)
+                or not sentences or any(
+                    not isinstance(s, dict) or not _nonblank(s.get("text"))
+                    for s in sentences
+                )):
+            raise SiteError(prefix + "cards: " + card["id"])
+    claims = {}
+    for claim in page["claims"]:
+        claim_id = claim["id"]
+        if claim_id in claims:
+            raise SiteError(prefix + "claims: duplicate " + claim_id)
+        claims[claim_id] = claim
+    if len(cards[0]["sentences"]) != 3:
+        raise SiteError(prefix + "bumpy: sentences")
+    for claim_id in ("bumpy.volatility", "bumpy.tracker_volatility"):
+        if claim_id not in claims:
+            raise SiteError(prefix + "claims: missing " + claim_id)
+    own = claims.get("bumpy.volatility_common", claims["bumpy.volatility"])
+    tracker = claims["bumpy.tracker_volatility"]
+    if any(own[key] != tracker[key] for key in ("period_start", "period_end")):
+        raise SiteError(prefix + "bumpy: periods differ")
+    fall = "worst.fall" in claims
+    if fall:
+        required = ("worst.months_to_low", "worst.ten_thousand_left",
+                    "worst.ten_thousand_lost", "worst.months_underwater")
+        recovery_count = sum(key in claims for key in (
+            "worst.months_to_recover", "worst.below_high_at_end"
+        ))
+        if any(key not in claims for key in required) or recovery_count != 1:
+            raise SiteError(prefix + "worst: claims")
+    elif any(key.startswith("worst.") for key in claims):
+        raise SiteError(prefix + "worst: claims")
+    if len(cards[1]["sentences"]) != (4 if fall else 1):
+        raise SiteError(prefix + "worst: sentences")
+    if len(cards[2]["sentences"]) != 7:
+        raise SiteError(prefix + "panic: sentences")
+    for window in _WINDOWS:
+        for claim_id in ("panic." + window, "panic." + window + ".tracker"):
+            if claim_id in claims and claims[claim_id].get("direction") not in ("up", "down", "flat"):
+                raise SiteError(prefix + "claims: direction " + claim_id)
+    for claim_id in ("next.correlation", "next.rolling_lowest", "next.rolling_highest"):
+        if claim_id not in claims:
+            raise SiteError(prefix + "claims: missing " + claim_id)
+    if len(cards[3]["sentences"]) not in (6, 7):
+        raise SiteError(prefix + "next: sentences")
+    headline = page["headline"]
+    if headline is not None:
+        if not isinstance(headline, dict):
+            raise SiteError(prefix + "headline: shape")
+        for field in ("text", "drafted_by"):
+            if not _nonblank(headline.get(field)):
+                raise SiteError(prefix + "headline: " + field)
+        reviewed = headline.get("reviewed_on")
+        if not isinstance(reviewed, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", reviewed):
+            raise SiteError(prefix + "headline: reviewed_on")
+        try:
+            datetime.date.fromisoformat(reviewed)
+        except ValueError:
+            raise SiteError(prefix + "headline: reviewed_on") from None
+    return claims
+
+
+def _month(value):
+    year, month = value.split("-")
+    return _MONTHS[int(month) - 1] + " " + year
+
+
+def _period(claim):
+    return _month(claim["period_start"]) + " to " + _month(claim["period_end"])
+
+
+def _day(value):
+    date = datetime.date.fromisoformat(value)
+    return "{} {} {}".format(date.day, _MONTHS[date.month - 1], value[:4])
+
+
+class _Markup:
+    """Keep escaping and the data-qx text contract at one output boundary."""
+
+    def __init__(self):
+        self.parts = ["<!doctype html>"]
+
+    def start(self, tag, attrs=None):
+        attributes = "".join(
+            " " + name if value is None else ' {}="{}"'.format(name, html.escape(value, quote=True))
+            for name, value in (attrs or {}).items()
+        )
+        self.parts.append("<" + tag + attributes + ">")
+
+    def end(self, tag):
+        self.parts.append("</" + tag + ">")
+
+    def text(self, role, text, key="", tag="p", attrs=None, text_attr=None):
+        attributes = {"data-qx": role}
+        if key:
+            attributes["data-qx-key"] = key
+        if text_attr:
+            attributes["data-qx-attr"] = text_attr
+            attributes[text_attr] = text
+        attributes.update(attrs or {})
+        self.start(tag, attributes)
+        if not text_attr:
+            self.parts[-1] += html.escape(text, quote=True)
+        if tag not in ("meta", "input", "link", "br"):
+            self.parts[-1] += "</" + tag + ">"
+
+    def size(self, asset_id, key, calculate):
+        try:
+            value = calculate()
+            if (isinstance(value, bool) or not isinstance(value, (int, float))
+                    or not math.isfinite(value) or not 0 <= value <= 1):
+                raise ValueError
+            size = format(float(value), ".4f")
+        except (TypeError, ValueError, OverflowError, ZeroDivisionError):
+            raise SiteError(asset_id + ": size: " + key) from None
+        self.text("size", "", key, tag="span", attrs={"style": "--qx-size:" + size})
+
+    def finish(self):
+        return "\n".join(self.parts) + "\n"
+
+
+def _head(out, title, description, prefix):
+    out.start("html", {"lang": "en-GB"})
+    out.start("head")
+    out.start("meta", {"charset": "utf-8"})
+    out.start("meta", {"name": "viewport", "content": "width=device-width, initial-scale=1"})
+    out.text("title", title, tag="title")
+    out.text("description", description, tag="meta", attrs={"name": "description"}, text_attr="content")
+    out.text("og-title", title, tag="meta", attrs={"property": "og:title"}, text_attr="content")
+    out.text("og-description", description, tag="meta", attrs={"property": "og:description"}, text_attr="content")
+    out.start("meta", {"property": "og:type", "content": "website"})
+    out.start("link", {"rel": "stylesheet", "href": prefix + "assets/site.css"})
+    out.start("script", {"src": prefix + "assets/site.js", "defer": None})
+    out.end("script")
+    out.end("head")
+    out.start("body")
+    out.start("header")
+    out.text("site-name", SITE_NAME, tag="a", attrs={"href": prefix or "./"})
+    out.text("not-advice", "Not advice")
+    out.end("header")
+
+
+def _source_text(source):
+    return source["provider"] + " (" + ", ".join(source["used_for"]) + ")"
+
+
+def _footer(out, data, sources, identity=None):
+    out.start("footer")
+    out.text("footer-data", data["data_as_of_text"] + " · Method " + data["method_version"])
+    out.text("sources-label", "Sources")
+    for source in sources:
+        out.text("source", _source_text(source), source["provider"], tag="a", attrs={"href": source["url"]})
+    if identity is not None:
+        name = identity["name"]
+        if identity["isin"]:
+            name += " · ISIN " + identity["isin"]
+        out.text("identity", name)
+        if identity["sources"]:
+            out.text("identity-label", "Identity from")
+            for i, url in enumerate(identity["sources"], 1):
+                out.text("identity-source", url[len("https://"):].split("/", 1)[0], str(i),
+                         tag="a", attrs={"href": url})
+    out.text("disclaimer", _DISCLAIMER)
+    out.end("footer")
+    out.end("body")
+    out.end("html")
+
+
+def _sentences(out, card, start=0, stop=None):
+    if stop is None:
+        stop = len(card["sentences"])
+    for i in range(start, stop):
+        out.text("sentence", card["sentences"][i]["text"], card["id"] + "." + str(i))
+
+
+def _card_sources(page, card_id):
+    own = page["instrument"]["label"]
+    tracker = page["benchmark"]["label"]
+    needed = {own}
+    if any(c["id"].startswith(card_id + ".") and c["series"] in ("tracker", "mix")
+           for c in page["claims"]):
+        needed.add(tracker)
+    if page["instrument"]["identity"]["trading_currency"] == "USD":
+        needed.update(label for source in page["sources"] for label in source["used_for"]
+                      if label not in (own, tracker))
+    sources = []
+    for source in page["sources"]:
+        labels = [label for label in source["used_for"] if label in needed]
+        if labels:
+            sources.append(_source_text({"provider": source["provider"], "used_for": labels}))
+    return (("Source: " if len(sources) == 1 else "Sources: ") + "; ".join(sources)
+            + ". Method " + page["method_version"] + ".")
+
+
+def _maths(out, page, card_id, claims):
+    out.start("details")
+    out.start("summary")
+    out.text("maths-show", "Show the maths", card_id, tag="span")
+    out.text("maths-hide", "Hide the maths", card_id, tag="span", attrs={"hidden": None})
+    out.end("summary")
+    out.text("maths-method", _METHODS[card_id], card_id)
+    rows = [c for c in page["claims"] if c["id"].startswith(card_id + ".")]
+    if card_id in ("bumpy", "worst") and rows:
+        out.start("table")
+        out.start("thead")
+        out.start("tr")
+        for key, label in (("figure", "Figure"), ("value", "Value"), ("period", "Period")):
+            out.text("maths-head", label, card_id + "." + key, tag="th", attrs={"scope": "col"})
+        out.end("tr")
+        out.end("thead")
+        out.start("tbody")
+        for claim in rows:
+            key = claim["id"]
+            if key == "worst.fall":
+                label = "Largest fall since " + _month(claims["bumpy.volatility"]["period_start"])
+            else:
+                label = _TABLE_LABELS[key]
+            out.start("tr")
+            out.text("maths-figure", label, key, tag="th", attrs={"scope": "row"})
+            out.text("maths-value", claim["display"], key, tag="td")
+            out.text("maths-period", _period(claim), key, tag="td")
+            out.end("tr")
+        out.end("tbody")
+        out.end("table")
+    out.text("maths-note", "Periods run from month-end to month-end. Each figure is rounded once, "
+             "from the unrounded calculation.", card_id)
+    out.text("maths-sources", _card_sources(page, card_id), card_id)
+    out.end("details")
+
+
+def _bumpy(out, page, card, claims):
+    asset_id = page["instrument"]["id"]
+    out.text("figure", claims["bumpy.volatility"]["display"], "bumpy.volatility")
+    _sentences(out, card, 0, 1)
+    own = claims.get("bumpy.volatility_common", claims["bumpy.volatility"])
+    tracker = claims["bumpy.tracker_volatility"]
+    out.text("bars-label", "Same months: " + _period(own))
+    for key, claim, label in (("bumpy.asset", own, page["instrument"]["label"]),
+                              ("bumpy.tracker", tracker, page["benchmark"]["label"])):
+        out.start("div")
+        out.text("bar-label", label, key)
+        out.text("bar-value", claim["display"], key)
+        out.size(asset_id, key, lambda: claim["value"] / max(own["value"], tracker["value"]))
+        out.end("div")
+    _sentences(out, card, 1)
+
+
+def _worst(out, page, card, claims):
+    if "worst.fall" not in claims:
+        _sentences(out, card)
+        return
+    asset_id = page["instrument"]["id"]
+    fall = claims["worst.fall"]
+    left = claims["worst.ten_thousand_left"]
+    low = claims["worst.months_to_low"]
+    under = claims["worst.months_underwater"]
+    recovery = claims.get("worst.months_to_recover")
+    out.text("figure", fall["display"], "worst.fall")
+    _sentences(out, card, 0, 1)
+    out.text("drain-label", "£10,000 invested at the high")
+    out.text("figure", left["display"], "worst.ten_thousand_left", attrs={"data-qx-from": "10000"})
+    out.text("drain-period", _period(fall))
+    out.size(asset_id, "worst.drain", lambda: left["value"] / 10000)
+    out.text("drain-left", left["display"] + " at the low")
+    out.text("drain-lost", claims["worst.ten_thousand_lost"]["display"] + " less")
+    if recovery is not None:
+        out.text("timeline-label", "High to back at the high: " + under["display"])
+    else:
+        out.text("timeline-label", "Below its high: " + under["display"]
+                 + ", to the end of " + _month(under["period_end"]))
+    out.text("segment", low["display"], "worst.fall")
+    out.size(asset_id, "worst.fall", lambda: low["value"] / under["value"])
+    if recovery is not None:
+        out.text("segment", recovery["display"], "worst.recovery")
+        out.size(asset_id, "worst.recovery", lambda: recovery["value"] / under["value"])
+        end_point = ("back", "Back at the high", recovery["period_end"])
+    else:
+        out.text("segment", "still " + claims["worst.below_high_at_end"]["display"]
+                 + " below its high", "worst.since-low")
+        out.size(asset_id, "worst.since-low", lambda: (under["value"] - low["value"]) / under["value"])
+        end_point = ("end", "Not recovered by", under["period_end"])
+    for key, label, month in (("high", "High", fall["period_start"]),
+                               ("low", "Low", fall["period_end"]), end_point):
+        out.text("point-label", label, key)
+        out.text("point-date", "end of " + _month(month), key)
+    _sentences(out, card, 1)
+
+
+def _direction(claim):
+    if claim is None:
+        return "not covered"
+    if claim["direction"] == "flat":
+        return "unchanged (" + claim["display"] + ")"
+    return claim["direction"] + " " + claim["display"]
+
+
+def _panic(out, page, card, claims):
+    for i, window in enumerate(_WINDOWS):
+        _sentences(out, card, 2 * i, 2 * i + 2)
+        if i == 0:
+            out.text("chips-label", "Over the period")
+        for series, label, suffix in (("asset", page["instrument"]["label"], ""),
+                                       ("tracker", "Tracker", ".tracker")):
+            key = window + "." + series
+            out.text("chip-label", label, key)
+            out.text("chip-value", _direction(claims.get("panic." + window + suffix)), key)
+    _sentences(out, card, 6)
+
+
+def _next(out, page, card, claims):
+    asset_id = page["instrument"]["id"]
+    correlation = claims["next.correlation"]
+    lowest = claims["next.rolling_lowest"]
+    highest = claims["next.rolling_highest"]
+    out.text("figure", correlation["display"], "next.correlation")
+    _sentences(out, card, 0, 1)
+    out.text("scale-label", "Correlation with the tracker")
+    out.text("scale-value", correlation["display"], "next.correlation")
+    out.size(asset_id, "next.correlation", lambda: (correlation["value"] + 1) / 2)
+    for key, mark, note in (("low", "−1", "always opposite"), ("mid", "0", "no pattern"),
+                             ("high", "1", "always in step")):
+        out.text("scale-mark", mark, key)
+        out.text("scale-note", note, key)
+    out.text("range", "Range across 36-month stretches: " + lowest["display"] + " to " + highest["display"])
+    out.size(asset_id, "next.range-low", lambda: (lowest["value"] + 1) / 2)
+    out.size(asset_id, "next.range-high", lambda: (highest["value"] + 1) / 2)
+    _sentences(out, card, 1, 3)
+    out.text("mix-part", "Tracker 90%", "next.tracker")
+    out.size(asset_id, "next.tracker", lambda: 0.9)
+    out.text("mix-part", page["instrument"]["label"] + " 10%", "next.asset")
+    out.size(asset_id, "next.asset", lambda: 0.1)
+    _sentences(out, card, 3)
+
+
+def render_page(page, index):
+    """Return an asset page as finished HTML after section 16.6 checks."""
+    _check_index(index)
+    claims = _check_page(page, index)
+    instrument = page["instrument"]
+    identity = instrument["identity"]
+    headline = page["headline"]
+    out = _Markup()
+    _head(out, instrument["label"] + ", in pounds · " + SITE_NAME,
+          headline["text"] if headline is not None else _TAGLINE, "../")
+    out.start("main")
+    out.text("back", "All " + _COUNTS[len(index["assets"]) - 1], tag="a", attrs={"href": "../"})
+    kicker = _TYPES[identity["type"]]
+    if identity["exchange"]:
+        kicker += " · " + identity["exchange"]
+    out.text("kicker", kicker)
+    out.text("asset-label", instrument["label"], tag="h1")
+    out.text("asset-name", identity["name"] + " · " + identity["ticker"])
+    out.text("tag", "Priced in US dollars" if identity["trading_currency"] == "USD"
+             else "Priced in pounds", "priced")
+    out.text("tag", "Figures in pounds", "figures")
+    out.text("tag", page["data_as_of_text"], "data")
+    out.text("section-label", "The headline", "headline")
+    if headline is None:
+        out.text("no-headline", "No reviewed headline for this data yet. A headline appears "
+                 "here only after a person has reviewed it.")
+    else:
+        out.text("headline", headline["text"], instrument["id"])
+        for key, label, detail in (
+            ("drafted", "Drafted by AI", headline["drafted_by"]),
+            ("checked", "Checked by code", _rules_passed()),
+            ("reviewed", "Reviewed by a person", _day(headline["reviewed_on"])),
+        ):
+            out.text("chain", label, key)
+            out.text("chain-detail", detail, key)
+    out.start("nav")
+    out.text("rail-label", "The questions")
+    for i, card in enumerate(page["cards"], 1):
+        out.start("a", {"href": "#" + card["id"]})
+        out.text("rail-number", format(i, "02d"), card["id"], tag="span")
+        out.text("rail-title", card["title"], card["id"], tag="span")
+        out.end("a")
+    out.text("compared-label", "Compared with")
+    out.text("benchmark-label", page["benchmark"]["label"])
+    benchmark = page["benchmark"]["identity"]
+    out.text("benchmark-name", benchmark["name"] + " · " + benchmark["ticker"])
+    out.end("nav")
+    renderers = {"bumpy": _bumpy, "worst": _worst, "panic": _panic, "next": _next}
+    for i, card in enumerate(page["cards"], 1):
+        card_id = card["id"]
+        out.start("section", {"id": card_id})
+        out.text("card-number", format(i, "02d"), card_id)
+        out.text("card-title", card["title"], card_id, tag="h2")
+        if card_id in renderers:
+            renderers[card_id](out, page, card, claims)
+            _maths(out, page, card_id, claims)
+        else:
+            _sentences(out, card)
+        out.end("section")
+    out.end("main")
+    _footer(out, page, page["sources"], identity)
+    return out.finish()
+
+
+def _rules_passed():
+    return "{0} of {0} rules passed".format(HEADLINE_RULE_COUNT)
+
+
+def _merge_sources(pages):
+    merged = {}
+    for page in pages:
+        for source in page["sources"]:
+            provider = source["provider"]
+            if provider not in merged:
+                merged[provider] = {"provider": provider, "url": source["url"], "used_for": []}
+            elif source["url"] != merged[provider]["url"]:
+                raise SiteError("landing: sources: " + provider + " url differs")
+            labels = merged[provider]["used_for"]
+            for label in source["used_for"]:
+                if label not in labels:
+                    labels.append(label)
+    return list(merged.values())
+
+
+def render_landing(index, pages):
+    """Return the landing page as finished HTML, preserving index order."""
+    _check_index(index)
+    if (not isinstance(pages, list)
+            or any(not isinstance(p, dict) or not isinstance(p.get("instrument"), dict)
+                   for p in pages)
+            or [p["instrument"].get("id") for p in pages]
+            != [a["id"] for a in index["assets"]]):
+        raise SiteError("landing: pages do not match the index")
+    for page in pages:
+        _check_page(page, index)
+    sources = _merge_sources(pages)
+    assets = index["assets"]
+    count = _COUNTS[len(assets) - 1]
+    out = _Markup()
+    _head(out, SITE_NAME + ": " + count + " investments in plain English", _TAGLINE, "")
+    out.start("main")
+    as_of = index["data_as_of_text"]
+    out.text("kicker", count.capitalize() + " investments · in pounds · " + as_of[:1].lower() + as_of[1:])
+    out.text("hero", "What am I actually getting into?", tag="h1")
+    out.text("tagline", _TAGLINE)
+    out.start("div", {"hidden": None})
+    out.text("search-label", "Look up an investment", tag="label", attrs={"for": "asset-search"})
+    out.text("search-hint", "Try " + assets[0]["label"] + " or " + assets[0]["ticker"],
+             tag="input", attrs={"id": "asset-search", "type": "search"}, text_attr="placeholder")
+    out.text("search-count", str(len(assets)) + " covered")
+    out.start("ul")
+    for asset in assets:
+        key = asset["id"]
+        out.start("li", {"hidden": None})
+        out.start("a", {"href": key + "/"})
+        for field in ("label", "ticker", "name"):
+            out.text("result-" + field, asset[field], key, tag="span")
+        out.end("a")
+        out.end("li")
+    out.end("ul")
+    out.start("div", {"hidden": None})
+    out.text("not-covered-title", "Not covered yet")
+    out.text("not-covered-text", "This site covers " + count + " investments in depth rather than "
+             "many in outline. Every figure comes from tested code, and every headline is reviewed by a person.")
+    out.end("div")
+    out.end("div")
+    headlines = [(asset, page["headline"]) for asset, page in zip(assets, pages) if page["headline"] is not None]
+    if headlines:
+        out.start("section")
+        out.text("section-label", "Headlines", "headlines")
+        for i, (asset, headline) in enumerate(headlines, 1):
+            key = asset["id"]
+            out.start("article")
+            out.text("slide-position", "{} / {}".format(i, len(headlines)), key)
+            out.text("slide-label", asset["label"], key)
+            out.text("slide-ticker", asset["ticker"], key)
+            out.text("headline", headline["text"], key)
+            out.text("slide-meta", headline["drafted_by"] + " · reviewed " + _day(headline["reviewed_on"]), key)
+            out.text("slide-open", "Open " + asset["label"], key, tag="a", attrs={"href": key + "/"})
+            out.end("article")
+        out.text("chain", "Drafted by AI", "drafted")
+        out.text("chain", "Checked by code: " + _rules_passed(), "checked")
+        out.text("chain", "Reviewed by a person", "reviewed")
+        out.start("div", {"hidden": None})
+        out.start("button", {"type": "button"})
+        out.text("pause", "Pause the headlines", tag="span")
+        out.text("play", "Play the headlines", tag="span", attrs={"hidden": None})
+        out.end("button")
+        for asset, headline in headlines:
+            out.text("segment", "Show the headline for " + asset["label"], asset["id"],
+                     tag="button", attrs={"type": "button"}, text_attr="aria-label")
+        out.end("div")
+        out.end("section")
+    out.text("tiles-label", "Or pick one of the " + count)
+    for asset in assets:
+        key = asset["id"]
+        out.start("a", {"href": key + "/"})
+        out.text("tile-ticker", asset["ticker"], key, tag="span")
+        out.text("tile-label", asset["label"], key, tag="span")
+        out.end("a")
+    out.text("strip", "Every figure comes from tested code. Every headline is reviewed by a person.")
+    out.end("main")
+    _footer(out, index, sources)
+    return out.finish()

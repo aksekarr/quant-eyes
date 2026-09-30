@@ -254,12 +254,15 @@ class InvarianceTests(unittest.TestCase):
             "page.py": {"copy", "pipeline.publish", "words.cards", "words.cards_567"},
         }
         source_paths.extend(root / "words" / name for name in allowed_words_imports)
+        source_paths.append(root / "web" / "render.py")
         for path in source_paths:
             package = path.parent.name
             if package == "engine":
                 module_allowlist = allowed_imports
             elif package == "pipeline":
                 module_allowlist = allowed_pipeline_imports[path.name]
+            elif package == "web":
+                module_allowlist = {"datetime", "html", "math", "re"}
             else:
                 module_allowlist = allowed_words_imports[path.name]
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
