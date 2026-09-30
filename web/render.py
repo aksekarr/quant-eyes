@@ -249,7 +249,10 @@ class _Markup:
         attributes.update(attrs or {})
         self.start(tag, attributes)
         if not text_attr:
-            self.parts[-1] += html.escape(text, quote=True)
+            escaped = html.escape(text, quote=True)
+            if role == "figure":
+                escaped = '<span data-layout="figure-text">' + escaped + '</span>'
+            self.parts[-1] += escaped
         if tag not in ("meta", "input", "link", "br"):
             self.parts[-1] += "</" + tag + ">"
 
@@ -603,13 +606,26 @@ def render_page(page, index):
         out.start("section", {"id": card_id})
         out.start("div", {"data-layout": "card-heading"})
         out.text("card-number", format(i, "02d"), card_id)
-        out.text("card-title", card["title"], card_id, tag="h2")
+        if card_id in ("next", "pound"):
+            out.start("h2", {"data-qx": "card-title", "data-qx-key": card_id})
+            out.start("button", {"type": "button", "data-accordion-toggle": "",
+                                 "aria-expanded": "true", "aria-disabled": "true",
+                                 "aria-controls": card_id + "-content"})
+            out.parts[-1] += html.escape(card["title"], quote=True)
+            out.end("button")
+            out.end("h2")
+        else:
+            out.text("card-title", card["title"], card_id, tag="h2")
         out.end("div")
+        if card_id in ("next", "pound"):
+            out.start("div", {"data-layout": "card-content", "id": card_id + "-content"})
         if card_id in renderers:
             renderers[card_id](out, page, card, claims)
             _maths(out, page, card_id, claims)
         else:
             _sentences(out, card)
+        if card_id in ("next", "pound"):
+            out.end("div")
         out.end("section")
     out.end("div")
     out.end("div")
@@ -712,7 +728,7 @@ def render_landing(index, pages):
         out.text("chain", "Reviewed by a person", "reviewed")
         out.end("div")
         out.start("div", {"data-layout": "headline-controls", "hidden": None})
-        out.start("button", {"type": "button"})
+        out.start("button", {"type": "button", "data-layout": "headline-toggle"})
         out.text("pause", "Pause the headlines", tag="span")
         out.text("play", "Play the headlines", tag="span", attrs={"hidden": None})
         out.end("button")

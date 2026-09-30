@@ -87,8 +87,8 @@ class SiteLookTests(unittest.TestCase):
         self.assertTrue(_STYLESHEET.is_file())
         self.assertTrue(self.css.strip())
         lowered = self.css.lower()
-        for token in ("http:", "https:", "@import", "@keyframes", "animation",
-                      "infinite", "javascript:", "expression("):
+        for token in ("http:", "https:", "@import", "infinite", "javascript:",
+                      "expression("):
             with self.subTest(token=token):
                 self.assertNotIn(token, lowered)
         self.assertNotRegex(lowered, r"url\(\s*['\"]?//")
