@@ -1163,6 +1163,16 @@ consecutive words. Each rule fails if any word or phrase on its list is present.
     passed "It fell 31.9% from May 2020 to Oct 2023 and took 75 months to get back to that
     high" for IGLT: both figures were real claims, and the sentence was false. IGLT had
     not recovered; 75 months was its time below the high so far.
+16. **currency**: only for a page whose asset trades in `USD` (its identity
+    `trading_currency` in the instrument list; section 8.1 allows only `GBP` and `USD`).
+    Each cited claim with currency `GBP` needs the phrase "in pounds", and each with
+    currency `USD` the phrase "in dollars": the two words, one after the other, among the
+    words (as rules 8 to 12 read them). A claim with no currency (a count of months, a
+    correlation) needs nothing. Added on 30 Sept, after the second drafts gave dollar
+    assets' falls in pounds without saying so: in 2008 the pound's fall made falls in
+    pounds far smaller than the same falls in dollars (Microsoft's card 6: down 35.8% in
+    dollars, 8.3% in pounds, over the financial-crisis window), so a reader who remembers
+    the dollar fall concludes the figure is wrong.
 
 Within a rule, problems follow the order they are found. The word lists are part of the
 method: changing one is a methodology change with its own golden cases.
@@ -1214,11 +1224,12 @@ The model drafts, code checks, Avi reviews. Avi's decisions (30 Sept):
 - Every draft, with its problems, goes to `words/headline_drafts.json`. Avi commits it as the record of what the model proposed.
 - He can redraft only the assets he names.
 - Amended the same morning, after review rejected 6 of the 7 first drafts (all passed the checker): prompt version 2 adds rule 6 (date a fall, never rank it), rule 12 bans superlatives, and time to recover is only ever offered from the high (`worst.months_underwater`). The from-the-low figure is the flattering one, and the first drafts mixed the two, which reversed a comparison between pages.
+- Amended again after review of the second drafts: the four dollar assets' headlines gave falls in pounds without saying so. Prompt version 3 adds rule 3 and an input line for a dollar asset (below), and the checker's rule 16 requires "in pounds" (or "in dollars") on a dollar asset.
 
 Only derived figures already on the page are sent, and the request asks OpenAI not to store the response.
 
 **Where the code lives.**
-- `words/headline.py`, pure like the rest of the module: `DRAFT_MODEL = "gpt-6.1-sol"`, `PROMPT_VERSION = "2"`, `DRAFT_INSTRUCTIONS`, `draft_request(page)` and `read_draft(response)`. It may import `json`, to read the model's answer.
+- `words/headline.py`, pure like the rest of the module: `DRAFT_MODEL = "gpt-6.1-sol"`, `PROMPT_VERSION = "3"`, `DRAFT_INSTRUCTIONS`, `draft_request(page)` and `read_draft(response)`. It may import `json`, to read the model's answer.
 - `pipeline/network.py`: `http_post_json(url, headers, body)`, next to `http_get_json` (section 9.7). It is still the only module that opens a connection.
 - `scripts/draft_headlines.py`: the command Avi runs, with his key. Its `main()` has no default arguments, and the script imports `pipeline.network` only under `if __name__ == "__main__":`. So a test that forgets its fake fails instead of reaching the network.
 
@@ -1249,6 +1260,7 @@ Only derived figures already on the page are sent, and the request asks OpenAI n
 Investment: <the instrument's label>
 Full name: <its identity name>
 Ticker: <its identity ticker>
+<the pounds line, for a dollar asset only>
 <data_as_of_text>.
 
 What its page says:
@@ -1261,6 +1273,7 @@ Figures you may cite (id | figure | direction | period):
 <recovery line>
 ```
 
+- The pounds line is `Every figure here is in pounds, but it trades in US dollars.`, written only when the page's instrument trades in `USD` (its identity `trading_currency`). For an asset that trades in pounds there is no such line.
 - A card's title is written only if the card has an offered sentence. Each such card is followed by its offered sentences, in order.
 - There is one figure line per offered claim, in order. The direction is `none` when the claim has none. The period is `period_start` and `period_end` written with `month_name`.
 - The recovery line depends on the recovery state:
@@ -1278,7 +1291,7 @@ The schema is below. With `strict`, the model can return only this shape and can
  "additionalProperties": false}
 ```
 
-`DRAFT_INSTRUCTIONS` (version 2, approved by Avi on 30 Sept) is the text below, filled in with Python's `str.format`. The placeholders are:
+`DRAFT_INSTRUCTIONS` (version 3, approved by Avi on 30 Sept) is the text below, filled in with Python's `str.format`. The placeholders are:
 - `{down}` and `{up}`: rule 14's lists.
 - `{recovery}`: rule 15's list.
 - `{advice}`, `{future}`, `{number}`, `{comparison}` and `{loaded}`: the lists of rules 8 to 12.
@@ -1293,12 +1306,13 @@ Write one sentence that gives the gist of what holding this investment was like,
 Rules:
 1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.
 2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.
-3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and "2022 rate shock" when citing that period's figure.
-4. If a cited figure's direction is down, use one of these words: {down}. If it is up, use one of these: {up}.
-5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.
-6. Do not rank a fall. The data starts at a fixed month, so a fall can't be called the largest, worst or deepest. Say when it happened instead, using its first and last months.
-7. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
-8. Never use these words or phrases:
+3. If the input says the investment trades in US dollars, write "in pounds" in the sentence: every figure is in pounds, and a fall in pounds can be very different from the same fall in dollars.
+4. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and "2022 rate shock" when citing that period's figure.
+5. If a cited figure's direction is down, use one of these words: {down}. If it is up, use one of these: {up}.
+6. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.
+7. Do not rank a fall. The data starts at a fixed month, so a fall can't be called the largest, worst or deepest. Say when it happened instead, using its first and last months.
+8. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
+9. Never use these words or phrases:
 - advice: {advice}
 - the future: {future}
 - numbers in words: {number}, or any word ending in "fold"
@@ -1383,7 +1397,7 @@ Error messages have the form `<who>: <step>: <ErrorType>: <message>`. The messag
    - `data_as_of` and `generated_on`: the pages'.
    - `drafted_on`: `today`, as `YYYY-MM-DD`.
    - `model`: `"gpt-6.1-sol"`.
-   - `prompt_version`: `"2"`.
+   - `prompt_version`: `"3"`.
    - `drafts`: asset id to draft.
 
    It is written as `json.dumps(value, indent=2, sort_keys=True, allow_nan=False, ensure_ascii=False) + "\n"` in UTF-8, to `headline_drafts.json.tmp`, replacing any left over. That file is read back, parsed, and must equal the value (`FAILED: drafts: write: read back differently`). Then it is renamed over `headline_drafts.json`. Any failure removes the temporary file (`FAILED: drafts: write: <ErrorType>[: <message>]`), and the previous drafts file is left as it was.
