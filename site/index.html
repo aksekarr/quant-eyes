@@ -17,14 +17,20 @@
 <a data-qx="site-name" href="./">Quant explainer</a>
 <p data-qx="not-advice">Not advice</p>
 </header>
-<main>
+<main data-layout="landing">
+<div data-layout="landing-intro">
 <p data-qx="kicker">Seven investments · in pounds · data to the end of Aug 2026</p>
-<h1 data-qx="hero">What am I actually getting into?</h1>
+<h1 data-qx="hero">What am I 
+<span data-layout="hero-accent">actually
+</span> getting into?
+</h1>
 <p data-qx="tagline">How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.</p>
-<div hidden>
+<div data-layout="search" hidden>
 <label data-qx="search-label" for="asset-search">Look up an investment</label>
+<div data-layout="search-field">
 <input data-qx="search-hint" data-qx-attr="placeholder" placeholder="Try Microsoft or MSFT" id="asset-search" type="search">
 <p data-qx="search-count">7 covered</p>
+</div>
 <ul>
 <li hidden>
 <a href="msft/">
@@ -76,73 +82,90 @@
 </a>
 </li>
 </ul>
-<div hidden>
+<div data-layout="not-covered" hidden>
 <p data-qx="not-covered-title">Not covered yet</p>
 <p data-qx="not-covered-text">This site covers seven investments in depth rather than many in outline. Every figure comes from tested code, and every headline is reviewed by a person.</p>
 </div>
 </div>
-<section>
+</div>
+<section data-layout="headlines">
 <p data-qx="section-label" data-qx-key="headlines">Headlines</p>
 <article>
+<div data-layout="slide-heading">
 <p data-qx="slide-position" data-qx-key="msft">1 / 7</p>
 <p data-qx="slide-label" data-qx-key="msft">Microsoft</p>
 <p data-qx="slide-ticker" data-qx-key="msft">MSFT</p>
+</div>
 <p data-qx="headline" data-qx-key="msft">Microsoft fell 35.5% in pounds from Dec 2007 to Feb 2009, leaving £10,000 invested at the high worth £6,450 at the low.</p>
 <p data-qx="slide-meta" data-qx-key="msft">gpt-6.1-sol · reviewed 30 Sep 2026</p>
 <a data-qx="slide-open" data-qx-key="msft" href="msft/">Open Microsoft</a>
 </article>
 <article>
+<div data-layout="slide-heading">
 <p data-qx="slide-position" data-qx-key="aapl">2 / 7</p>
 <p data-qx="slide-label" data-qx-key="aapl">Apple</p>
 <p data-qx="slide-ticker" data-qx-key="aapl">AAPL</p>
+</div>
 <p data-qx="headline" data-qx-key="aapl">Apple fell 41.5% in pounds from Dec 2007 to Dec 2008.</p>
 <p data-qx="slide-meta" data-qx-key="aapl">gpt-6.1-sol · reviewed 30 Sep 2026</p>
 <a data-qx="slide-open" data-qx-key="aapl" href="aapl/">Open Apple</a>
 </article>
 <article>
+<div data-layout="slide-heading">
 <p data-qx="slide-position" data-qx-key="nvda">3 / 7</p>
 <p data-qx="slide-label" data-qx-key="nvda">Nvidia</p>
 <p data-qx="slide-ticker" data-qx-key="nvda">NVDA</p>
+</div>
 <p data-qx="headline" data-qx-key="nvda">Nvidia’s value in pounds fell 72.5% from Sep 2007 to Nov 2008, and its annual volatility was 46.1%.</p>
 <p data-qx="slide-meta" data-qx-key="nvda">gpt-6.1-sol · reviewed 30 Sep 2026</p>
 <a data-qx="slide-open" data-qx-key="nvda" href="nvda/">Open Nvidia</a>
 </article>
 <article>
+<div data-layout="slide-heading">
 <p data-qx="slide-position" data-qx-key="sgln">4 / 7</p>
 <p data-qx="slide-label" data-qx-key="sgln">Physical gold fund</p>
 <p data-qx="slide-ticker" data-qx-key="sgln">SGLN</p>
+</div>
 <p data-qx="headline" data-qx-key="sgln">The physical gold fund fell 38.2% in pounds from Aug 2011 to Jul 2015.</p>
 <p data-qx="slide-meta" data-qx-key="sgln">gpt-6.1-sol · reviewed 30 Sep 2026</p>
 <a data-qx="slide-open" data-qx-key="sgln" href="sgln/">Open Physical gold fund</a>
 </article>
 <article>
+<div data-layout="slide-heading">
 <p data-qx="slide-position" data-qx-key="iglt">5 / 7</p>
 <p data-qx="slide-label" data-qx-key="iglt">UK government bond fund</p>
 <p data-qx="slide-ticker" data-qx-key="iglt">IGLT</p>
+</div>
 <p data-qx="headline" data-qx-key="iglt">The fund fell 31.9% from May 2020 to Oct 2023 and remained 25.9% below its high at the end of Aug 2026.</p>
 <p data-qx="slide-meta" data-qx-key="iglt">gpt-6.1-sol · reviewed 30 Sep 2026</p>
 <a data-qx="slide-open" data-qx-key="iglt" href="iglt/">Open UK government bond fund</a>
 </article>
 <article>
+<div data-layout="slide-heading">
 <p data-qx="slide-position" data-qx-key="azn">6 / 7</p>
 <p data-qx="slide-label" data-qx-key="azn">AstraZeneca</p>
 <p data-qx="slide-ticker" data-qx-key="azn">AZN</p>
+</div>
 <p data-qx="headline" data-qx-key="azn">AstraZeneca fell 41.0% from Aug 2006 to Mar 2008, spending 43 months below its previous high before recovering.</p>
 <p data-qx="slide-meta" data-qx-key="azn">gpt-6.1-sol · reviewed 30 Sep 2026</p>
 <a data-qx="slide-open" data-qx-key="azn" href="azn/">Open AstraZeneca</a>
 </article>
 <article>
+<div data-layout="slide-heading">
 <p data-qx="slide-position" data-qx-key="btc">7 / 7</p>
 <p data-qx="slide-label" data-qx-key="btc">Bitcoin</p>
 <p data-qx="slide-ticker" data-qx-key="btc">BTC</p>
+</div>
 <p data-qx="headline" data-qx-key="btc">Bitcoin’s volatility was 72.5% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019.</p>
 <p data-qx="slide-meta" data-qx-key="btc">gpt-6.1-sol · reviewed 30 Sep 2026</p>
 <a data-qx="slide-open" data-qx-key="btc" href="btc/">Open Bitcoin</a>
 </article>
+<div data-layout="chain">
 <p data-qx="chain" data-qx-key="drafted">Drafted by AI</p>
 <p data-qx="chain" data-qx-key="checked">Checked by code: 16 of 16 rules passed</p>
 <p data-qx="chain" data-qx-key="reviewed">Reviewed by a person</p>
-<div hidden>
+</div>
+<div data-layout="headline-controls" hidden>
 <button type="button">
 <span data-qx="pause">Pause the headlines</span>
 <span data-qx="play" hidden>Play the headlines</span>
@@ -156,7 +179,9 @@
 <button data-qx="segment" data-qx-key="btc" data-qx-attr="aria-label" aria-label="Show the headline for Bitcoin" type="button"></button>
 </div>
 </section>
+<div data-layout="tiles">
 <p data-qx="tiles-label">Or pick one of the seven</p>
+<div data-layout="tile-grid">
 <a href="msft/">
 <span data-qx="tile-ticker" data-qx-key="msft">MSFT</span>
 <span data-qx="tile-label" data-qx-key="msft">Microsoft</span>
@@ -185,13 +210,17 @@
 <span data-qx="tile-ticker" data-qx-key="btc">BTC</span>
 <span data-qx="tile-label" data-qx-key="btc">Bitcoin</span>
 </a>
+</div>
+</div>
 <p data-qx="strip">Every figure comes from tested code. Every headline is reviewed by a person.</p>
 </main>
 <footer>
 <p data-qx="footer-data">Data to the end of Aug 2026 · Method 1.0</p>
+<div data-layout="sources">
 <p data-qx="sources-label">Sources</p>
 <a data-qx="source" data-qx-key="Tiingo" href="https://www.tiingo.com">Tiingo (Microsoft, Apple, Nvidia, Bitcoin)</a>
 <a data-qx="source" data-qx-key="Alpha Vantage" href="https://www.alphavantage.co">Alpha Vantage (Developed-world tracker, US dollars per pound, Physical gold fund, UK government bond fund, AstraZeneca)</a>
+</div>
 <p data-qx="disclaimer">Past results in pounds, measured at month-ends. Descriptive, never advice. Past behaviour does not predict future results.</p>
 </footer>
 </body>
