@@ -8,6 +8,11 @@ files: they use its template syntax (`{{…}}`), inline styles, Google Fonts lin
 script of their own. Read them for layout, spacing, colour and type; never copy their
 fonts links, scripts, template syntax or placeholder text into the site.
 
+**Where this file and the boards differ, the boards win** (they are what Avi approved),
+except for the rules: text, order and sizes as section 16 fixes them; sizes only from
+`--qx-size`; `hidden` stays hidden; no JavaScript, no animation, no external URLs, no red
+or green.
+
 Task 9c is the **static look** only. No JavaScript and no animation: motion and
 interaction (count-ups, the border sweep, the headline pass, search, the phone
 accordions) are Task 9d. Without JavaScript, every page must still read well: the
@@ -32,9 +37,10 @@ attribute stay hidden.
 `url("fonts/<file>") format("woff2")`, with the family names `Sora`, `Atkinson
 Hyperlegible Next` and `IBM Plex Mono` and the weight in the file name.
 
-- **Sora** (600, 700): the site name, the landing heading, card titles, the asset name
-  and every large figure (`figure`, `scale-value`, `bar-value`).
-- **Atkinson Hyperlegible Next** (400, 600, 700): sentences, headlines and other text.
+- **Sora** (600, 700): the site name, the landing heading, card titles, the asset name,
+  the headline text (as the boards set it) and every large figure (`figure`,
+  `scale-value`, `bar-value`).
+- **Atkinson Hyperlegible Next** (400, 600, 700): sentences and other text.
 - **IBM Plex Mono** (400, 500): small labels (kicker, tags, section labels, chain,
   card numbers, maths heads, footer data), usually upper case with letter spacing, as
   on the canvas.
@@ -70,7 +76,8 @@ the full width, so what the eye compares is the true ratio.
 - Volatility bars: two bars on identical tracks, asset and tracker.
 - The £10,000 bar: a full track for £10,000 with the part left filled to `worst.drain`.
 - The timeline: the fall and the recovery (or the time since the low) as two segments
-  whose widths are their sizes, with the points beneath.
+  whose lengths are their sizes: horizontal with the points beneath on desktop, vertical
+  with the labels beside on phone, as the boards draw them.
 - The correlation scale: a track from −1 to 1, the range band from `next.range-low` to
   `next.range-high`, and the marker at `next.correlation`.
 - The 90/10 bar: two parts, 90 and 10.
@@ -80,9 +87,10 @@ Straight shapes only. Nothing that looks like a price line or chart.
 ## Layout
 
 - **Desktop** (1024px and wider): as the desktop boards. On the landing page, the heading,
-  tagline, search and tiles sit on the left and the headlines card on the right. On an
-  asset page, the questions sit in a sticky rail beside the cards, and each card leads with
-  its large figure, with the sentence under it and the visual beside or below, as drawn.
+  tagline and search sit on the left and the headlines card on the right, with the tiles
+  as a full-width row below both. On an asset page, the questions sit in a sticky rail
+  beside the cards, and each card leads with its large figure, with the sentence under
+  it and the visual beside or below, as drawn.
 - **Phone** (below 640px): as the phone boards: one column, the questions as a
   horizontal row of pills, cards stacked, touch targets at least 44px.
 - In between: a sensible blend. No horizontal scrolling at 360px wide.
