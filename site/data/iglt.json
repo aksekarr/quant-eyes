@@ -513,7 +513,15 @@
   "data_as_of": "2026-08",
   "data_as_of_text": "Data to the end of Aug 2026",
   "generated_on": "2026-09-29",
-  "headline": null,
+  "headline": {
+    "claims": [
+      "worst.fall",
+      "worst.below_high_at_end"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "The fund fell 31.9% from May 2020 to Oct 2023 and remained 25.9% below its high at the end of Aug 2026."
+  },
   "instrument": {
     "id": "iglt",
     "identity": {

@@ -717,7 +717,15 @@
   "data_as_of": "2026-08",
   "data_as_of_text": "Data to the end of Aug 2026",
   "generated_on": "2026-09-29",
-  "headline": null,
+  "headline": {
+    "claims": [
+      "worst.fall",
+      "bumpy.volatility"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "Nvidia’s value in pounds fell 72.5% from Sep 2007 to Nov 2008, and its annual volatility was 46.1%."
+  },
   "instrument": {
     "id": "nvda",
     "identity": {

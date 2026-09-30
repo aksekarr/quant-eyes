@@ -482,7 +482,14 @@
   "data_as_of": "2026-08",
   "data_as_of_text": "Data to the end of Aug 2026",
   "generated_on": "2026-09-29",
-  "headline": null,
+  "headline": {
+    "claims": [
+      "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "The physical gold fund fell 38.2% in pounds from Aug 2011 to Jul 2015."
+  },
   "instrument": {
     "id": "sgln",
     "identity": {

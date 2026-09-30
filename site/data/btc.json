@@ -632,7 +632,15 @@
   "data_as_of": "2026-08",
   "data_as_of_text": "Data to the end of Aug 2026",
   "generated_on": "2026-09-29",
-  "headline": null,
+  "headline": {
+    "claims": [
+      "bumpy.volatility",
+      "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "Bitcoin’s volatility was 72.5% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019."
+  },
   "instrument": {
     "id": "btc",
     "identity": {

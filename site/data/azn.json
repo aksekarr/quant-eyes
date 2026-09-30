@@ -517,7 +517,15 @@
   "data_as_of": "2026-08",
   "data_as_of_text": "Data to the end of Aug 2026",
   "generated_on": "2026-09-29",
-  "headline": null,
+  "headline": {
+    "claims": [
+      "worst.fall",
+      "worst.months_underwater"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "AstraZeneca fell 41.0% from Aug 2006 to Mar 2008, spending 43 months below its previous high before recovering."
+  },
   "instrument": {
     "id": "azn",
     "identity": {

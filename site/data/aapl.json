@@ -717,7 +717,14 @@
   "data_as_of": "2026-08",
   "data_as_of_text": "Data to the end of Aug 2026",
   "generated_on": "2026-09-29",
-  "headline": null,
+  "headline": {
+    "claims": [
+      "worst.fall"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "Apple fell 41.5% in pounds from Dec 2007 to Dec 2008."
+  },
   "instrument": {
     "id": "aapl",
     "identity": {
