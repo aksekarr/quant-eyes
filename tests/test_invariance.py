@@ -250,7 +250,7 @@ class InvarianceTests(unittest.TestCase):
             "cards_567.py": {
                 "decimal", "math", "numbers", "re", "engine.series", "words.cards",
             },
-            "headline.py": {"copy", "re", "pipeline.publish", "words.cards"},
+            "headline.py": {"copy", "json", "re", "pipeline.publish", "words.cards"},
             "page.py": {"copy", "pipeline.publish", "words.cards", "words.cards_567"},
         }
         source_paths.extend(root / "words" / name for name in allowed_words_imports)
@@ -309,6 +309,15 @@ class InvarianceTests(unittest.TestCase):
             {"eval", "exec", "__import__", "getenv"},
         )
         self.assertNotIn(".environ", pages_path.read_text(encoding="utf-8"))
+        self._check_file_io_source(
+            root / "scripts" / "draft_headlines.py",
+            {
+                "datetime", "json", "os", "pathlib", "re", "sys",
+                "pipeline.network", "pipeline.providers", "pipeline.publish",
+                "words.cards", "words.headline",
+            },
+            {"eval", "exec", "__import__"},
+        )
 
     def _check_file_io_source(self, path, allowed_imports, forbidden_calls):
         """Keep the writer and command within their explicit I/O boundaries."""

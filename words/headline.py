@@ -1,6 +1,7 @@
 """Check drafted and approved headlines for methodology section 15."""
 
 from copy import deepcopy
+import json
 import re
 
 from pipeline.publish import _date_from_text
@@ -55,6 +56,38 @@ UP_WORDS = (
     "rise", "rises", "rose", "risen", "rising", "gain", "gains", "gained", "up",
     "grew", "grow", "grown", "growth", "increase", "increased", "increases",
     "higher", "above",
+)
+
+DRAFT_MODEL = "gpt-6.1-sol"
+PROMPT_VERSION = "1"
+
+_DRAFT_INSTRUCTIONS_TEMPLATE = """You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.
+
+Write one sentence that gives the gist of what holding this investment was like, using one or two of the figures you are given. Return the sentence as "text" and the ids of the figures it uses as "claims".
+
+Rules:
+1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.
+2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.
+3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and "2022 rate shock" when citing that period's figure.
+4. If a cited figure's direction is down, use one of these words: {down}. If it is up, use one of these: {up}.
+5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.
+6. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
+7. Never use these words or phrases:
+- advice: {advice}
+- the future: {future}
+- numbers in words: {number}, or any word ending in "fold"
+- comparisons: {comparison}
+- loaded words: {loaded}"""
+
+DRAFT_INSTRUCTIONS = _DRAFT_INSTRUCTIONS_TEMPLATE.format(
+    down=", ".join(DOWN_WORDS),
+    up=", ".join(UP_WORDS),
+    recovery=", ".join(RECOVERY_WORDS),
+    advice=", ".join(ADVICE_WORDS),
+    future=", ".join(FUTURE_WORDS),
+    number=", ".join(NUMBER_WORDS),
+    comparison=", ".join(COMPARISON_WORDS),
+    loaded=", ".join(LOADED_WORDS),
 )
 
 _WORD_PATTERN = re.compile(r"[a-z]+(?:'[a-z]+)*")
@@ -123,6 +156,16 @@ def _listed_hits(words, entries):
             if phrase in phrases:
                 hits.append(phrase)
     return hits
+
+
+def _recovery_state(page):
+    """Return section 15's recovery state from all claims on the page."""
+    page_claim_ids = {claim["id"] for claim in page["claims"]}
+    if "worst.below_high_at_end" in page_claim_ids:
+        return "not recovered"
+    if "worst.months_to_recover" in page_claim_ids:
+        return "recovered"
+    return "no fall"
 
 
 def check_headline(text, claim_ids, page, registry):
@@ -233,13 +276,7 @@ def check_headline(text, claim_ids, page, registry):
             problems.append(_problem("direction", "{} lacks a {} word".format(claim["id"], direction)))
 
     recovery_words = _word_runs(uncovered_text)
-    page_claim_ids = {claim["id"] for claim in page["claims"]}
-    if "worst.below_high_at_end" in page_claim_ids:
-        recovery_state = "not recovered"
-    elif "worst.months_to_recover" in page_claim_ids:
-        recovery_state = "recovered"
-    else:
-        recovery_state = "no fall"
+    recovery_state = _recovery_state(page)
     for index, word in enumerate(recovery_words):
         if word not in RECOVERY_WORDS:
             continue
@@ -255,6 +292,183 @@ def check_headline(text, claim_ids, page, registry):
                 "recovery", "{} conflicts with {}".format(word, recovery_state),
             ))
     return problems
+
+
+def draft_request(page):
+    """Build one section 15.3 Responses API request from a page."""
+    claims_by_id = {claim["id"]: claim for claim in page["claims"]}
+    offered_cards = []
+    offered_claims = []
+    offered_ids = set()
+
+    for card in page["cards"]:
+        if card["id"] not in ("bumpy", "worst", "panic"):
+            continue
+        offered_sentences = []
+        for sentence in card["sentences"]:
+            claim_ids = sentence["claims"]
+            for claim_id in claim_ids:
+                if claim_id not in claims_by_id:
+                    raise WordsError(
+                        "{} is not a claim on the page.".format(claim_id)
+                    )
+            if not claim_ids:
+                continue
+            claims = [claims_by_id[claim_id] for claim_id in claim_ids]
+            if not all(
+                claim.get("series") == "asset"
+                and claim.get("kind") == "observed"
+                for claim in claims
+            ):
+                continue
+            offered_sentences.append(sentence["text"])
+            for claim in claims:
+                if claim["id"] not in offered_ids:
+                    offered_ids.add(claim["id"])
+                    offered_claims.append(claim)
+        if offered_sentences:
+            offered_cards.append((card["title"], offered_sentences))
+
+    if not offered_claims:
+        raise WordsError("page has no figures to cite.")
+
+    instrument = page["instrument"]
+    lines = [
+        "Investment: " + instrument["label"],
+        "Full name: " + instrument["identity"]["name"],
+        "Ticker: " + instrument["identity"]["ticker"],
+        page["data_as_of_text"] + ".",
+        "",
+        "What its page says:",
+    ]
+    for title, sentences in offered_cards:
+        lines.append(title)
+        lines.extend("- " + sentence for sentence in sentences)
+
+    lines.extend((
+        "",
+        "Figures you may cite (id | figure | direction | period):",
+    ))
+    for claim in offered_claims:
+        lines.append("{} | {} | {} | {} to {}".format(
+            claim["id"],
+            claim["display"],
+            claim.get("direction") or "none",
+            month_name(claim["period_start"]),
+            month_name(claim["period_end"]),
+        ))
+
+    recovery_lines = {
+        "not recovered": "Its largest fall had not recovered by the end of the data.",
+        "recovered": "Its largest fall recovered.",
+        "no fall": "It had not fallen below a previous high at any month-end.",
+    }
+    lines.extend(("", recovery_lines[_recovery_state(page)]))
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "text": {"type": "string"},
+            "claims": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [claim["id"] for claim in offered_claims],
+                },
+            },
+        },
+        "required": ["text", "claims"],
+        "additionalProperties": False,
+    }
+    return {
+        "model": DRAFT_MODEL,
+        "instructions": DRAFT_INSTRUCTIONS,
+        "input": "\n".join(lines),
+        "text": {
+            "format": {
+                "type": "json_schema",
+                "name": "headline",
+                "strict": True,
+                "schema": schema,
+            },
+        },
+        "reasoning": {"effort": "medium"},
+        "max_output_tokens": 8000,
+        "store": False,
+    }
+
+
+def _identifier(value):
+    return (
+        isinstance(value, str)
+        and 1 <= len(value) <= 64
+        and all(character in "abcdefghijklmnopqrstuvwxyz0123456789_" for character in value)
+    )
+
+
+def read_draft(response):
+    """Read one section 15.3 response without exposing response contents."""
+    if type(response) is not dict:
+        raise WordsError("response is not an object")
+
+    status = response.get("status")
+    if status != "completed":
+        message = "status " + (status if _identifier(status) else "unreadable")
+        reason = None
+        incomplete = response.get("incomplete_details")
+        if type(incomplete) is dict and _identifier(incomplete.get("reason")):
+            reason = incomplete["reason"]
+        error = response.get("error")
+        if reason is None and type(error) is dict and _identifier(error.get("code")):
+            reason = error["code"]
+        if reason is not None:
+            message += " ({})".format(reason)
+        raise WordsError(message)
+
+    model = response.get("model")
+    if not isinstance(model, str) or not model or model != model.strip():
+        raise WordsError("model missing")
+
+    output = response.get("output")
+    if type(output) is not list:
+        raise WordsError("output missing")
+    answers = [
+        item for item in output
+        if type(item) is dict
+        and item.get("type") == "message"
+        and item.get("phase") != "commentary"
+    ]
+    if len(answers) != 1:
+        raise WordsError("{} answers".format(len(answers)))
+
+    content = answers[0].get("content")
+    if type(content) is not list or not content:
+        raise WordsError("answer has no content")
+    if any(
+        type(item) is dict and item.get("type") == "refusal"
+        for item in content
+    ):
+        raise WordsError("the model refused")
+    if not all(
+        type(item) is dict
+        and item.get("type") == "output_text"
+        and isinstance(item.get("text"), str)
+        for item in content
+    ):
+        raise WordsError("unexpected content")
+
+    answer_text = "".join(item["text"] for item in content)
+    try:
+        headline = json.loads(answer_text)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        raise WordsError("answer is not a headline object") from None
+    if type(headline) is not dict or set(headline) != {"text", "claims"}:
+        raise WordsError("answer is not a headline object")
+    return {
+        "text": headline["text"],
+        "claims": headline["claims"],
+        "drafted_by": model,
+    }
 
 
 def _approval_keys(value, expected, part):
