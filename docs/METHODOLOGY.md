@@ -840,7 +840,7 @@ with its reason and sources. Codex never edits it. Each entry gives:
 - `held_by_tracker`: the tracker (MSCI World) holds this asset. Microsoft, Apple, Nvidia
   and AstraZeneca (MSCI factsheets, 31 Aug 2026).
 - `priced_in_pounds_holds_dollars`: priced in pounds but holding something priced in
-  dollars, so it carries a currency effect that can't be separated (the gold fund).
+  dollars, so it carries a currency effect that can't be separated (the physical gold ETC).
 
 `build_cards_567` receives exactly those two true/false values. Missing keys, other keys,
 anything but true or false, or `priced_in_pounds_holds_dollars` for an asset that has

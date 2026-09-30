@@ -92,7 +92,7 @@
     {
       "id": "sgln",
       "role": "asset",
-      "label": "Physical gold fund",
+      "label": "Physical gold ETC",
       "identity": {
         "name": "iShares Physical Gold ETC",
         "share_class": null,

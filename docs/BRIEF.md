@@ -11,7 +11,7 @@ firm could explain investment risk to clients in a way that is checkable and und
 ## Who it's for
 
 - **Primary:** a UK investor who already holds a global tracker fund and is considering
-  one more investment (a large-cap stock, a gold fund, a gilts fund, bitcoin). Their
+  one more investment (a large-cap stock, a physical gold ETC, a gilts fund, bitcoin). Their
   question: *"What am I actually getting into, and what does it do to what I already hold?"*
   Account eligibility (ISA or not) is explained separately, not assumed. Direct bitcoin
   and crypto ETNs cannot be newly bought in a Stocks & Shares ISA.
@@ -91,7 +91,7 @@ User accounts. Any "enter any ticker" promise beyond the fixed universe.
 
 Every instrument records: name, ticker, exchange, share class, accumulating or
 distributing, currency-hedged or not, trading currency and quote unit (GBP vs pence),
-first available date. A physical-gold fund is not spot gold.
+first available date. A physical gold ETC is not spot gold.
 
 ## Words: how the text is produced and checked
 
