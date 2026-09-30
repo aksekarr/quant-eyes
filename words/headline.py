@@ -61,7 +61,7 @@ UP_WORDS = (
 )
 
 DRAFT_MODEL = "gpt-6.1-sol"
-PROMPT_VERSION = "2"
+PROMPT_VERSION = "3"
 
 _DRAFT_INSTRUCTIONS_TEMPLATE = """You write the headline for one page of a website that explains, in plain English, how one investment behaved in the past. Its readers are UK investors. The page describes history and never gives advice. Code checks your headline, and then a person reviews it before it is published.
 
@@ -70,12 +70,13 @@ Write one sentence that gives the gist of what holding this investment was like,
 Rules:
 1. One sentence in the past tense, at most 30 words, ending with a full stop. No semicolons, question marks or exclamation marks.
 2. Cite one or two figures, and write every figure you cite exactly as given, such as 35.5% or £6,450. Put no plus or minus sign in front of a figure: say the direction in words.
-3. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and "2022 rate shock" when citing that period's figure.
-4. If a cited figure's direction is down, use one of these words: {down}. If it is up, use one of these: {up}.
-5. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.
-6. Do not rank a fall. The data starts at a fixed month, so a fall can't be called the largest, worst or deepest. Say when it happened instead, using its first and last months.
-7. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
-8. Never use these words or phrases:
+3. If the input says the investment trades in US dollars, write "in pounds" in the sentence: every figure is in pounds, and a fall in pounds can be very different from the same fall in dollars.
+4. Use no other numbers. The only exceptions: the first and last months of a cited figure's period, written exactly as given (Feb 2009, never February 2009); £10,000 when citing a figure about £10,000 invested; and "2022 rate shock" when citing that period's figure.
+5. If a cited figure's direction is down, use one of these words: {down}. If it is up, use one of these: {up}.
+6. Describe this investment alone. Do not compare it with anything, and do not name any other investment, fund, index or tracker.
+7. Do not rank a fall. The data starts at a fixed month, so a fall can't be called the largest, worst or deepest. Say when it happened instead, using its first and last months.
+8. Words about recovery ({recovery}) must agree with the page. If its largest fall had not recovered, put "not" just before them, as in "had not recovered". If it recovered, never negate them. If it had not fallen below a previous high, do not use them.
+9. Never use these words or phrases:
 - advice: {advice}
 - the future: {future}
 - numbers in words: {number}, or any word ending in "fold"
@@ -294,6 +295,20 @@ def check_headline(text, claim_ids, page, registry):
             problems.append(_problem(
                 "recovery", "{} conflicts with {}".format(word, recovery_state),
             ))
+
+    trades_in_dollars = any(
+        instrument["id"] == own_id
+        and instrument["identity"]["trading_currency"] == "USD"
+        for instrument in registry["instruments"]
+    )
+    if trades_in_dollars:
+        currency_phrases = {"GBP": "in pounds", "USD": "in dollars"}
+        for claim in cited:
+            phrase = currency_phrases.get(claim.get("currency"))
+            if phrase is not None and not _listed_hits(words, (phrase,)):
+                problems.append(_problem(
+                    "currency", "{} needs {}".format(claim["id"], phrase),
+                ))
     return problems
 
 
@@ -342,10 +357,14 @@ def draft_request(page):
         "Investment: " + instrument["label"],
         "Full name: " + instrument["identity"]["name"],
         "Ticker: " + instrument["identity"]["ticker"],
+    ]
+    if instrument["identity"]["trading_currency"] == "USD":
+        lines.append("Every figure here is in pounds, but it trades in US dollars.")
+    lines.extend((
         page["data_as_of_text"] + ".",
         "",
         "What its page says:",
-    ]
+    ))
     for title, sentences in offered_cards:
         lines.append(title)
         lines.extend("- " + sentence for sentence in sentences)
