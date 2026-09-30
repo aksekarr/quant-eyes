@@ -1,0 +1,2769 @@
+{
+ "file": "build_site",
+ "spec": "docs/METHODOLOGY.md section 17",
+ "authorship": "Cases and expected results written by Claude (architect), checked against a separate Claude-only reference implementation, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+ "interface": {
+  "module": "scripts/build_site.py. Load it in tests with importlib.util.spec_from_file_location, as tests/test_build_pages.py loads scripts/build_pages.py.",
+  "errors": "SiteWriteError is defined in scripts/build_site.py. SiteError comes from web.render.",
+  "write_site(index, pages, out_dir)": "Section 17.1. Returns the summary.",
+  "main(argv, root, out)": "Section 17.2. Returns the exit code. It has no default arguments."
+ },
+ "case_fields": {
+  "index / index_edits": "The index fixture IDX3 below (deep copy), with index_edits applied with golden_support.apply_edits.",
+  "pages / page_edits": "pages maps an id to a page fixture name: that id's page is a deep copy of the named fixture, with page_edits[id] applied if present.",
+  "before_files": "Created under the output folder before the call: a relative path to its text, or {\"folder\": true} for an empty folder (parents are created as needed). The output folder is root/site under a new temporary root. For write cases it is created, with before_files, unless out_dir_missing is true; for cli cases root/site/data is always created.",
+  "out_dir_missing": "write cases: write_site is given root/site, which does not exist.",
+  "render_failure": "{\"call\": n, \"raise\": \"SiteError\" or \"RuntimeError\", \"message\": text}: replace render_page in the script module (the name write_site uses) so that its n-th call, counting from 1, raises that type with that message; every other call goes to the real render_page.",
+  "read_back_mismatch": "\"<id>/index.html\": replace render_page in the script module so that for that id's page it returns the real HTML as an instance of a str subclass whose __eq__ returns False and __ne__ returns True (with __hash__ = str.__hash__); \"index.html\": the same for render_landing. The text encodes and writes normally, but never compares equal when read back.",
+  "cli": "main(argv, root, out) cases: root/site/data holds index.json (json.dumps of the index, or index_text exactly if given, or no file if index_missing is true) and <id>.json for each entry in pages (json.dumps of the page, or page_texts[id] exactly if given). out is a StringIO. write_site_raises: replace write_site in the script module with a function that raises RuntimeError(text).",
+  "expected_tree": "After the call, every file and folder under root/site, as sorted paths relative to it, folders ending in \"/\" (os.walk), or null if root/site must not exist.",
+  "expected_rendered": "The files that must hold exactly the text render_page (for <id>/index.html) or render_landing (for index.html) returns for the same edited inputs, pages in index order. Every other file holds exactly its before_files text (or, in cli cases, what the case wrote to site/data).",
+  "expected_summary / expected_error": "write cases: the returned summary, compared exactly; or the SiteWriteError message, compared exactly.",
+  "expected_exit / expected_stdout": "cli cases: the return value and the exact list of lines written to out.",
+  "rerun": "Every case without an error: run it again on the same folder with the same inputs; the second call returns the same summary (or exit code and lines) and every file is byte-identical."
+ },
+ "index": {
+  "IDX3": {
+   "assets": [
+    {
+     "id": "usa",
+     "label": "US share",
+     "name": "Test US Corp",
+     "ticker": "USA",
+     "type": "share"
+    },
+    {
+     "id": "gbf",
+     "label": "UK fund",
+     "name": "Test UK Fund",
+     "ticker": "GBF",
+     "type": "etf"
+    },
+    {
+     "id": "cry",
+     "label": "Test coin",
+     "name": "Test Coin",
+     "ticker": "CRY",
+     "type": "cryptocurrency"
+    }
+   ],
+   "benchmark": {
+    "id": "trk",
+    "label": "Test tracker",
+    "name": "Test Tracker ETF",
+    "ticker": "TRK"
+   },
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "index_version": "1",
+   "method_version": "1.0"
+  }
+ },
+ "pages": {
+  "P_USA": {
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "cards": [
+    {
+     "id": "bumpy",
+     "sentences": [
+      {
+       "claims": [
+        "bumpy.volatility"
+       ],
+       "text": "Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026."
+      },
+      {
+       "claims": [
+        "bumpy.volatility_common",
+        "bumpy.tracker_volatility"
+       ],
+       "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 43.1% against the tracker's 11.7%."
+      },
+      {
+       "claims": [],
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future."
+      }
+     ],
+     "title": "How bumpy is the ride?"
+    },
+    {
+     "id": "worst",
+     "sentences": [
+      {
+       "claims": [
+        "worst.fall",
+        "worst.months_to_low"
+       ],
+       "text": "Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later."
+      },
+      {
+       "claims": [
+        "worst.ten_thousand_left",
+        "worst.ten_thousand_lost"
+       ],
+       "text": "£10,000 invested at that high would have been worth £2,750 at the low, £7,250 less."
+      },
+      {
+       "claims": [
+        "worst.months_to_recover",
+        "worst.months_underwater"
+       ],
+       "text": "It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high."
+      },
+      {
+       "claims": [],
+       "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high."
+      }
+     ],
+     "title": "What's the worst it's been?"
+    },
+    {
+     "id": "panic",
+     "sentences": [
+      {
+       "claims": [
+        "panic.gfc"
+       ],
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period."
+      },
+      {
+       "claims": [],
+       "text": "The tracker: not covered."
+      },
+      {
+       "claims": [
+        "panic.covid"
+       ],
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period."
+      },
+      {
+       "claims": [
+        "panic.covid.tracker"
+       ],
+       "text": "The tracker: down 14.5% over the same period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock"
+       ],
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock.tracker"
+       ],
+       "text": "The tracker: down 6.0% over the same period."
+      },
+      {
+       "claims": [],
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+      }
+     ],
+     "title": "What happened when markets panicked?"
+    },
+    {
+     "id": "next",
+     "sentences": [
+      {
+       "claims": [
+        "next.correlation"
+       ],
+       "text": "Its correlation with the tracker was 0.47, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+      },
+      {
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ],
+       "text": "Measured over each 36-month stretch, it ranged from 0.21 (the 36 months to the end of Dec 2013) to 0.67 (the 36 months to the end of Apr 2024)."
+      },
+      {
+       "claims": [],
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection."
+      },
+      {
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ],
+       "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 17.5% a year, against 12.5% a year for the tracker alone."
+      },
+      {
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ],
+       "text": "The mix's volatility was 13.5% against the tracker's 11.7%, and its largest fall at month-end was 17.5% against 15.0%."
+      },
+      {
+       "claims": [],
+       "text": "Before fees, trading costs and tax."
+      },
+      {
+       "claims": [],
+       "text": "The tracker already holds these shares, so the 10% adds to a holding it already has."
+      }
+     ],
+     "title": "What does it do next to the tracker?"
+    },
+    {
+     "id": "pound",
+     "sentences": [
+      {
+       "claims": [
+        "pound.local",
+        "pound.currency",
+        "pound.gbp"
+       ],
+       "text": "From the end of Aug 2007 to the end of Aug 2026: up 28,171.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 41,992.8%."
+      },
+      {
+       "claims": [
+        "pound.gfc.local",
+        "pound.gfc.currency",
+        "pound.gfc.gbp"
+       ],
+       "text": "Global financial crisis: down 72.8% in dollars, the dollar rose 43.0%, so down 61.1% in pounds."
+      },
+      {
+       "claims": [
+        "pound.covid.local",
+        "pound.covid.currency",
+        "pound.covid.gbp"
+       ],
+       "text": "Covid crash: up 11.6% in dollars, the dollar rose 6.5%, so up 18.8% in pounds."
+      },
+      {
+       "claims": [],
+       "text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds."
+      }
+     ],
+     "title": "How much of it was the pound?"
+    },
+    {
+     "id": "limits",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "A single company's shares can fall a long way and stay down, and the company can fail."
+      },
+      {
+       "claims": [],
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+      }
+     ],
+     "title": "What these numbers don't capture"
+    }
+   ],
+   "claims": [
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "46.1%",
+     "id": "bumpy.volatility",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 46.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "43.1%",
+     "id": "bumpy.volatility_common",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 43.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "11.7%",
+     "id": "bumpy.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 11.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "72.5%",
+     "id": "worst.fall",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2008-11",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -72.5
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "14 months",
+     "id": "worst.months_to_low",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "months_peak_to_trough",
+     "period_end": "2008-11",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "months",
+     "value": 14
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "£2,750",
+     "id": "worst.ten_thousand_left",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "ten_thousand_at_trough",
+     "period_end": "2008-11",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "gbp",
+     "value": 2750
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "£7,250",
+     "id": "worst.ten_thousand_lost",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "ten_thousand_lost",
+     "period_end": "2008-11",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "gbp",
+     "value": 7250
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "83 months",
+     "id": "worst.months_to_recover",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "months_trough_to_recovery",
+     "period_end": "2015-10",
+     "period_start": "2008-11",
+     "series": "asset",
+     "unit": "months",
+     "value": 83
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "97 months",
+     "id": "worst.months_underwater",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "months_underwater",
+     "period_end": "2015-10",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "months",
+     "value": 97
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "61.1%",
+     "id": "panic.gfc",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -61.1
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "18.8%",
+     "id": "panic.covid",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 18.8
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "14.5%",
+     "id": "panic.covid.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -14.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "7.3%",
+     "id": "panic.rate_shock",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "asset",
+     "unit": "percent",
+     "value": -7.3
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "6.0%",
+     "id": "panic.rate_shock.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -6.0
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.47",
+     "id": "next.correlation",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "correlation",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.47
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.21",
+     "id": "next.rolling_lowest",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_lowest",
+     "period_end": "2013-12",
+     "period_start": "2010-12",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.21
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.67",
+     "id": "next.rolling_highest",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_highest",
+     "period_end": "2024-04",
+     "period_start": "2021-04",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.67
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "17.5%",
+     "id": "next.mix_annualised",
+     "instrument": "usa",
+     "kind": "illustration",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": 17.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "12.5%",
+     "id": "next.tracker_annualised",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 12.5
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "13.5%",
+     "id": "next.mix_volatility",
+     "instrument": "usa",
+     "kind": "illustration",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": 13.5
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "11.7%",
+     "id": "next.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 11.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "17.5%",
+     "id": "next.mix_fall",
+     "instrument": "usa",
+     "kind": "illustration",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": -17.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "15.0%",
+     "id": "next.tracker_fall",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -15.0
+    },
+    {
+     "currency": "USD",
+     "direction": "up",
+     "display": "28,171.2%",
+     "id": "pound.local",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 28171.2
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "48.9%",
+     "id": "pound.currency",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "currency",
+     "unit": "percent",
+     "value": 48.9
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "41,992.8%",
+     "id": "pound.gbp",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 41992.8
+    },
+    {
+     "currency": "USD",
+     "direction": "down",
+     "display": "72.8%",
+     "id": "pound.gfc.local",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -72.8
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "43.0%",
+     "id": "pound.gfc.currency",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "currency",
+     "unit": "percent",
+     "value": 43.0
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "61.1%",
+     "id": "pound.gfc.gbp",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -61.1
+    },
+    {
+     "currency": "USD",
+     "direction": "up",
+     "display": "11.6%",
+     "id": "pound.covid.local",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 11.6
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "6.5%",
+     "id": "pound.covid.currency",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "currency",
+     "unit": "percent",
+     "value": 6.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "18.8%",
+     "id": "pound.covid.gbp",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 18.8
+    }
+   ],
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "headline": {
+    "claims": [
+     "worst.ten_thousand_left"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered."
+   },
+   "instrument": {
+    "id": "usa",
+    "identity": {
+     "currency_hedged": null,
+     "exchange": "Test US exchange",
+     "income": "dividends",
+     "isin": "US00TEST0002",
+     "name": "Test US Corp",
+     "quote_unit": "dollars",
+     "share_class": "Common stock",
+     "sources": [
+      "https://issuer.example.com/usa"
+     ],
+     "ticker": "USA",
+     "trading_currency": "USD",
+     "type": "share"
+    },
+    "label": "US share"
+   },
+   "method_version": "1.0",
+   "page_version": "1",
+   "sources": [
+    {
+     "provider": "Provider A",
+     "url": "https://a.example.com",
+     "used_for": [
+      "US share"
+     ]
+    },
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "Test tracker",
+      "US dollars per pound"
+     ]
+    }
+   ]
+  },
+  "P_GBF": {
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "cards": [
+    {
+     "id": "bumpy",
+     "sentences": [
+      {
+       "claims": [
+        "bumpy.volatility"
+       ],
+       "text": "Its volatility was 3.9% a year, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026."
+      },
+      {
+       "claims": [
+        "bumpy.tracker_volatility"
+       ],
+       "text": "Over the same months, the tracker's was 5.6%."
+      },
+      {
+       "claims": [],
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future."
+      }
+     ],
+     "title": "How bumpy is the ride?"
+    },
+    {
+     "id": "worst",
+     "sentences": [
+      {
+       "claims": [
+        "worst.fall",
+        "worst.months_to_low"
+       ],
+       "text": "Since the end of Aug 2021, its largest fall, measured at month-end, was 8.7%: from its high at the end of Sep 2021 to its low at the end of Aug 2026, 59 months later."
+      },
+      {
+       "claims": [
+        "worst.ten_thousand_left",
+        "worst.ten_thousand_lost"
+       ],
+       "text": "£10,000 invested at that high would have been worth £9,130 at the low, £870 less."
+      },
+      {
+       "claims": [
+        "worst.below_high_at_end",
+        "worst.months_underwater"
+       ],
+       "text": "It had not recovered by the end of Aug 2026: it was still 8.7% below its high, 59 months after it."
+      },
+      {
+       "claims": [],
+       "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high."
+      }
+     ],
+     "title": "What's the worst it's been?"
+    },
+    {
+     "id": "panic",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): not covered; its history in pounds starts at the end of Aug 2021."
+      },
+      {
+       "claims": [],
+       "text": "The tracker: not covered."
+      },
+      {
+       "claims": [],
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): not covered; its history in pounds starts at the end of Aug 2021."
+      },
+      {
+       "claims": [],
+       "text": "The tracker: not covered."
+      },
+      {
+       "claims": [
+        "panic.rate_shock"
+       ],
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): up 1.3% over the period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock.tracker"
+       ],
+       "text": "The tracker: up 0.7% over the same period."
+      },
+      {
+       "claims": [],
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+      }
+     ],
+     "title": "What happened when markets panicked?"
+    },
+    {
+     "id": "next",
+     "sentences": [
+      {
+       "claims": [
+        "next.correlation"
+       ],
+       "text": "Its correlation with the tracker was 0.02, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+      },
+      {
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ],
+       "text": "Measured over each 36-month stretch, it ranged from −0.08 (the 36 months to the end of May 2025) to 0.08 (the 36 months to the end of Apr 2026)."
+      },
+      {
+       "claims": [],
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection."
+      },
+      {
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ],
+       "text": "As an illustration, not a recommendation: from the end of Aug 2021 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 2.7% a year, against 3.2% a year for the tracker alone."
+      },
+      {
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ],
+       "text": "The mix's volatility was 5.1% against the tracker's 5.6%, and its largest fall at month-end was 3.0% against 3.1%."
+      },
+      {
+       "claims": [],
+       "text": "Before fees, trading costs and tax."
+      }
+     ],
+     "title": "What does it do next to the tracker?"
+    },
+    {
+     "id": "pound",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "It is priced in pounds, so there is no separate currency effect to show."
+      }
+     ],
+     "title": "How much of it was the pound?"
+    },
+    {
+     "id": "limits",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "A fund's value moves with what it holds: bond prices, for example, fall when interest rates rise. Its market price can differ slightly from the value of its holdings, and its running charges are already inside these figures."
+      },
+      {
+       "claims": [],
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+      }
+     ],
+     "title": "What these numbers don't capture"
+    }
+   ],
+   "claims": [
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "3.9%",
+     "id": "bumpy.volatility",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 3.9
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "5.6%",
+     "id": "bumpy.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 5.6
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "8.7%",
+     "id": "worst.fall",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -8.7
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "59 months",
+     "id": "worst.months_to_low",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "months_peak_to_trough",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "months",
+     "value": 59
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "£9,130",
+     "id": "worst.ten_thousand_left",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "ten_thousand_at_trough",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "gbp",
+     "value": 9130
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "£870",
+     "id": "worst.ten_thousand_lost",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "ten_thousand_lost",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "gbp",
+     "value": 870
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "8.7%",
+     "id": "worst.below_high_at_end",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "drawdown_at_end",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -8.7
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "59 months",
+     "id": "worst.months_underwater",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "months_underwater",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "months",
+     "value": 59
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "1.3%",
+     "id": "panic.rate_shock",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "asset",
+     "unit": "percent",
+     "value": 1.3
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "0.7%",
+     "id": "panic.rate_shock.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 0.7
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.02",
+     "id": "next.correlation",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "correlation",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.02
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "−0.08",
+     "id": "next.rolling_lowest",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_lowest",
+     "period_end": "2025-05",
+     "period_start": "2022-05",
+     "series": "asset",
+     "unit": "ratio",
+     "value": -0.08
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.08",
+     "id": "next.rolling_highest",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_highest",
+     "period_end": "2026-04",
+     "period_start": "2023-04",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.08
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "2.7%",
+     "id": "next.mix_annualised",
+     "instrument": "gbf",
+     "kind": "illustration",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "mix",
+     "unit": "percent",
+     "value": 2.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "3.2%",
+     "id": "next.tracker_annualised",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 3.2
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "5.1%",
+     "id": "next.mix_volatility",
+     "instrument": "gbf",
+     "kind": "illustration",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "mix",
+     "unit": "percent",
+     "value": 5.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "5.6%",
+     "id": "next.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 5.6
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "3.0%",
+     "id": "next.mix_fall",
+     "instrument": "gbf",
+     "kind": "illustration",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "mix",
+     "unit": "percent",
+     "value": -3.0
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "3.1%",
+     "id": "next.tracker_fall",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -3.1
+    }
+   ],
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "headline": {
+    "claims": [
+     "worst.fall",
+     "worst.months_underwater"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high."
+   },
+   "instrument": {
+    "id": "gbf",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "distributing",
+     "isin": "IE00TEST0003",
+     "name": "Test UK Fund",
+     "quote_unit": "pounds",
+     "share_class": "GBP (Dist)",
+     "sources": [
+      "https://issuer.example.com/gbf"
+     ],
+     "ticker": "GBF",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "UK fund"
+   },
+   "method_version": "1.0",
+   "page_version": "1",
+   "sources": [
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "UK fund",
+      "Test tracker"
+     ]
+    }
+   ]
+  },
+  "P_CRY": {
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "cards": [
+    {
+     "id": "bumpy",
+     "sentences": [
+      {
+       "claims": [
+        "bumpy.volatility"
+       ],
+       "text": "Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026."
+      },
+      {
+       "claims": [
+        "bumpy.volatility_common",
+        "bumpy.tracker_volatility"
+       ],
+       "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 43.1% against the tracker's 11.7%."
+      },
+      {
+       "claims": [],
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future."
+      }
+     ],
+     "title": "How bumpy is the ride?"
+    },
+    {
+     "id": "worst",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "Since the end of Aug 2007, it has not been below a previous high at any month-end."
+      }
+     ],
+     "title": "What's the worst it's been?"
+    },
+    {
+     "id": "panic",
+     "sentences": [
+      {
+       "claims": [
+        "panic.gfc"
+       ],
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period."
+      },
+      {
+       "claims": [],
+       "text": "The tracker: not covered."
+      },
+      {
+       "claims": [
+        "panic.covid"
+       ],
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period."
+      },
+      {
+       "claims": [
+        "panic.covid.tracker"
+       ],
+       "text": "The tracker: unchanged (0.0%) over the same period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock"
+       ],
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock.tracker"
+       ],
+       "text": "The tracker: down 6.0% over the same period."
+      },
+      {
+       "claims": [],
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+      }
+     ],
+     "title": "What happened when markets panicked?"
+    },
+    {
+     "id": "next",
+     "sentences": [
+      {
+       "claims": [
+        "next.correlation"
+       ],
+       "text": "Its correlation with the tracker was 0.47, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+      },
+      {
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ],
+       "text": "Measured over each 36-month stretch, it ranged from 0.21 (the 36 months to the end of Dec 2013) to 0.67 (the 36 months to the end of Apr 2024)."
+      },
+      {
+       "claims": [],
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection."
+      },
+      {
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ],
+       "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 17.5% a year, against 12.5% a year for the tracker alone."
+      },
+      {
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ],
+       "text": "The mix's volatility was 13.5% against the tracker's 11.7%, and its largest fall at month-end was 17.5% against 15.0%."
+      },
+      {
+       "claims": [],
+       "text": "Before fees, trading costs and tax."
+      },
+      {
+       "claims": [],
+       "text": "The tracker already holds these shares, so the 10% adds to a holding it already has."
+      }
+     ],
+     "title": "What does it do next to the tracker?"
+    },
+    {
+     "id": "pound",
+     "sentences": [
+      {
+       "claims": [
+        "pound.local",
+        "pound.currency",
+        "pound.gbp"
+       ],
+       "text": "From the end of Aug 2007 to the end of Aug 2026: up 28,171.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 41,992.8%."
+      },
+      {
+       "claims": [
+        "pound.gfc.local",
+        "pound.gfc.currency",
+        "pound.gfc.gbp"
+       ],
+       "text": "Global financial crisis: down 72.8% in dollars, the dollar rose 43.0%, so down 61.1% in pounds."
+      },
+      {
+       "claims": [
+        "pound.covid.local",
+        "pound.covid.currency",
+        "pound.covid.gbp"
+       ],
+       "text": "Covid crash: up 11.6% in dollars, the dollar rose 6.5%, so up 18.8% in pounds."
+      },
+      {
+       "claims": [],
+       "text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds."
+      }
+     ],
+     "title": "How much of it was the pound?"
+    },
+    {
+     "id": "limits",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "It is not issued or backed by a government or a company, and it pays no income. Its price can move a long way in days, it trades around the clock, and holdings can be lost to theft or lost keys. Its history here starts at the end of Aug 2007, so it covers fewer market conditions than the others."
+      },
+      {
+       "claims": [],
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+      }
+     ],
+     "title": "What these numbers don't capture"
+    }
+   ],
+   "claims": [
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "46.1%",
+     "id": "bumpy.volatility",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 46.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "43.1%",
+     "id": "bumpy.volatility_common",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 43.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "11.7%",
+     "id": "bumpy.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 11.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "61.1%",
+     "id": "panic.gfc",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -61.1
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "18.8%",
+     "id": "panic.covid",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 18.8
+    },
+    {
+     "currency": "GBP",
+     "direction": "flat",
+     "display": "0.0%",
+     "id": "panic.covid.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 0.0
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "7.3%",
+     "id": "panic.rate_shock",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "asset",
+     "unit": "percent",
+     "value": -7.3
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "6.0%",
+     "id": "panic.rate_shock.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -6.0
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.47",
+     "id": "next.correlation",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "correlation",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.47
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.21",
+     "id": "next.rolling_lowest",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_lowest",
+     "period_end": "2013-12",
+     "period_start": "2010-12",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.21
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.67",
+     "id": "next.rolling_highest",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_highest",
+     "period_end": "2024-04",
+     "period_start": "2021-04",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.67
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "17.5%",
+     "id": "next.mix_annualised",
+     "instrument": "cry",
+     "kind": "illustration",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": 17.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "12.5%",
+     "id": "next.tracker_annualised",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 12.5
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "13.5%",
+     "id": "next.mix_volatility",
+     "instrument": "cry",
+     "kind": "illustration",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": 13.5
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "11.7%",
+     "id": "next.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 11.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "17.5%",
+     "id": "next.mix_fall",
+     "instrument": "cry",
+     "kind": "illustration",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": -17.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "15.0%",
+     "id": "next.tracker_fall",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -15.0
+    },
+    {
+     "currency": "USD",
+     "direction": "up",
+     "display": "28,171.2%",
+     "id": "pound.local",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 28171.2
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "48.9%",
+     "id": "pound.currency",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "currency",
+     "unit": "percent",
+     "value": 48.9
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "41,992.8%",
+     "id": "pound.gbp",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 41992.8
+    },
+    {
+     "currency": "USD",
+     "direction": "down",
+     "display": "72.8%",
+     "id": "pound.gfc.local",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -72.8
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "43.0%",
+     "id": "pound.gfc.currency",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "currency",
+     "unit": "percent",
+     "value": 43.0
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "61.1%",
+     "id": "pound.gfc.gbp",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -61.1
+    },
+    {
+     "currency": "USD",
+     "direction": "up",
+     "display": "11.6%",
+     "id": "pound.covid.local",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 11.6
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "6.5%",
+     "id": "pound.covid.currency",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "currency",
+     "unit": "percent",
+     "value": 6.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "18.8%",
+     "id": "pound.covid.gbp",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 18.8
+    }
+   ],
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "headline": null,
+   "instrument": {
+    "id": "cry",
+    "identity": {
+     "currency_hedged": null,
+     "exchange": null,
+     "income": null,
+     "isin": null,
+     "name": "Test Coin",
+     "quote_unit": "dollars",
+     "share_class": null,
+     "sources": [],
+     "ticker": "CRY",
+     "trading_currency": "USD",
+     "type": "cryptocurrency"
+    },
+    "label": "Test coin"
+   },
+   "method_version": "1.0",
+   "page_version": "1",
+   "sources": [
+    {
+     "provider": "Provider A",
+     "url": "https://a.example.com",
+     "used_for": [
+      "Test coin"
+     ]
+    },
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "Test tracker",
+      "US dollars per pound"
+     ]
+    }
+   ]
+  }
+ },
+ "cases": [
+  {
+   "id": "W01",
+   "check": "write",
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "cry/",
+    "cry/index.html",
+    "data/",
+    "data/index.json",
+    "gbf/",
+    "gbf/index.html",
+    "index.html",
+    "usa/",
+    "usa/index.html"
+   ],
+   "expected_rendered": [
+    "cry/index.html",
+    "gbf/index.html",
+    "index.html",
+    "usa/index.html"
+   ],
+   "expected_summary": {
+    "data_as_of": "2026-08",
+    "headlines": [
+     "usa",
+     "gbf"
+    ],
+    "written": [
+     "usa/index.html",
+     "gbf/index.html",
+     "cry/index.html",
+     "index.html"
+    ]
+   },
+   "derivation": "A first run: each asset's folder is created and every page written; data/ is left alone. Rename order: pages in index order, index.html last."
+  },
+  {
+   "id": "W02",
+   "check": "write",
+   "before_files": {
+    "data/index.json": "{}",
+    "assets/site.css": "p{}",
+    "assets/fonts/x.woff2": "x",
+    ".DS_Store": "x",
+    "usa/.DS_Store": "x",
+    "index.html": "old",
+    "usa/index.html": "old",
+    "gbf/index.html": "old",
+    "cry/index.html": "old"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    ".DS_Store",
+    "assets/",
+    "assets/fonts/",
+    "assets/fonts/x.woff2",
+    "assets/site.css",
+    "cry/",
+    "cry/index.html",
+    "data/",
+    "data/index.json",
+    "gbf/",
+    "gbf/index.html",
+    "index.html",
+    "usa/",
+    "usa/.DS_Store",
+    "usa/index.html"
+   ],
+   "expected_rendered": [
+    "cry/index.html",
+    "gbf/index.html",
+    "index.html",
+    "usa/index.html"
+   ],
+   "expected_summary": {
+    "data_as_of": "2026-08",
+    "headlines": [
+     "usa",
+     "gbf"
+    ],
+    "written": [
+     "usa/index.html",
+     "gbf/index.html",
+     "cry/index.html",
+     "index.html"
+    ]
+   },
+   "derivation": "A rerun over last month's files: all four are replaced; data/, assets/ (and what's inside it) and names starting with a dot, at the top and inside an asset's folder, are left exactly as they were."
+  },
+  {
+   "id": "W03",
+   "check": "write",
+   "out_dir_missing": true,
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": null,
+   "expected_rendered": [],
+   "expected_error": "output folder: does not exist",
+   "derivation": "write_site never creates the output folder."
+  },
+  {
+   "id": "W04",
+   "check": "write",
+   "before_files": {
+    "data/index.json": "{}",
+    "old.html": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json",
+    "old.html"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected old.html",
+   "derivation": "A stray file at the top level. Nothing is written."
+  },
+  {
+   "id": "W05",
+   "check": "write",
+   "before_files": {
+    "zzz/index.html": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "zzz/",
+    "zzz/index.html"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected zzz",
+   "derivation": "A folder for an asset no longer in the index would go on being published. Nothing is written."
+  },
+  {
+   "id": "W06",
+   "check": "write",
+   "before_files": {
+    "index.html.tmp": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "index.html.tmp"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected index.html.tmp",
+   "derivation": "A leftover temporary file from an interrupted run."
+  },
+  {
+   "id": "W07",
+   "check": "write",
+   "before_files": {
+    "b.txt": "x",
+    "a.txt": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "a.txt",
+    "b.txt"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected a.txt",
+   "derivation": "Several unexpected names: the first in alphabetical order is named."
+  },
+  {
+   "id": "W08",
+   "check": "write",
+   "before_files": {
+    "usa/extra.html": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "usa/",
+    "usa/extra.html"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected usa/extra.html",
+   "derivation": "Inside an asset's folder only index.html is allowed."
+  },
+  {
+   "id": "W09",
+   "check": "write",
+   "before_files": {
+    "usa/index.html.tmp": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "usa/",
+    "usa/index.html.tmp"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected usa/index.html.tmp",
+   "derivation": "A leftover temporary file inside an asset's folder."
+  },
+  {
+   "id": "W10",
+   "check": "write",
+   "before_files": {
+    "index.html": {
+     "folder": true
+    }
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "index.html/"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected index.html",
+   "derivation": "index.html must be a file."
+  },
+  {
+   "id": "W11",
+   "check": "write",
+   "before_files": {
+    "usa": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "usa"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected usa",
+   "derivation": "An asset's name must be a folder."
+  },
+  {
+   "id": "W12",
+   "check": "write",
+   "before_files": {
+    "data": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected data",
+   "derivation": "data must be a folder."
+  },
+  {
+   "id": "W13",
+   "check": "write",
+   "before_files": {
+    "usa/index.html": {
+     "folder": true
+    }
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "usa/",
+    "usa/index.html/"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected usa/index.html",
+   "derivation": "An asset's index.html must be a file."
+  },
+  {
+   "id": "W14",
+   "check": "write",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json"
+   ],
+   "expected_rendered": [],
+   "expected_error": "cry: page: missing",
+   "derivation": "Every id in the index needs a page."
+  },
+  {
+   "id": "W15",
+   "check": "write",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY",
+    "zzz": "P_USA"
+   },
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json"
+   ],
+   "expected_rendered": [],
+   "expected_error": "pages: unexpected zzz",
+   "derivation": "A page for an id not in the index."
+  },
+  {
+   "id": "W16",
+   "check": "write",
+   "index_edits": [
+    {
+     "path": [
+      "assets"
+     ],
+     "set": "x"
+    }
+   ],
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json"
+   ],
+   "expected_rendered": [],
+   "expected_error": "index: assets: unreadable",
+   "derivation": "The ids can't be read from the index."
+  },
+  {
+   "id": "W17",
+   "check": "write",
+   "page_edits": {
+    "gbf": [
+     {
+      "path": [
+       "generated_on"
+      ],
+      "set": "2026-09-28"
+     }
+    ]
+   },
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json"
+   ],
+   "expected_rendered": [],
+   "expected_error": "site: render: SiteError: gbf: generated_on differs from the index",
+   "derivation": "A page that fails section 16's checks: the landing page is rendered first and reports it, and nothing is written."
+  },
+  {
+   "id": "W18",
+   "check": "write",
+   "render_failure": {
+    "call": 2,
+    "raise": "RuntimeError",
+    "message": "boom 12.3"
+   },
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json"
+   ],
+   "expected_rendered": [],
+   "expected_error": "site: render: RuntimeError",
+   "derivation": "Any other error while rendering is named alone (here render_page's second call, for gbf)."
+  },
+  {
+   "id": "W19",
+   "check": "write",
+   "render_failure": {
+    "call": 1,
+    "raise": "SiteError",
+    "message": "usa: size: bumpy.asset"
+   },
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json"
+   ],
+   "expected_rendered": [],
+   "expected_error": "site: render: SiteError: usa: size: bumpy.asset",
+   "derivation": "A SiteError keeps its message."
+  },
+  {
+   "id": "W20",
+   "check": "write",
+   "read_back_mismatch": "gbf/index.html",
+   "before_files": {
+    "data/index.json": "{}",
+    "usa": {
+     "folder": true
+    }
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json",
+    "usa/"
+   ],
+   "expected_rendered": [],
+   "expected_error": "gbf/index.html: write: read back differently",
+   "derivation": "gbf's page reads back differently: every temporary file and the folders this run created (gbf, cry) are removed; the usa folder, which already existed, stays; the folder is exactly as it was."
+  },
+  {
+   "id": "W21",
+   "check": "write",
+   "read_back_mismatch": "index.html",
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data/",
+    "data/index.json"
+   ],
+   "expected_rendered": [],
+   "expected_error": "index.html: write: read back differently",
+   "derivation": "The landing page reads back differently, after every page was written to its temporary file: nothing is renamed and everything is removed."
+  },
+  {
+   "id": "W22",
+   "check": "write",
+   "page_edits": {
+    "usa": [
+     {
+      "path": [
+       "headline"
+      ],
+      "set": null
+     }
+    ],
+    "gbf": [
+     {
+      "path": [
+       "headline"
+      ],
+      "set": null
+     }
+    ]
+   },
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "cry/",
+    "cry/index.html",
+    "data/",
+    "data/index.json",
+    "gbf/",
+    "gbf/index.html",
+    "index.html",
+    "usa/",
+    "usa/index.html"
+   ],
+   "expected_rendered": [
+    "cry/index.html",
+    "gbf/index.html",
+    "index.html",
+    "usa/index.html"
+   ],
+   "expected_summary": {
+    "data_as_of": "2026-08",
+    "headlines": [],
+    "written": [
+     "usa/index.html",
+     "gbf/index.html",
+     "cry/index.html",
+     "index.html"
+    ]
+   },
+   "derivation": "No page has a headline: the summary's headlines list is empty."
+  },
+  {
+   "id": "W23",
+   "check": "write",
+   "page_edits": {
+    "gbf": [
+     {
+      "path": [
+       "generated_on"
+      ],
+      "set": "2026-09-28"
+     }
+    ]
+   },
+   "before_files": {
+    "old.html": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "old.html"
+   ],
+   "expected_rendered": [],
+   "expected_error": "output folder: unexpected old.html",
+   "derivation": "The output folder is checked before anything is rendered: a stray file is reported even though gbf's page would also fail."
+  },
+  {
+   "id": "W24",
+   "check": "write",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "before_files": {
+    "old.html": "x"
+   },
+   "expected_tree": [
+    "old.html"
+   ],
+   "expected_rendered": [],
+   "expected_error": "cry: page: missing",
+   "derivation": "The pages are checked before the output folder: a missing page is reported even though the folder holds a stray file."
+  },
+  {
+   "id": "B01",
+   "check": "cli",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "expected_tree": [
+    "cry/",
+    "cry/index.html",
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json",
+    "gbf/",
+    "gbf/index.html",
+    "index.html",
+    "usa/",
+    "usa/index.html"
+   ],
+   "expected_rendered": [
+    "cry/index.html",
+    "gbf/index.html",
+    "index.html",
+    "usa/index.html"
+   ],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Pages for data as of 2026-08: 2 of 3 have an approved headline.",
+    "Wrote 4 files to site."
+   ],
+   "derivation": "A normal run: the pages are written next to site/data."
+  },
+  {
+   "id": "B02",
+   "check": "cli",
+   "argv": [
+    "--list"
+   ],
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 2,
+   "expected_stdout": [
+    "Usage: python3 scripts/build_site.py"
+   ],
+   "derivation": "Arguments are refused."
+  },
+  {
+   "id": "B03",
+   "check": "cli",
+   "index_missing": true,
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: index: load: FileNotFoundError",
+    "Nothing was written."
+   ],
+   "derivation": "No index.json."
+  },
+  {
+   "id": "B04",
+   "check": "cli",
+   "index_text": "{",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: index: load: JSONDecodeError",
+    "Nothing was written."
+   ],
+   "derivation": "index.json isn't JSON."
+  },
+  {
+   "id": "B05",
+   "check": "cli",
+   "index_edits": [
+    {
+     "path": [
+      "assets"
+     ],
+     "set": {}
+    }
+   ],
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: index: assets: unreadable",
+    "Nothing was written."
+   ],
+   "derivation": "The ids can't be read."
+  },
+  {
+   "id": "B06",
+   "check": "cli",
+   "page_texts": {
+    "gbf": "{"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: gbf: load: JSONDecodeError",
+    "Nothing was written."
+   ],
+   "derivation": "A page file isn't JSON."
+  },
+  {
+   "id": "B07",
+   "check": "cli",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF"
+   },
+   "argv": [],
+   "expected_tree": [
+    "data/",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: cry: load: FileNotFoundError",
+    "Nothing was written."
+   ],
+   "derivation": "A page file is missing."
+  },
+  {
+   "id": "B08",
+   "check": "cli",
+   "before_files": {
+    "old.html": "x"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json",
+    "old.html"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: output folder: unexpected old.html",
+    "Check git status --short before committing anything."
+   ],
+   "derivation": "write_site's error is printed as it reports it; nothing was written."
+  },
+  {
+   "id": "B09",
+   "check": "cli",
+   "write_site_raises": "boom 12.3",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: unexpected RuntimeError.",
+    "Check git status --short before committing anything."
+   ],
+   "derivation": "Any other failure is named by type only."
+  },
+  {
+   "id": "B10",
+   "check": "cli",
+   "page_edits": {
+    "usa": [
+     {
+      "path": [
+       "headline"
+      ],
+      "set": null
+     }
+    ],
+    "gbf": [
+     {
+      "path": [
+       "headline"
+      ],
+      "set": null
+     }
+    ]
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "expected_tree": [
+    "cry/",
+    "cry/index.html",
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json",
+    "gbf/",
+    "gbf/index.html",
+    "index.html",
+    "usa/",
+    "usa/index.html"
+   ],
+   "expected_rendered": [
+    "cry/index.html",
+    "gbf/index.html",
+    "index.html",
+    "usa/index.html"
+   ],
+   "expected_exit": 0,
+   "expected_stdout": [
+    "Pages for data as of 2026-08: 0 of 3 have an approved headline.",
+    "Wrote 4 files to site."
+   ],
+   "derivation": "No headlines yet (the month after a refresh, before review)."
+  }
+ ]
+}

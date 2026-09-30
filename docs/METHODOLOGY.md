@@ -26,6 +26,7 @@ section is written here only once its conventions are confirmed.
 | 14. Writing the site's data | Site 1 | `build_pages.json` | Written |
 | 15. The headline (15.1 to 15.4) | Words 4 | `headline.json`, `draft_headlines.json`, `build_pages.json` | Written |
 | 16. The site pages | Site 2 | `site_render.json` | Written |
+| 17. Writing the site's pages | Site 3 | `build_site.json` | Written |
 
 ## General rules
 
@@ -1822,3 +1823,76 @@ the same text and leaves the inputs unchanged; and checks that `HEADLINE_RULE_CO
 equals the number of distinct rule names in the `expected_rules` of
 `tests/golden/headline.json`, so adding or removing a headline rule fails a test until
 the site's number is updated.
+
+## 17. Writing the site's pages
+
+`scripts/build_site.py` writes the HTML of section 16 into `site/`, and is the command Avi
+runs after `scripts/build_pages.py`: `python3 scripts/build_site.py`. It is offline: no
+network, no keys, no environment variables and no clock. It reads `site/data` and writes
+only `site/index.html` and `site/<id>/index.html`. The same inputs always give
+byte-identical files, so a run with nothing new shows no change in `git status`. It
+imports only `json`, `os`, `pathlib`, `sys` and `web.render`.
+
+### 17.1 `write_site(index, pages, out_dir)`
+
+`index` is the value of `site/data/index.json`; `pages` maps each asset id to the value
+of `site/data/<id>.json`. In order:
+
+1. **Pages.** The ids are the `id` of each entry of `index["assets"]`, in order; if they
+   can't be read (not a list, an entry that isn't an object, an id that isn't text) the
+   run stops with `index: assets: unreadable`. Every id has an entry in `pages`, checked
+   in index order (`<id>: page: missing`); then there is no other entry (`pages:
+   unexpected <name>`, the first in alphabetical order).
+2. **Output folder.** It must exist (`output folder: does not exist`); `write_site` never
+   creates it. Apart from names starting with `.`, which are left alone, it may hold only:
+   folders named `data` and `assets`, which are never read or changed; a file named
+   `index.html`; and, for each id, a folder named with the id, which may hold only a file
+   named `index.html` (and names starting with `.`). Anything else stops the run: another
+   name, a file where a folder belongs or a folder where a file belongs, a leftover
+   `.tmp`. The top level is checked first, naming the first such name in alphabetical
+   order (`output folder: unexpected <name>`); then each id's folder, in index order
+   (`output folder: unexpected <id>/<name>`). A removed asset's folder is deleted by hand
+   (`git rm -r`), never silently.
+3. **Render.** `render_landing(index, pages)` (section 16.5), with the pages in index
+   order; then `render_page(page, index)` (section 16.4) for each id in index order. A
+   `SiteError` is reported as `site: render: SiteError: <message>`; any other error type
+   is named alone (`site: render: RuntimeError`).
+4. **Write, all or nothing.** First each id's folder that doesn't exist is created, in
+   index order. Then each page goes to `<id>/index.html.tmp`, in index order, and the
+   landing page to `index.html.tmp`, each written as its text encoded in UTF-8, with no
+   newline translation. Every temporary file is then read back, decoded as UTF-8, and
+   must equal (`==`) the text rendered for it, the pages in index order and then the
+   landing page (`<file>: write: read back differently`). Only then is each file renamed
+   into place, the pages in index order and `index.html` last. If anything fails before
+   the first rename, every temporary file created and every folder this run created are
+   removed, and the output folder is exactly as it was. `<file>` is `index.html` or
+   `<id>/index.html`; any other failure while writing or reading back is `<file>: write:
+   <ErrorType>`.
+5. **Return** `{"data_as_of", "headlines", "written"}`: the index's `data_as_of`; the ids
+   whose page has a headline (not null), in index order; and the files in the order they
+   were renamed (`<id>/index.html` in index order, then `index.html`).
+
+**Errors** are a `SiteWriteError`, defined in `scripts/build_site.py`, whose message is
+exactly as above.
+
+### 17.2 The command: `python3 scripts/build_site.py`
+
+`main(argv, root, out)` returns the exit code and writes lines to `out`. It never prints
+a traceback or a value.
+
+- **Arguments:** none. Anything else prints `Usage: python3 scripts/build_site.py` and
+  returns 2.
+- **Loading**, each file read as UTF-8 with `json.load`: `root/site/data/index.json`
+  (`FAILED: index: load: <ErrorType>`); then the ids, as in 17.1 step 1 (`FAILED: index:
+  assets: unreadable`); then `root/site/data/<id>.json` for each id in order (`FAILED:
+  <id>: load: <ErrorType>`). Each failure prints its line, then `Nothing was written.`,
+  and returns 1.
+- `write_site(index, pages, root/site)`. On success it prints `Pages for data as of
+  <data_as_of>: <k> of <n> have an approved headline.` (`<n>` is the number of ids) and
+  `Wrote <n + 1> files to site.`, and returns 0.
+- On a `SiteWriteError`: `FAILED: <message>`. On anything else: `FAILED: unexpected
+  <ErrorType>.` Either way, then `Check git status --short before committing anything.`,
+  and exit code 1.
+
+Each month, after the pages are built again with their headlines (section 15.4): run
+`scripts/build_site.py`, then commit `site/data` and the site's HTML together.

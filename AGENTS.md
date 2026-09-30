@@ -146,3 +146,10 @@ Site
 - Motion always lands on the exact checked figure and stops. Nothing loops: no ticker
   tape, no "live" cues, no red/green, no price charts, and reduced-motion settings switch
   motion off.
+- `scripts/build_site.py` is the site writer (METHODOLOGY section 17) and the only thing
+  that writes `site/index.html` and the `site/<id>/` folders. It is offline: no network,
+  no keys, no environment variables, no clock, and it never reads or changes
+  `site/data` or `site/assets`. Never run it against this repo: the tests run it on
+  temporary folders. Avi runs it.
+- `site/index.html` and `site/<id>/index.html` are generated output that Avi commits.
+  Never create, edit or delete them by hand.
