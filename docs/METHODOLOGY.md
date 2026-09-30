@@ -25,6 +25,7 @@ section is written here only once its conventions are confirmed.
 | 13. Page data | Words 3 | `page.json` | Written |
 | 14. Writing the site's data | Site 1 | `build_pages.json` | Written |
 | 15. The headline (15.1 to 15.4) | Words 4 | `headline.json`, `draft_headlines.json`, `build_pages.json` | Written |
+| 16. The site pages | Site 2 | `site_render.json` | Written |
 
 ## General rules
 
@@ -1441,3 +1442,383 @@ building every page, and before the index, it runs `check_approvals` against tho
 Each month, in order: refresh the data (section 10); build the pages, which then have no
 headlines; draft against those pages (15.3); review and approve (15.2); build the pages
 again, now with headlines; commit `site/data`.
+
+## 16. The site pages
+
+In `web/render.py` (package `web`, with an empty `__init__.py`). Pure, like sections 11 to
+13: it turns the site's data (section 13: `index.json` and one page per asset) into
+finished HTML, as text. Every word and number a visitor can see or hear is in that HTML
+before any JavaScript runs. JavaScript (a later task) only moves, filters, shows and hides
+what is already there; it never writes text, apart from the count-up in a figure, which
+ends by showing the exact text the HTML already holds. It imports only `datetime`, `html`,
+`math` and `re` (the pure-module check in `tests/test_invariance.py` covers it): no
+network, no files, no environment variables, no clock. The same inputs always give the
+same text, and the inputs are never changed.
+
+`render_page(page, index)` returns one asset's page and `render_landing(index, pages)` the
+landing page, each a `str`. Errors are a `SiteError`, defined in `web/render.py`, with the
+messages in section 16.6.
+
+### 16.1 Fixed values and formats
+
+- `SITE_NAME` is `"Quant explainer"` (the working title; Avi names the product later,
+  and changing it changes this line and the golden cases). `HEADLINE_RULE_COUNT` is `16`,
+  the number of rules in section 15.1; a test checks it against the rule names used in
+  `tests/golden/headline.json` (section 16.8).
+- **Month:** `YYYY-MM` is written `Mon YYYY` (`2007-12` → `Dec 2007`), with the months
+  `Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec`.
+- **Period** of a claim: `{Mon YYYY of period_start} to {Mon YYYY of period_end}`
+  (`Dec 2007 to Feb 2009`).
+- **Day:** `YYYY-MM-DD` is written `{day} {Mon} {YYYY}` with no leading zero
+  (`2026-09-30` → `30 Sep 2026`).
+- **Count word:** the number of assets in the index as a word: `one` to `twelve`. The
+  index must have from 2 to 12 assets.
+- **Direction words** for a claim with a direction: `up {display}`, `down {display}`, or
+  `unchanged ({display})` for `flat` (the same words as section 11.5).
+- **Size:** a number from 0 to 1 that sets the length or position of part of a visual.
+  It is written with `format(x, ".4f")` of the Python float, in the element's `style`
+  attribute and nowhere else: `style="--qx-size:0.2750"`. A size that is not a finite
+  number from 0 to 1 is a `SiteError`.
+- **Escaping:** every piece of text taken from the data or from this section is written
+  with `html.escape(text, quote=True)`, in element text and in attribute values alike.
+- Sizes use claim `value`s only. No number is shown that is not a claim's `display`, a
+  count from section 16.1, a date from the data, or fixed copy below.
+
+### 16.2 The contract: reading a page back
+
+The tests never compare HTML text. They read a page back into a list of **entries** and
+compare that list with the golden file, so the markup, class names and layout are free
+(Task 9b styles them) while every word, its order and every size are fixed.
+
+- Every element that holds text for the visitor carries `data-qx="<role>"` and, where the
+  role repeats on a page, `data-qx-key="<key>"`. The pair (role, key) is unique on a page.
+- An element whose text is an attribute (a `<meta>` description, an input's placeholder,
+  an icon button's `aria-label`) also carries `data-qx-attr="<attribute name>"`.
+- A `size` element is an empty element with `data-qx="size"`, a key, and the style above.
+- `data-qx` elements never contain another `data-qx` element.
+
+**Reading back** uses `html.parser.HTMLParser` with `convert_charrefs=True`. Each start tag
+with a `data-qx` attribute begins an entry, in document order:
+`[role, key, text, size]`, where
+
+- `key` is the `data-qx-key` value, or `""` without one;
+- `text` is the value of the attribute named by `data-qx-attr` if there is one; otherwise
+  all character data inside the element, up to its matching end tag (a void element such
+  as `<meta>` or `<input>` has none). In both cases every run of the characters space, tab,
+  newline, carriage return and form feed becomes one space, and the result is stripped;
+- `size` is the number in `style="--qx-size:<n>"` as written (text, e.g. `"0.2750"`), or
+  `null` when the element has no `style` attribute.
+
+### 16.3 Parts every page shares
+
+**Head**, in this order:
+
+```html
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-qx="title">{title}</title>
+<meta name="description" data-qx="description" data-qx-attr="content" content="{description}">
+<meta property="og:title" data-qx="og-title" data-qx-attr="content" content="{title}">
+<meta property="og:description" data-qx="og-description" data-qx-attr="content" content="{description}">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="{prefix}assets/site.css">
+<script src="{prefix}assets/site.js" defer></script>
+</head>
+```
+
+`{prefix}` is empty on the landing page and `../` on an asset page (each asset page will
+be `site/<id>/index.html`, written by a later task). Task 9b may add `<link>` elements
+whose `rel` is `stylesheet`, `preload` or `icon` with an `href` under `{prefix}assets/`.
+
+**Header:** a link to the landing page (`href="./"` on the landing page, `"../"` on an
+asset page) with role `site-name` and the text `SITE_NAME`; then role `not-advice`:
+`Not advice`.
+
+**Footer**, in this order:
+
+1. `footer-data`: `{data_as_of_text} · Method {method_version}`.
+2. `sources-label`: `Sources`.
+3. One link per source, role `source`, key the provider's name, `href` its `url`, text
+   `{provider} ({used_for, joined with ", "})`. On an asset page these are the page's
+   `sources` in order. On the landing page they are merged across the pages in index
+   order: each provider once, where it first appears, with its `used_for` labels in the
+   order they first appear.
+4. Asset page only: `identity`: `{identity name}`, followed by ` · ISIN {isin}` when the
+   ISIN is not empty. Then, if the identity has sources: `identity-label`: `Identity from`,
+   and one link per source URL, role `identity-source`, key `1`, `2`, … in order, `href`
+   the URL, text its host: the part after `https://` up to the next `/`, or to the end
+   (`https://etp.morganstanley.com/fr/en/…` → `etp.morganstanley.com`).
+5. `disclaimer`: `Past results in pounds, measured at month-ends. Descriptive, never
+   advice. Past behaviour does not predict future results.`
+
+### 16.4 An asset page: `render_page(page, index)`
+
+The title is `{label}, in pounds · {SITE_NAME}`; the description is the headline's text
+if the page has a headline, otherwise the tagline (section 16.5). `{label}` is the
+instrument's label and "the tracker's label" is the benchmark's. Then, in this order:
+
+1. `back`, a link to `../`: `All {count word}`.
+2. `kicker`: the type (`share` → `Share`, `etf` → `Exchange-traded fund`, `etc` →
+   `Exchange-traded commodity`, `cryptocurrency` → `Cryptocurrency`), followed by
+   ` · {exchange}` when the exchange is not empty.
+3. `asset-label`, the page's only `<h1>`: `{label}`.
+4. `asset-name`: `{identity name} · {ticker}`.
+5. Tags, role `tag`: key `priced`: `Priced in US dollars` (trading currency `USD`) or
+   `Priced in pounds` (`GBP`); key `figures`: `Figures in pounds`; key `data`:
+   `{data_as_of_text}`.
+6. The headline. `section-label`, key `headline`: `The headline`. With a headline:
+   `headline`, key the asset id: its text; then three steps, each a `chain` and a
+   `chain-detail` with the same key: `drafted`: `Drafted by AI` and `{drafted_by}`;
+   `checked`: `Checked by code` and `{HEADLINE_RULE_COUNT} of {HEADLINE_RULE_COUNT} rules
+   passed`; `reviewed`: `Reviewed by a person` and the day of `reviewed_on`. Without one:
+   `no-headline`: `No reviewed headline for this data yet. A headline appears here only
+   after a person has reviewed it.`
+7. The questions, in a `<nav>`. `rail-label`: `The questions`. For each card in order, a
+   link to `#{card id}` holding `rail-number` (`01` to `06`) and `rail-title` (the card's
+   title), both keyed by the card id. Then `compared-label`: `Compared with`;
+   `benchmark-label`: the tracker's label; `benchmark-name`: `{benchmark identity name} ·
+   {benchmark ticker}`.
+8. The six cards, each a `<section id="{card id}">` starting with `card-number` (`01` to
+   `06`) and `card-title` (an `<h2>`: the card's title), keyed by the card id. The rest
+   of each card, in order, where `sentence` `{card}.{i}` is the card's sentence number
+   *i* counting from 0, keyed `{card id}.{i}`:
+   - **bumpy.** `figure`, key `bumpy.volatility`: its display. Sentence 0. The bars: the
+     asset's bar is `bumpy.volatility_common` if the page has it, otherwise
+     `bumpy.volatility`, and the tracker's is `bumpy.tracker_volatility`; `bars-label`:
+     `Same months: {period of the asset's bar}`; then for the asset (key `bumpy.asset`)
+     and the tracker (key `bumpy.tracker`): `bar-label` (the label, or the tracker's
+     label), `bar-value` (the claim's display) and a `size`: the claim's value divided by
+     the larger of the two values, so the longer bar is 1. Sentences 1 and 2. The maths.
+   - **worst**, when the page has `worst.fall`: `figure`, key `worst.fall`. Sentence 0.
+     The £10,000 bar: `drain-label`: `£10,000 invested at the high`; `figure`, key
+     `worst.ten_thousand_left`, with the attribute `data-qx-from="10000"` (the only place
+     it appears): its display; `drain-period`: the period of `worst.fall`; `size`, key
+     `worst.drain`: the value of `worst.ten_thousand_left` ÷ 10000; `drain-left`:
+     `{£ left display} at the low`; `drain-lost`: `{£ lost display} less`. The timeline,
+     where *low* is `worst.months_to_low` and *under* is `worst.months_underwater`:
+     - Recovered (the page has `worst.months_to_recover`, *rec*): `timeline-label`: `High
+       to back at the high: {under display}`; `segment`, key `worst.fall`: *low*'s
+       display, with a `size` of the same key: *low* ÷ *under*; `segment`, key
+       `worst.recovery`: *rec*'s display, with a `size`: *rec* ÷ *under*; then three
+       points, each a `point-label` and a `point-date` with the same key: `high`: `High`
+       and `end of {Mon YYYY of worst.fall's period_start}`; `low`: `Low` and `end of
+       {Mon YYYY of worst.fall's period_end}`; `back`: `Back at the high` and `end of {Mon
+       YYYY of rec's period_end}`.
+     - Not recovered (the page has `worst.below_high_at_end`, *below*): `timeline-label`:
+       `Below its high: {under display}, to the end of {Mon YYYY of under's period_end}`;
+       `segment`, key `worst.fall`, with its `size`, as above; `segment`, key
+       `worst.since-low`: `still {below display} below its high`, with a `size`: (*under*
+       − *low*) ÷ *under*; points `high` and `low` as above, and `end`: `Not recovered by`
+       and `end of {Mon YYYY of under's period_end}`.
+
+     Then sentences 1, 2 and 3. The maths. When the page has no `worst.fall` (section
+     11.4's one sentence): sentence 0, then the maths.
+   - **panic.** For each window in order (`gfc`, `covid`, `rate_shock`, number *w* from 0):
+     sentences 2*w* and 2*w* + 1; for the first window only, `chips-label`: `Over the
+     period`; then `chip-label` and `chip-value`, key `{window}.asset`: the label, and the
+     direction words of `panic.{window}`, or `not covered` if the page has no such claim;
+     then `chip-label` and `chip-value`, key `{window}.tracker`: `Tracker`, and the
+     direction words of `panic.{window}.tracker`, or `not covered`. Then sentence 6. The
+     maths.
+   - **next.** `figure`, key `next.correlation`. Sentence 0. The scale: `scale-label`:
+     `Correlation with the tracker`; `scale-value`, key `next.correlation`: its display;
+     `size`, key `next.correlation`: (value + 1) ÷ 2; then `scale-mark` and `scale-note`
+     keyed `low`: `−1` (true minus sign) and `always opposite`, `mid`: `0` and `no
+     pattern`, `high`: `1` and `always in step`; `range`: `Range across 36-month
+     stretches: {next.rolling_lowest display} to {next.rolling_highest display}`; `size`,
+     key `next.range-low`: (lowest value + 1) ÷ 2; `size`, key `next.range-high`: (highest
+     value + 1) ÷ 2. Sentences 1 and 2. The 90/10 bar: `mix-part`, key `next.tracker`:
+     `Tracker 90%`, with a `size` of the same key: 0.9; `mix-part`, key `next.asset`:
+     `{label} 10%`, with a `size`: 0.1. Sentences 3 to the last. The maths.
+   - **pound** and **limits**: their sentences, in order.
+
+**The maths** of a card, in a `<details>` element: `maths-show`: `Show the maths` and
+`maths-hide`: `Hide the maths` (with the `hidden` attribute), both inside its `<summary>`;
+`maths-method`: the card's method text, below. For bumpy and worst only, when the card
+has claims, a table: `maths-head` keyed `{card}.figure`, `{card}.value`, `{card}.period`:
+`Figure`, `Value`, `Period`; then one row per claim whose id starts with `{card}.`, in the
+page's claims order: `maths-figure` (its label, below), `maths-value` (its display) and
+`maths-period` (its period), each keyed by the claim id. Then `maths-note`: `Periods run
+from month-end to month-end. Each figure is rounded once, from the unrounded
+calculation.` and `maths-sources`: the sources line. All keyed by the card id unless
+said otherwise.
+
+Table labels: `bumpy.volatility` `Volatility, a year`; `bumpy.volatility_common` `Same
+months as the tracker`; `bumpy.tracker_volatility` `The tracker, same months`;
+`worst.fall` `Largest fall since {Mon YYYY of bumpy.volatility's period_start}`;
+`worst.months_to_low` `High to low`; `worst.ten_thousand_left` `£10,000 at the high,
+worth at the low`; `worst.ten_thousand_lost` `£10,000 at the high, less at the low`;
+`worst.months_to_recover` `Low to back at the high`; `worst.months_underwater` `Time below
+the high`; `worst.below_high_at_end` `Still below its high at the end`.
+
+Method texts (approved by Avi, 30 Sept):
+
+- bumpy: `A month's return is the change in value from one month-end to the next, in
+  pounds, with any income reinvested. Volatility is the standard deviation of those
+  monthly returns (the sample version, dividing by one fewer than the number of months),
+  multiplied by √12 to make it a yearly figure. That step treats months as independent,
+  which is an approximation.`
+- worst: `At each month-end the value is compared with the highest month-end value so
+  far. The largest fall is the deepest drop below that high; if two are equally deep, the
+  earlier counts. The first month in the data counts as a high, so a fall that began
+  earlier is measured only from there. The high is the last month-end at that level
+  before the low; back at the high is the first month-end at or above it. Months are
+  counted between month-ends. The £10,000 figure is £10,000 × (1 − the fall), rounded to
+  the nearest £10.`
+- panic: `Each window runs from the month-end before it starts to the month-end it
+  finishes: the 2022 rate shock runs from the end of Dec 2021 to the end of Oct 2022. The
+  figure is the change between those two month-ends, not the largest fall inside the
+  window. A window is shown only if the data covers both month-ends; it is never
+  shortened to fit.`
+- next: `Correlation is the Pearson correlation of the two sets of monthly returns in
+  pounds, over the months both cover. The 36-month range repeats it for every run of 36
+  consecutive months and shows the lowest and highest. The 90/10 mix starts at 90%
+  tracker and 10% this investment; each part grows or shrinks with its own returns, and
+  at the end of every December the mix is reset to 90/10. A yearly figure is the total
+  return turned into a compound rate: (1 + total return)^(12 ÷ months) − 1. Before fees,
+  with no trading costs or tax.`
+
+(`√` is U+221A, `×` U+00D7, `÷` U+00F7 and `−` U+2212.)
+
+**The sources line** of a card names only the data its figures use. The labels needed
+are: the asset's label; the tracker's label if any claim whose id starts with `{card}.`
+has series `tracker` or `mix`; and, for an asset whose trading currency is `USD`, every
+`used_for` label that is neither the asset's nor the tracker's (the exchange rate). For
+each source in the page's order, keep its `used_for` labels that are needed, in their
+order; leave out a source with none. The line is `Source: ` (one source kept) or
+`Sources: ` (more), then each kept source as `{provider} ({labels, joined with ", "})`,
+joined with `; `, then `. Method {method_version}.`
+
+### 16.5 The landing page: `render_landing(index, pages)`
+
+`pages` is the list of asset pages in the index's order. The title is `{SITE_NAME}:
+{count word} investments in plain English`; the description is the tagline:
+`How one more investment has behaved, and what it did next to a developed-world tracker.
+In plain English, in pounds.` Then, in this order:
+
+1. `kicker`: `{Count word, first letter capital} investments · in pounds ·
+   {data_as_of_text, first letter lower case}`.
+2. `hero`, the page's only `<h1>`: `What am I actually getting into?`
+3. `tagline`: the tagline.
+4. The search, in an element with the `hidden` attribute (JavaScript shows it):
+   `search-label`, a `<label>` for the input: `Look up an investment`; `search-hint`, a
+   search input whose `placeholder` is the text: `Try {first asset's label} or {first
+   asset's ticker}`; `search-count`: `{number of assets} covered`; then for each asset in
+   order, a list item with the `hidden` attribute holding a link to `{id}/` with
+   `result-label`, `result-ticker` and `result-name` (the index's label, ticker and name),
+   keyed by the asset id; then, in an element with the `hidden` attribute,
+   `not-covered-title`: `Not covered yet` and `not-covered-text`: `This site covers
+   {count word} investments in depth rather than many in outline. Every figure comes from
+   tested code, and every headline is reviewed by a person.`
+5. The headlines, only if at least one page has a headline, for the assets that have
+   one, in index order (number *k* of *m*): `section-label`, key `headlines`:
+   `Headlines`; then for each, keyed by the asset id: `slide-position`: `{k} / {m}`;
+   `slide-label`: the label; `slide-ticker`: the ticker; `headline`: its text;
+   `slide-meta`: `{drafted_by} · reviewed {day of reviewed_on}`; `slide-open`, a link to
+   `{id}/`: `Open {label}`. Then `chain` keyed `drafted`: `Drafted by AI`, `checked`:
+   `Checked by code: {HEADLINE_RULE_COUNT} of {HEADLINE_RULE_COUNT} rules passed`,
+   `reviewed`: `Reviewed by a person`. Then, in an element with the `hidden` attribute:
+   a button holding `pause`: `Pause the headlines` and `play`: `Play the headlines` (with
+   the `hidden` attribute); then for each headline an empty button, role `segment`, key
+   the asset id, `data-qx-attr="aria-label"`, whose `aria-label` is `Show the headline for
+   {label}`.
+6. `tiles-label`: `Or pick one of the {count word}`; then for each asset, a link to
+   `{id}/` holding `tile-ticker` and `tile-label`, keyed by the asset id.
+7. `strip`: `Every figure comes from tested code. Every headline is reviewed by a
+   person.`
+
+The labels, names and tickers on the landing page come from the index; everything else
+from the pages.
+
+### 16.6 Checks and errors
+
+Both functions check before writing anything, in this order, and raise a `SiteError` with
+the first failure's message. Messages never contain a figure.
+
+**The index** (both functions): the keys `assets`, `benchmark`, `data_as_of`,
+`data_as_of_text`, `generated_on` and `method_version` (`index: missing <key>`); from 2 to
+12 assets (`index: assets: count`); each with non-blank `id`, `label`, `name`, `ticker`
+and `type` (`index: assets: missing <field>`); no id twice (`index: assets: duplicate
+<id>`).
+
+**The landing page** then checks that the pages' instrument ids are the index's ids in
+the same order (`landing: pages do not match the index`), then checks each page as below,
+then merges the sources (a provider with two different URLs: `landing: sources:
+<provider> url differs`).
+
+**A page**, where `<id>` is its instrument's id:
+
+1. The keys `instrument`, `benchmark`, `data_as_of`, `data_as_of_text`, `generated_on`,
+   `method_version`, `sources`, `cards`, `claims` and `headline` (`page: missing <key>`).
+2. The id is in the index (`<id>: not in the index`).
+3. `data_as_of`, `data_as_of_text`, `generated_on` and `method_version` equal the index's
+   (`<id>: <key> differs from the index`); then the label, the identity name and the
+   ticker equal the index entry's `label`, `name` and `ticker` (`<id>: label differs from
+   the index`, `<id>: name …`, `<id>: ticker …`).
+4. Identity: a known type (`<id>: identity: type`); trading currency `USD` or `GBP`
+   (`<id>: identity: trading_currency`); every identity source URL starts with
+   `https://` and has no whitespace (`<id>: identity: sources`).
+5. Each source has a non-blank `provider` (`<id>: sources: provider`), a URL as above
+   (`<id>: sources: url`) and a non-empty list of non-blank `used_for` labels (`<id>:
+   sources: used_for`).
+6. The card ids are exactly `bumpy`, `worst`, `panic`, `next`, `pound`, `limits` in that
+   order (`<id>: cards: order`); each card has a non-blank title and at least one
+   sentence, each with non-blank text (`<id>: cards: <card id>`).
+7. No claim id twice (`<id>: claims: duplicate <claim id>`).
+8. bumpy has 3 sentences (`<id>: bumpy: sentences`); `bumpy.volatility` and
+   `bumpy.tracker_volatility` exist (`<id>: claims: missing <claim id>`); the asset's bar
+   claim and the tracker's have the same `period_start` and `period_end` (`<id>: bumpy:
+   periods differ`).
+9. worst: with `worst.fall`, the page has `worst.months_to_low`,
+   `worst.ten_thousand_left`, `worst.ten_thousand_lost` and `worst.months_underwater` and
+   exactly one of `worst.months_to_recover` and `worst.below_high_at_end`; without it, no
+   claim starting `worst.` (either way `<id>: worst: claims`). Then 4 sentences with
+   `worst.fall`, 1 without (`<id>: worst: sentences`).
+10. panic has 7 sentences (`<id>: panic: sentences`); every `panic.{window}` and
+    `panic.{window}.tracker` claim has direction `up`, `down` or `flat` (`<id>: claims:
+    direction <claim id>`).
+11. `next.correlation`, `next.rolling_lowest` and `next.rolling_highest` exist (`<id>:
+    claims: missing <claim id>`); next has 6 or 7 sentences (`<id>: next: sentences`).
+12. The headline is null, or an object (`<id>: headline: shape`) with non-blank `text`
+    and `drafted_by` (`<id>: headline: text`, `<id>: headline: drafted_by`) and a real
+    date `YYYY-MM-DD` in `reviewed_on` (`<id>: headline: reviewed_on`).
+13. While the page is written, any size that is not a finite number from 0 to 1, or a
+    division by zero, is `<id>: size: <size key>` (the bumpy bars check `bumpy.asset`
+    first).
+
+### 16.7 What the markup may contain
+
+Checked by the tests on every page and landing page the golden cases produce:
+
+- It starts `<!doctype html>\n<html lang="en-GB">\n` and ends `</html>\n`.
+- Exactly one `<title>` and one `<h1>`; every `card-title` is an `<h2>`.
+- The only `<script>` is the one in the head, with exactly `src` and `defer`. No `<style>`
+  element, no comments, no attribute starting `on`, and no `style` attribute except on
+  `size` elements, where it is exactly `--qx-size:<digit>.<4 digits>`.
+- Only these elements: `html head meta title link script body header main footer nav
+  section article div span p a h1 h2 h3 ul ol li dl dt dd figure figcaption details
+  summary table thead tbody tr th td button label input svg path circle line polyline rect
+  g strong em small abbr br`.
+- Every non-blank piece of text in `<body>` is inside a `data-qx` element; `data-qx`
+  elements are never nested; each (role, key) pair appears once; every `id` is unique.
+- `aria-label`, `placeholder`, `alt` and `title` attributes appear only on an element
+  whose `data-qx-attr` names that attribute.
+- `data-qx-from` appears only on the `figure` keyed `worst.ten_thousand_left`, as
+  `10000`.
+- Links (`<a href>`): on an asset page, `../`, `#{card id}`, and the page's source and
+  identity URLs; on the landing page, `./`, `{id}/` for each asset, and the merged source
+  URLs. `<link>` elements as in section 16.3.
+
+### 16.8 Tests
+
+`tests/golden/site_render.json` holds the cases: pages and landing pages with their
+expected entries, and inputs that must fail with their messages. `tests/test_site_render.py`
+reads each case, renders it, reads the result back (section 16.2) and compares the list
+exactly; checks section 16.7 on every page it renders; checks that rendering twice gives
+the same text and leaves the inputs unchanged; and checks that `HEADLINE_RULE_COUNT`
+equals the number of distinct rule names in the `expected_rules` of
+`tests/golden/headline.json`, so adding or removing a headline rule fails a test until
+the site's number is updated.

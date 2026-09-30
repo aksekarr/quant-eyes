@@ -121,7 +121,8 @@ Words
   of what the model proposed. Never create, edit or delete it.
 
 Site
-- The website makes zero runtime API calls. It only reads precomputed JSON.
+- The website makes zero runtime network requests. Its pages are finished HTML built
+  offline from `site/data` (METHODOLOGY section 16); nothing is fetched in the browser.
 - Every page shows data sources with attribution and a "data as of" date.
 - `scripts/build_pages.py` is the page writer (METHODOLOGY section 14) and the only
   thing that writes `site/data/`. It is offline: no network, no keys, no environment
@@ -131,3 +132,17 @@ Site
 - `site/data/` is generated output that Avi commits. Never create, edit or delete
   anything in it by hand, and never run `scripts/build_pages.py` against this repo: the
   tests run it on temporary folders. Avi runs it.
+- `web/render.py` is the site page renderer (METHODOLOGY section 16). It is pure: no
+  files, no network, no environment variables, no clock, and it imports only `datetime`,
+  `html`, `math` and `re`. It returns HTML as text and writes nothing.
+- Every word, number and label a visitor can see or hear comes from the page data or from
+  the fixed copy in section 16. Never add, remove or reword visible text, headings,
+  `aria-label`s or placeholders, even to help a layout: wording is Avi's decision and goes
+  through the spec and `tests/golden/site_render.json`. Markup and element choice are
+  yours, within section 16.7.
+- JavaScript (a later task) never writes text into a page and never fetches anything. It
+  only moves, filters, shows and hides what the HTML already holds; a count-up ends on the
+  exact text already there.
+- Motion always lands on the exact checked figure and stops. Nothing loops: no ticker
+  tape, no "live" cues, no red/green, no price charts, and reduced-motion settings switch
+  motion off.
