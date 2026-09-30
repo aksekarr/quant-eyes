@@ -315,6 +315,13 @@ class InvarianceTests(unittest.TestCase):
             {"eval", "exec", "__import__", "getenv"},
         )
         self.assertNotIn(".environ", pages_path.read_text(encoding="utf-8"))
+        site_path = root / "scripts" / "build_site.py"
+        self._check_file_io_source(
+            site_path,
+            {"json", "os", "pathlib", "sys", "web.render"},
+            {"eval", "exec", "__import__", "getenv"},
+        )
+        self.assertNotIn(".environ", site_path.read_text(encoding="utf-8"))
         self._check_file_io_source(
             root / "scripts" / "draft_headlines.py",
             {
