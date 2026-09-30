@@ -11,6 +11,7 @@ import unittest
 from unittest.mock import patch
 
 from words.cards import WordsError
+from words.headline import check_approvals
 from words.page import build_index, build_page
 from golden_support import (
     apply_edits,
@@ -30,7 +31,7 @@ _ERRORS = {"PageError": _BUILD_PAGES.PageError}
 _PAGE_ERRORS = {"WordsError": WordsError, "RuntimeError": RuntimeError}
 
 
-def _expected_pages(case, registry, context, documents):
+def _expected_pages(case, registry, context, documents, approvals):
     """Compose the expected files through the already-tested page builders."""
     names = case.get("expected_pages", [])
     if not names:
@@ -48,6 +49,9 @@ def _expected_pages(case, registry, context, documents):
         page = build_page(deepcopy(documents[instrument_id]), deepcopy(facts))
         pages.append(page)
         values[instrument_id + ".json"] = page
+    headlines = check_approvals(approvals, pages, registry)
+    for page in pages:
+        page["headline"] = headlines.get(page["instrument"]["id"])
     values["index.json"] = build_index(deepcopy(registry), pages)
     return {
         name: json.dumps(
@@ -124,10 +128,12 @@ class BuildPagesGoldenTests(unittest.TestCase):
                 side_effect=RuntimeError(case["write_pages_raises"]),
             ))
 
-    def _exercise_write(self, case, registry, context, documents, out_dir):
+    def _exercise_write(self, case, registry, context, documents, approvals, out_dir):
         def write():
             try:
-                return _BUILD_PAGES.write_pages(registry, context, documents, out_dir)
+                return _BUILD_PAGES.write_pages(
+                    registry, context, documents, approvals, out_dir,
+                )
             except Exception as error:
                 if "message_equals" in case:
                     self.assertEqual(str(error), case["message_equals"])
@@ -139,7 +145,7 @@ class BuildPagesGoldenTests(unittest.TestCase):
             summary = write()
             assert_result_equal(self, summary, case["expected_summary"], tolerance=0)
 
-    def _exercise_cli(self, case, registry, context, documents, root):
+    def _exercise_cli(self, case, registry, context, documents, approvals, root):
         registry_path = root / "pipeline" / "instruments.json"
         registry_path.parent.mkdir()
         registry_path.write_text(
@@ -154,6 +160,12 @@ class BuildPagesGoldenTests(unittest.TestCase):
         for instrument_id, document in documents.items():
             (derived_dir / (instrument_id + ".json")).write_text(
                 json.dumps(document), encoding="utf-8",
+            )
+        if not case.get("headlines_missing"):
+            headlines_path = root / "words" / "headlines.json"
+            headlines_path.parent.mkdir(exist_ok=True)
+            headlines_path.write_text(
+                case.get("headlines_text", json.dumps(approvals)), encoding="utf-8",
             )
 
         out = StringIO()
@@ -176,7 +188,11 @@ class BuildPagesGoldenTests(unittest.TestCase):
             )
             for instrument_id, fixture in case["documents"].items()
         }
-        pages = _expected_pages(case, registry, context, documents)
+        approvals = apply_edits(
+            _GOLDEN["approvals"][case.get("approvals", "NONE")],
+            case.get("approvals_edits", []),
+        )
+        pages = _expected_pages(case, registry, context, documents, approvals)
 
         with tempfile.TemporaryDirectory() as temporary_root, ExitStack() as patches:
             root = Path(temporary_root)
@@ -185,11 +201,13 @@ class BuildPagesGoldenTests(unittest.TestCase):
             if case["check"] == "write":
                 if not case.get("out_dir_missing"):
                     self._prepare_output(out_dir, case.get("before_files", {}))
-                self._exercise_write(case, registry, context, documents, out_dir)
+                self._exercise_write(
+                    case, registry, context, documents, approvals, out_dir,
+                )
             elif case["check"] == "cli":
                 if "before_files" in case:
                     self._prepare_output(out_dir, case["before_files"])
-                self._exercise_cli(case, registry, context, documents, root)
+                self._exercise_cli(case, registry, context, documents, approvals, root)
             else:
                 self.fail("Unsupported golden check type: {}".format(case["check"]))
             self._assert_files(case, out_dir, pages)

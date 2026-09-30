@@ -13,6 +13,7 @@ from pipeline.publish import (
     PublishError, RegistryError, check_document, check_registry,
 )
 from words.cards import WordsError
+from words.headline import check_approvals
 from words.page import build_index, build_page, check_context
 
 
@@ -99,7 +100,7 @@ def _write_values(values, out_dir):
         raise
 
 
-def write_pages(registry, context, documents, out_dir):
+def write_pages(registry, context, documents, approvals, out_dir):
     """Validate and build every page and the index before replacing any file."""
     _step("registry", "check", check_registry, registry)
     _step("context", "check", check_context, context, registry)
@@ -128,6 +129,10 @@ def write_pages(registry, context, documents, out_dir):
         }
         pages.append(_step(instrument_id, "page", build_page, document, facts))
 
+    headlines = _step("headlines", "check", check_approvals, approvals, pages, registry)
+    for instrument_id, page in zip(asset_ids, pages):
+        page["headline"] = headlines.get(instrument_id)
+
     index = _step("index", "build", build_index, registry, pages)
     values = [
         (instrument_id + ".json", page)
@@ -138,6 +143,11 @@ def write_pages(registry, context, documents, out_dir):
         "data_as_of": index["data_as_of"],
         "generated_on": index["generated_on"],
         "method_version": index["method_version"],
+        "headlines": [
+            instrument_id for instrument_id, page in zip(asset_ids, pages)
+            if page["headline"] is not None
+        ],
+        "headlines_as_of": approvals["data_as_of"],
         "written": [name for name, value in values],
     }
 
@@ -172,6 +182,8 @@ def main(argv, root, out):
         documents = {}
         for who in _asset_ids(registry):
             documents[who] = _load_json(root / "data" / "derived" / (who + ".json"))
+        who = "headlines"
+        approvals = _load_json(root / "words" / "headlines.json")
     except Exception as error:
         print("FAILED: {}: load: {}".format(who, type(error).__name__), file=out)
         print("Nothing was written.", file=out)
@@ -180,10 +192,20 @@ def main(argv, root, out):
     try:
         out_dir = root / "site" / "data"
         out_dir.mkdir(parents=True, exist_ok=True)
-        summary = write_pages(registry, context, documents, out_dir)
+        summary = write_pages(registry, context, documents, approvals, out_dir)
         print("Data as of {data_as_of}, generated on {generated_on}, method {method_version}.".format(
             **summary
         ), file=out)
+        if summary["headlines_as_of"] == summary["data_as_of"]:
+            print("Headlines: {} of {} pages have an approved headline.".format(
+                len(summary["headlines"]), len(_asset_ids(registry)),
+            ), file=out)
+        else:
+            print(
+                "Headlines: none, because words/headlines.json is for {headlines_as_of}; "
+                "draft and review headlines for {data_as_of}.".format(**summary),
+                file=out,
+            )
         print("Wrote {} files to site/data.".format(len(summary["written"])), file=out)
         return 0
     except PageError as error:
