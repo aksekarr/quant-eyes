@@ -92,7 +92,7 @@
 </div>
 <div data-layout="card-lead">
 <div data-layout="lead-copy">
-<p data-qx="figure" data-qx-key="bumpy.volatility">28.9%</p>
+<p data-qx="figure" data-qx-key="bumpy.volatility"><span data-layout="figure-text">28.9%</span></p>
 <p data-qx="sentence" data-qx-key="bumpy.0">Its volatility was 28.9% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026.</p>
 </div>
 <div data-layout="bars">
@@ -160,12 +160,12 @@
 </div>
 <div data-layout="card-lead">
 <div data-layout="lead-copy">
-<p data-qx="figure" data-qx-key="worst.fall">41.5%</p>
+<p data-qx="figure" data-qx-key="worst.fall"><span data-layout="figure-text">41.5%</span></p>
 <p data-qx="sentence" data-qx-key="worst.0">Since the end of Aug 2007, its largest fall, measured at month-end, was 41.5%: from its high at the end of Dec 2007 to its low at the end of Dec 2008, 12 months later.</p>
 </div>
 <div data-layout="drain">
 <p data-qx="drain-label">£10,000 invested at the high</p>
-<p data-qx="figure" data-qx-key="worst.ten_thousand_left" data-qx-from="10000">£5,850</p>
+<p data-qx="figure" data-qx-key="worst.ten_thousand_left" data-qx-from="10000"><span data-layout="figure-text">£5,850</span></p>
 <p data-qx="drain-period">Dec 2007 to Dec 2008</p>
 <div data-layout="drain-track">
 <span data-qx="size" data-qx-key="worst.drain" style="--qx-size:0.5850"></span>
@@ -319,11 +319,15 @@
 <section id="next">
 <div data-layout="card-heading">
 <p data-qx="card-number" data-qx-key="next">04</p>
-<h2 data-qx="card-title" data-qx-key="next">What does it do next to the tracker?</h2>
+<h2 data-qx="card-title" data-qx-key="next">
+<button type="button" data-accordion-toggle="" aria-expanded="true" aria-disabled="true" aria-controls="next-content">What does it do next to the tracker?
+</button>
+</h2>
 </div>
+<div data-layout="card-content" id="next-content">
 <div data-layout="card-lead">
 <div data-layout="lead-copy">
-<p data-qx="figure" data-qx-key="next.correlation">0.53</p>
+<p data-qx="figure" data-qx-key="next.correlation"><span data-layout="figure-text">0.53</span></p>
 <p data-qx="sentence" data-qx-key="next.0">Its correlation with the tracker was 0.53, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite.</p>
 </div>
 <div data-layout="correlation">
@@ -370,17 +374,23 @@
 <p data-qx="maths-note" data-qx-key="next">Periods run from month-end to month-end. Each figure is rounded once, from the unrounded calculation.</p>
 <p data-qx="maths-sources" data-qx-key="next">Sources: Tiingo (Apple); Alpha Vantage (Developed-world tracker, US dollars per pound). Method 1.0.</p>
 </details>
+</div>
 </section>
 <section id="pound">
 <div data-layout="card-heading">
 <p data-qx="card-number" data-qx-key="pound">05</p>
-<h2 data-qx="card-title" data-qx-key="pound">How much of it was the pound?</h2>
+<h2 data-qx="card-title" data-qx-key="pound">
+<button type="button" data-accordion-toggle="" aria-expanded="true" aria-disabled="true" aria-controls="pound-content">How much of it was the pound?
+</button>
+</h2>
 </div>
+<div data-layout="card-content" id="pound-content">
 <p data-qx="sentence" data-qx-key="pound.0">From the end of Aug 2007 to the end of Aug 2026: up 7,550.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 11,290.4%.</p>
 <p data-qx="sentence" data-qx-key="pound.1">Global financial crisis: down 31.5% in dollars, the dollar rose 43.0%, so down 2.1% in pounds.</p>
 <p data-qx="sentence" data-qx-key="pound.2">Covid crash: down 17.6% in dollars, the dollar rose 6.5%, so down 12.3% in pounds.</p>
 <p data-qx="sentence" data-qx-key="pound.3">2022 rate shock: down 13.3% in dollars, the dollar rose 17.9%, so up 2.2% in pounds.</p>
 <p data-qx="sentence" data-qx-key="pound.4">The two parts multiply rather than add, so they never simply add up to the figure in pounds.</p>
+</div>
 </section>
 <section id="limits">
 <div data-layout="card-heading">
