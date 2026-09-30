@@ -110,8 +110,8 @@ meaning).
 ## Checks (`tests/test_site_look.py`)
 
 - `site/assets/site.css` exists and contains none of: `http:`, `https:`, `//` at the
-  start of a `url(`, `@import`, `@keyframes`, `animation`, `infinite`, `javascript:`,
-  `expression(`.
+  start of a `url(`, `@import`, `infinite`, `javascript:`, `expression(`. (Task 9c also
+  banned `@keyframes` and `animation`; Task 9d allows them under the motion rules below.)
 - Every `url(...)` in it is relative and names a file that exists under `site/assets/`.
 - There is an `@font-face` for every file in `site/assets/fonts/` ending in `.woff2`, and
   the three family names appear.
@@ -122,3 +122,105 @@ meaning).
 - Every page that `render_page` and `render_landing` produce for the golden cases in
   `tests/golden/site_render.json` links only `assets/site.css` (landing) or
   `../assets/site.css` (asset pages) as its stylesheet.
+
+# Motion and interaction (Task 9d)
+
+Everything that can react does, and every movement **lands on the exact checked figure
+or the static layout and stops**. Nothing loops, nothing suggests live data (no ticker
+tape, no pulsing "live" dots, no red or green, no price lines), and the page without
+JavaScript, or with reduced motion, is already the finished page.
+
+## Files
+
+- `site/assets/site.js` (new, the only script): plain JavaScript, no libraries, no
+  modules, loaded with `defer` as the head already does.
+- `site/assets/site.css`: motion styles may be added. `@keyframes` are allowed; every
+  animation runs once (no `infinite`, and any `animation-iteration-count` is `1`); every
+  animation and transition sits inside `@media (prefers-reduced-motion: no-preference)`
+  or is switched off by the reduced-motion block.
+- `web/render.py`: markup hooks only (attributes, wrappers, element choices), with every
+  text, order and size exactly as section 16 fixes them, and section 16.7 holding.
+- `tests/test_site_look.py`: amend its checks as described above; `tests/test_site_motion.py`
+  (new): the checks at the end of this section.
+
+## Rules for the script
+
+- It never fetches anything: no `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`,
+  `import(`, `navigator.sendBeacon`. No `eval`, `new Function`, `document.write`,
+  `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `setInterval`, `localStorage` or
+  `sessionStorage`.
+- It never changes the text of a `data-qx` element. The only text it ever writes is the
+  passing digits of a count-up, into an element it creates with `aria-hidden="true"`
+  inside the figure while the figure's own text is visually hidden (never removed), and it
+  removes that element when the count ends, leaving the figure exactly as built.
+- It may add and remove classes, `hidden`, `aria-*` states (`aria-expanded`,
+  `aria-current`, `aria-pressed`) and CSS custom properties.
+- If `window.matchMedia("(prefers-reduced-motion: reduce)")` matches, nothing moves:
+  everything shows its final state at once, and the headlines don't advance by themselves.
+- Motion starts when its element is at least half in view (`IntersectionObserver`), runs
+  once, and never replays on scrolling back, except the hover replay of the border sweep.
+- If anything in the script fails, the page must still read exactly as the static page.
+
+## What moves
+
+- **Count-ups.** Each `figure` element counts once from 0 (or from its `data-qx-from`,
+  for the £10,000 bar, counting down) to its own value, in about 1.2 seconds with an
+  ease-out. The value is read from the figure's own text: an optional true minus sign
+  (U+2212), an optional `£`, digits with thousands commas, optional decimals and an
+  optional `%`. Every passing frame uses the same format as the final text (same decimals,
+  commas, `£`, `%`, minus sign), and the last frame is the figure's own text. A figure
+  whose text doesn't match that pattern doesn't count. `scale-value` doesn't count; the
+  correlation marker slides instead.
+- **Visuals** grow once from zero to their size when their card comes into view: the
+  bars, the £10,000 fill (falling from full to what was left, in step with the count),
+  the timeline segments (the fall, then the recovery or the time since the low), the
+  correlation marker (sliding from the middle of the scale to its place, with the range
+  band fading in), and the 90/10 parts. When they stop, every size element's box is
+  exactly where the static page puts it.
+- **Border sweep.** The headline card on an asset page and the headlines card on the
+  landing page: a bright arc travels once around the border when the card comes into
+  view (about 1.6 seconds), then the border rests as the still glow. On devices with a
+  fine pointer, hovering replays one sweep.
+- **Provenance chain.** Its three steps light up in turn, once, when it comes into view.
+- **Hover and focus** (fine pointer only): tiles and cards lift slightly, and a soft
+  spotlight follows the pointer over them (CSS custom properties set from the pointer
+  position). Keyboard focus shows the focus ring.
+
+## Interaction
+
+- **Landing headlines.** With JavaScript, the headlines card shows one headline at a time
+  (the others get `hidden`) and its controls are shown. Each headline stays 6 seconds,
+  with its segment button filling as a progress bar; after the last, the card returns to
+  the first and stops: one pass only. A click, tap or keyboard focus anywhere in the card
+  stops the automatic advance for good. A segment button shows its headline
+  (`aria-pressed` on the current one). The pause button pauses, and its `play` label
+  replaces `pause`; play continues the pass from the current headline, to the end, then
+  stops on the first. With reduced motion there is no automatic advance: the first
+  headline shows, and the segment buttons work. The slides are not announced as they
+  change.
+- **Search.** JavaScript shows the search. Typing filters the results by label, ticker or
+  name, ignoring case (the text already in each result); an empty field shows no results;
+  text that matches nothing shows the "Not covered yet" block. Enter goes to the first
+  result shown. The tiles below stay as they are.
+- **Questions rail.** The card most in view marks its rail link with `aria-current="true"`;
+  on phones the pill row scrolls to keep it visible. The links jump to their cards
+  (smoothly, unless reduced motion).
+- **Phone accordions** (below 640px only): the `next` and `pound` cards start collapsed to
+  their number and title, and the title becomes the toggle (a `<button>` inside the `<h2>`
+  with `aria-expanded`). The `limits` card never collapses: the risk wording always shows.
+  On wider screens nothing collapses.
+- "Show the maths" stays the native `<details>` toggle.
+
+## Checks (`tests/test_site_motion.py`)
+
+- `site/assets/site.js` exists and contains none of the banned names above.
+- `site/assets/site.css` contains no `infinite`, and every `animation-iteration-count` in
+  it is `1`; it has a `@media (prefers-reduced-motion: reduce)` block.
+- Every page rendered for the golden cases still links `assets/site.js` (or
+  `../assets/site.js`) as its only script, with `defer`.
+
+Claude also checks the pages in a headless browser: with and without JavaScript, and with
+reduced motion; that once motion ends every `data-qx` element's text equals the built
+HTML and every size element's box equals the static page's; that nothing is still
+animating; that the headlines stop after one pass and on interaction; the search; and that
+no request leaves the site.
