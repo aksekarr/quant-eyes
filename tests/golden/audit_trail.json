@@ -1,0 +1,7109 @@
+{
+ "file": "audit_trail",
+ "spec": "docs/METHODOLOGY.md section 16.9 (Task 10d)",
+ "authorship": "Cases and expected results written by Claude (architect), checked against a separate Claude-only reference implementation, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
+ "interface": {
+  "render_landing(index, pages, reviews)": "web.render, section 16.5 plus 16.9. Each case renders the landing page with the edited index, the three edited pages in index order (usa, gbf, cry) and the edited reviews (or reviews_value exactly if given).",
+  "read back": "Section 16.2, as tests/test_site_render.py reads pages. expected is the full list of entries.",
+  "expected_targets": "The value of every data-trail attribute in the page, in document order.",
+  "expected_error": "The SiteError message, compared exactly.",
+  "checks": "Every rendered case also passes the section 16.7 markup checks, with 16.9's additions; rendering twice gives the same text and leaves the inputs unchanged."
+ },
+ "case_fields": {
+  "index_edits / page_edits / review_edits": "Applied with golden_support.apply_edits to deep copies of the fixtures below; page_edits maps an asset id to its edits."
+ },
+ "index": {
+  "assets": [
+   {
+    "id": "usa",
+    "label": "US share",
+    "name": "Test US Corp",
+    "ticker": "USA",
+    "type": "share"
+   },
+   {
+    "id": "gbf",
+    "label": "UK fund",
+    "name": "Test UK Fund",
+    "ticker": "GBF",
+    "type": "etf"
+   },
+   {
+    "id": "cry",
+    "label": "Test coin",
+    "name": "Test Coin",
+    "ticker": "CRY",
+    "type": "cryptocurrency"
+   }
+  ],
+  "benchmark": {
+   "id": "trk",
+   "label": "Test tracker",
+   "name": "Test Tracker ETF",
+   "ticker": "TRK"
+  },
+  "data_as_of": "2026-08",
+  "data_as_of_text": "Data to the end of Aug 2026",
+  "generated_on": "2026-09-29",
+  "index_version": "1",
+  "method_version": "1.0"
+ },
+ "pages": {
+  "P_USA": {
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "cards": [
+    {
+     "id": "bumpy",
+     "sentences": [
+      {
+       "claims": [
+        "bumpy.volatility"
+       ],
+       "text": "Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026."
+      },
+      {
+       "claims": [
+        "bumpy.volatility_common",
+        "bumpy.tracker_volatility"
+       ],
+       "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 43.1% against the tracker's 11.7%."
+      },
+      {
+       "claims": [],
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future."
+      }
+     ],
+     "title": "How bumpy is the ride?"
+    },
+    {
+     "id": "worst",
+     "sentences": [
+      {
+       "claims": [
+        "worst.fall",
+        "worst.months_to_low"
+       ],
+       "text": "Since the end of Aug 2007, its largest fall, measured at month-end, was 72.5%: from its high at the end of Sep 2007 to its low at the end of Nov 2008, 14 months later."
+      },
+      {
+       "claims": [
+        "worst.ten_thousand_left",
+        "worst.ten_thousand_lost"
+       ],
+       "text": "£10,000 invested at that high would have been worth £2,750 at the low, £7,250 less."
+      },
+      {
+       "claims": [
+        "worst.months_to_recover",
+        "worst.months_underwater"
+       ],
+       "text": "It was back at that high by the end of Oct 2015, 83 months after the low and 97 months after the high."
+      },
+      {
+       "claims": [],
+       "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high."
+      }
+     ],
+     "title": "What's the worst it's been?"
+    },
+    {
+     "id": "panic",
+     "sentences": [
+      {
+       "claims": [
+        "panic.gfc"
+       ],
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period."
+      },
+      {
+       "claims": [],
+       "text": "The tracker: not covered."
+      },
+      {
+       "claims": [
+        "panic.covid"
+       ],
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period."
+      },
+      {
+       "claims": [
+        "panic.covid.tracker"
+       ],
+       "text": "The tracker: down 14.5% over the same period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock"
+       ],
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock.tracker"
+       ],
+       "text": "The tracker: down 6.0% over the same period."
+      },
+      {
+       "claims": [],
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+      }
+     ],
+     "title": "What happened when markets panicked?"
+    },
+    {
+     "id": "next",
+     "sentences": [
+      {
+       "claims": [
+        "next.correlation"
+       ],
+       "text": "Its correlation with the tracker was 0.47, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+      },
+      {
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ],
+       "text": "Measured over each 36-month stretch, it ranged from 0.21 (the 36 months to the end of Dec 2013) to 0.67 (the 36 months to the end of Apr 2024)."
+      },
+      {
+       "claims": [],
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection."
+      },
+      {
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ],
+       "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 17.5% a year, against 12.5% a year for the tracker alone."
+      },
+      {
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ],
+       "text": "The mix's volatility was 13.5% against the tracker's 11.7%, and its largest fall at month-end was 17.5% against 15.0%."
+      },
+      {
+       "claims": [],
+       "text": "Before fees, trading costs and tax."
+      },
+      {
+       "claims": [],
+       "text": "The tracker already holds these shares, so the 10% adds to a holding it already has."
+      }
+     ],
+     "title": "What does it do next to the tracker?"
+    },
+    {
+     "id": "pound",
+     "sentences": [
+      {
+       "claims": [
+        "pound.local",
+        "pound.currency",
+        "pound.gbp"
+       ],
+       "text": "From the end of Aug 2007 to the end of Aug 2026: up 28,171.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 41,992.8%."
+      },
+      {
+       "claims": [
+        "pound.gfc.local",
+        "pound.gfc.currency",
+        "pound.gfc.gbp"
+       ],
+       "text": "Global financial crisis: down 72.8% in dollars, the dollar rose 43.0%, so down 61.1% in pounds."
+      },
+      {
+       "claims": [
+        "pound.covid.local",
+        "pound.covid.currency",
+        "pound.covid.gbp"
+       ],
+       "text": "Covid crash: up 11.6% in dollars, the dollar rose 6.5%, so up 18.8% in pounds."
+      },
+      {
+       "claims": [],
+       "text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds."
+      }
+     ],
+     "title": "How much of it was the pound?"
+    },
+    {
+     "id": "limits",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "A single company's shares can fall a long way and stay down, and the company can fail."
+      },
+      {
+       "claims": [],
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+      }
+     ],
+     "title": "What these numbers don't capture"
+    }
+   ],
+   "claims": [
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "46.1%",
+     "id": "bumpy.volatility",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 46.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "43.1%",
+     "id": "bumpy.volatility_common",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 43.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "11.7%",
+     "id": "bumpy.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 11.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "72.5%",
+     "id": "worst.fall",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2008-11",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -72.5
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "14 months",
+     "id": "worst.months_to_low",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "months_peak_to_trough",
+     "period_end": "2008-11",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "months",
+     "value": 14
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "£2,750",
+     "id": "worst.ten_thousand_left",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "ten_thousand_at_trough",
+     "period_end": "2008-11",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "gbp",
+     "value": 2750
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "£7,250",
+     "id": "worst.ten_thousand_lost",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "ten_thousand_lost",
+     "period_end": "2008-11",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "gbp",
+     "value": 7250
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "83 months",
+     "id": "worst.months_to_recover",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "months_trough_to_recovery",
+     "period_end": "2015-10",
+     "period_start": "2008-11",
+     "series": "asset",
+     "unit": "months",
+     "value": 83
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "97 months",
+     "id": "worst.months_underwater",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "months_underwater",
+     "period_end": "2015-10",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "months",
+     "value": 97
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "61.1%",
+     "id": "panic.gfc",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -61.1
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "18.8%",
+     "id": "panic.covid",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 18.8
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "14.5%",
+     "id": "panic.covid.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -14.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "7.3%",
+     "id": "panic.rate_shock",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "asset",
+     "unit": "percent",
+     "value": -7.3
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "6.0%",
+     "id": "panic.rate_shock.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -6.0
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.47",
+     "id": "next.correlation",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "correlation",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.47
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.21",
+     "id": "next.rolling_lowest",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_lowest",
+     "period_end": "2013-12",
+     "period_start": "2010-12",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.21
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.67",
+     "id": "next.rolling_highest",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_highest",
+     "period_end": "2024-04",
+     "period_start": "2021-04",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.67
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "17.5%",
+     "id": "next.mix_annualised",
+     "instrument": "usa",
+     "kind": "illustration",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": 17.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "12.5%",
+     "id": "next.tracker_annualised",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 12.5
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "13.5%",
+     "id": "next.mix_volatility",
+     "instrument": "usa",
+     "kind": "illustration",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": 13.5
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "11.7%",
+     "id": "next.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 11.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "17.5%",
+     "id": "next.mix_fall",
+     "instrument": "usa",
+     "kind": "illustration",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": -17.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "15.0%",
+     "id": "next.tracker_fall",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -15.0
+    },
+    {
+     "currency": "USD",
+     "direction": "up",
+     "display": "28,171.2%",
+     "id": "pound.local",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 28171.2
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "48.9%",
+     "id": "pound.currency",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "currency",
+     "unit": "percent",
+     "value": 48.9
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "41,992.8%",
+     "id": "pound.gbp",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 41992.8
+    },
+    {
+     "currency": "USD",
+     "direction": "down",
+     "display": "72.8%",
+     "id": "pound.gfc.local",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -72.8
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "43.0%",
+     "id": "pound.gfc.currency",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "currency",
+     "unit": "percent",
+     "value": 43.0
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "61.1%",
+     "id": "pound.gfc.gbp",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -61.1
+    },
+    {
+     "currency": "USD",
+     "direction": "up",
+     "display": "11.6%",
+     "id": "pound.covid.local",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 11.6
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "6.5%",
+     "id": "pound.covid.currency",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "currency",
+     "unit": "percent",
+     "value": 6.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "18.8%",
+     "id": "pound.covid.gbp",
+     "instrument": "usa",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 18.8
+    }
+   ],
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "headline": {
+    "claims": [
+     "worst.ten_thousand_left"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered."
+   },
+   "instrument": {
+    "id": "usa",
+    "identity": {
+     "currency_hedged": null,
+     "exchange": "Test US exchange",
+     "income": "dividends",
+     "isin": "US00TEST0002",
+     "name": "Test US Corp",
+     "quote_unit": "dollars",
+     "share_class": "Common stock",
+     "sources": [
+      "https://issuer.example.com/usa"
+     ],
+     "ticker": "USA",
+     "trading_currency": "USD",
+     "type": "share"
+    },
+    "label": "US share"
+   },
+   "method_version": "1.0",
+   "page_version": "1",
+   "sources": [
+    {
+     "provider": "Provider A",
+     "url": "https://a.example.com",
+     "used_for": [
+      "US share"
+     ]
+    },
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "Test tracker",
+      "US dollars per pound"
+     ]
+    }
+   ]
+  },
+  "P_GBF": {
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "cards": [
+    {
+     "id": "bumpy",
+     "sentences": [
+      {
+       "claims": [
+        "bumpy.volatility"
+       ],
+       "text": "Its volatility was 3.9% a year, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026."
+      },
+      {
+       "claims": [
+        "bumpy.tracker_volatility"
+       ],
+       "text": "Over the same months, the tracker's was 5.6%."
+      },
+      {
+       "claims": [],
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future."
+      }
+     ],
+     "title": "How bumpy is the ride?"
+    },
+    {
+     "id": "worst",
+     "sentences": [
+      {
+       "claims": [
+        "worst.fall",
+        "worst.months_to_low"
+       ],
+       "text": "Since the end of Aug 2021, its largest fall, measured at month-end, was 8.7%: from its high at the end of Sep 2021 to its low at the end of Aug 2026, 59 months later."
+      },
+      {
+       "claims": [
+        "worst.ten_thousand_left",
+        "worst.ten_thousand_lost"
+       ],
+       "text": "£10,000 invested at that high would have been worth £9,130 at the low, £870 less."
+      },
+      {
+       "claims": [
+        "worst.below_high_at_end",
+        "worst.months_underwater"
+       ],
+       "text": "It had not recovered by the end of Aug 2026: it was still 8.7% below its high, 59 months after it."
+      },
+      {
+       "claims": [],
+       "text": "Falls are measured from one month-end to the next, so a fall that recovered within a month doesn't show. The £10,000 figure applies only to money invested at the high."
+      }
+     ],
+     "title": "What's the worst it's been?"
+    },
+    {
+     "id": "panic",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): not covered; its history in pounds starts at the end of Aug 2021."
+      },
+      {
+       "claims": [],
+       "text": "The tracker: not covered."
+      },
+      {
+       "claims": [],
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): not covered; its history in pounds starts at the end of Aug 2021."
+      },
+      {
+       "claims": [],
+       "text": "The tracker: not covered."
+      },
+      {
+       "claims": [
+        "panic.rate_shock"
+       ],
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): up 1.3% over the period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock.tracker"
+       ],
+       "text": "The tracker: up 0.7% over the same period."
+      },
+      {
+       "claims": [],
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+      }
+     ],
+     "title": "What happened when markets panicked?"
+    },
+    {
+     "id": "next",
+     "sentences": [
+      {
+       "claims": [
+        "next.correlation"
+       ],
+       "text": "Its correlation with the tracker was 0.02, measured on monthly returns in pounds from the end of Aug 2021 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+      },
+      {
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ],
+       "text": "Measured over each 36-month stretch, it ranged from −0.08 (the 36 months to the end of May 2025) to 0.08 (the 36 months to the end of Apr 2026)."
+      },
+      {
+       "claims": [],
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection."
+      },
+      {
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ],
+       "text": "As an illustration, not a recommendation: from the end of Aug 2021 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 2.7% a year, against 3.2% a year for the tracker alone."
+      },
+      {
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ],
+       "text": "The mix's volatility was 5.1% against the tracker's 5.6%, and its largest fall at month-end was 3.0% against 3.1%."
+      },
+      {
+       "claims": [],
+       "text": "Before fees, trading costs and tax."
+      }
+     ],
+     "title": "What does it do next to the tracker?"
+    },
+    {
+     "id": "pound",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "It is priced in pounds, so there is no separate currency effect to show."
+      }
+     ],
+     "title": "How much of it was the pound?"
+    },
+    {
+     "id": "limits",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "A fund's value moves with what it holds: bond prices, for example, fall when interest rates rise. Its market price can differ slightly from the value of its holdings, and its running charges are already inside these figures."
+      },
+      {
+       "claims": [],
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+      }
+     ],
+     "title": "What these numbers don't capture"
+    }
+   ],
+   "claims": [
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "3.9%",
+     "id": "bumpy.volatility",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 3.9
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "5.6%",
+     "id": "bumpy.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 5.6
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "8.7%",
+     "id": "worst.fall",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -8.7
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "59 months",
+     "id": "worst.months_to_low",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "months_peak_to_trough",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "months",
+     "value": 59
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "£9,130",
+     "id": "worst.ten_thousand_left",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "ten_thousand_at_trough",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "gbp",
+     "value": 9130
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "£870",
+     "id": "worst.ten_thousand_lost",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "ten_thousand_lost",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "gbp",
+     "value": 870
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "8.7%",
+     "id": "worst.below_high_at_end",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "drawdown_at_end",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -8.7
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "59 months",
+     "id": "worst.months_underwater",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "months_underwater",
+     "period_end": "2026-08",
+     "period_start": "2021-09",
+     "series": "asset",
+     "unit": "months",
+     "value": 59
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "1.3%",
+     "id": "panic.rate_shock",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "asset",
+     "unit": "percent",
+     "value": 1.3
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "0.7%",
+     "id": "panic.rate_shock.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 0.7
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.02",
+     "id": "next.correlation",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "correlation",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.02
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "−0.08",
+     "id": "next.rolling_lowest",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_lowest",
+     "period_end": "2025-05",
+     "period_start": "2022-05",
+     "series": "asset",
+     "unit": "ratio",
+     "value": -0.08
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.08",
+     "id": "next.rolling_highest",
+     "instrument": "gbf",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_highest",
+     "period_end": "2026-04",
+     "period_start": "2023-04",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.08
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "2.7%",
+     "id": "next.mix_annualised",
+     "instrument": "gbf",
+     "kind": "illustration",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "mix",
+     "unit": "percent",
+     "value": 2.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "3.2%",
+     "id": "next.tracker_annualised",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 3.2
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "5.1%",
+     "id": "next.mix_volatility",
+     "instrument": "gbf",
+     "kind": "illustration",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "mix",
+     "unit": "percent",
+     "value": 5.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "5.6%",
+     "id": "next.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 5.6
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "3.0%",
+     "id": "next.mix_fall",
+     "instrument": "gbf",
+     "kind": "illustration",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "mix",
+     "unit": "percent",
+     "value": -3.0
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "3.1%",
+     "id": "next.tracker_fall",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2021-08",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -3.1
+    }
+   ],
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "headline": {
+    "claims": [
+     "worst.fall",
+     "worst.months_underwater"
+    ],
+    "drafted_by": "gpt-6.1-sol",
+    "reviewed_on": "2026-09-30",
+    "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high."
+   },
+   "instrument": {
+    "id": "gbf",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "distributing",
+     "isin": "IE00TEST0003",
+     "name": "Test UK Fund",
+     "quote_unit": "pounds",
+     "share_class": "GBP (Dist)",
+     "sources": [
+      "https://issuer.example.com/gbf"
+     ],
+     "ticker": "GBF",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "UK fund"
+   },
+   "method_version": "1.0",
+   "page_version": "1",
+   "sources": [
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "UK fund",
+      "Test tracker"
+     ]
+    }
+   ]
+  },
+  "P_CRY": {
+   "benchmark": {
+    "id": "trk",
+    "identity": {
+     "currency_hedged": false,
+     "exchange": "Test exchange",
+     "income": "accumulating",
+     "isin": "IE00TEST0001",
+     "name": "Test Tracker ETF",
+     "quote_unit": "pence",
+     "share_class": "USD (Acc)",
+     "sources": [
+      "https://issuer.example.com/trk"
+     ],
+     "ticker": "TRK",
+     "trading_currency": "GBP",
+     "type": "etf"
+    },
+    "label": "Test tracker"
+   },
+   "cards": [
+    {
+     "id": "bumpy",
+     "sentences": [
+      {
+       "claims": [
+        "bumpy.volatility"
+       ],
+       "text": "Its volatility was 46.1% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026."
+      },
+      {
+       "claims": [
+        "bumpy.volatility_common",
+        "bumpy.tracker_volatility"
+       ],
+       "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 43.1% against the tracker's 11.7%."
+      },
+      {
+       "claims": [],
+       "text": "Volatility measures how widely returns swung around their average, up as well as down. It describes the past, not the future."
+      }
+     ],
+     "title": "How bumpy is the ride?"
+    },
+    {
+     "id": "worst",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "Since the end of Aug 2007, it has not been below a previous high at any month-end."
+      }
+     ],
+     "title": "What's the worst it's been?"
+    },
+    {
+     "id": "panic",
+     "sentences": [
+      {
+       "claims": [
+        "panic.gfc"
+       ],
+       "text": "Global financial crisis (end of Sep 2007 to end of Mar 2009): down 61.1% over the period."
+      },
+      {
+       "claims": [],
+       "text": "The tracker: not covered."
+      },
+      {
+       "claims": [
+        "panic.covid"
+       ],
+       "text": "Covid crash (end of Jan 2020 to end of Mar 2020): up 18.8% over the period."
+      },
+      {
+       "claims": [
+        "panic.covid.tracker"
+       ],
+       "text": "The tracker: unchanged (0.0%) over the same period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock"
+       ],
+       "text": "2022 rate shock (end of Dec 2021 to end of Oct 2022): down 7.3% over the period."
+      },
+      {
+       "claims": [
+        "panic.rate_shock.tracker"
+       ],
+       "text": "The tracker: down 6.0% over the same period."
+      },
+      {
+       "claims": [],
+       "text": "Each figure compares the start and end of the period. Prices may have fallen further in between and partly recovered."
+      }
+     ],
+     "title": "What happened when markets panicked?"
+    },
+    {
+     "id": "next",
+     "sentences": [
+      {
+       "claims": [
+        "next.correlation"
+       ],
+       "text": "Its correlation with the tracker was 0.47, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+      },
+      {
+       "claims": [
+        "next.rolling_lowest",
+        "next.rolling_highest"
+       ],
+       "text": "Measured over each 36-month stretch, it ranged from 0.21 (the 36 months to the end of Dec 2013) to 0.67 (the 36 months to the end of Apr 2024)."
+      },
+      {
+       "claims": [],
+       "text": "Correlation says how consistently the monthly moves lined up, not how big they were. A low figure is not protection."
+      },
+      {
+       "claims": [
+        "next.mix_annualised",
+        "next.tracker_annualised"
+       ],
+       "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 17.5% a year, against 12.5% a year for the tracker alone."
+      },
+      {
+       "claims": [
+        "next.mix_volatility",
+        "next.tracker_volatility",
+        "next.mix_fall",
+        "next.tracker_fall"
+       ],
+       "text": "The mix's volatility was 13.5% against the tracker's 11.7%, and its largest fall at month-end was 17.5% against 15.0%."
+      },
+      {
+       "claims": [],
+       "text": "Before fees, trading costs and tax."
+      },
+      {
+       "claims": [],
+       "text": "The tracker already holds these shares, so the 10% adds to a holding it already has."
+      }
+     ],
+     "title": "What does it do next to the tracker?"
+    },
+    {
+     "id": "pound",
+     "sentences": [
+      {
+       "claims": [
+        "pound.local",
+        "pound.currency",
+        "pound.gbp"
+       ],
+       "text": "From the end of Aug 2007 to the end of Aug 2026: up 28,171.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 41,992.8%."
+      },
+      {
+       "claims": [
+        "pound.gfc.local",
+        "pound.gfc.currency",
+        "pound.gfc.gbp"
+       ],
+       "text": "Global financial crisis: down 72.8% in dollars, the dollar rose 43.0%, so down 61.1% in pounds."
+      },
+      {
+       "claims": [
+        "pound.covid.local",
+        "pound.covid.currency",
+        "pound.covid.gbp"
+       ],
+       "text": "Covid crash: up 11.6% in dollars, the dollar rose 6.5%, so up 18.8% in pounds."
+      },
+      {
+       "claims": [],
+       "text": "The two parts multiply rather than add, so they never simply add up to the figure in pounds."
+      }
+     ],
+     "title": "How much of it was the pound?"
+    },
+    {
+     "id": "limits",
+     "sentences": [
+      {
+       "claims": [],
+       "text": "It is not issued or backed by a government or a company, and it pays no income. Its price can move a long way in days, it trades around the clock, and holdings can be lost to theft or lost keys. Its history here starts at the end of Aug 2007, so it covers fewer market conditions than the others."
+      },
+      {
+       "claims": [],
+       "text": "These are past results in pounds, measured at month-ends, before platform fees, trading costs and tax. Past behaviour does not predict future results."
+      }
+     ],
+     "title": "What these numbers don't capture"
+    }
+   ],
+   "claims": [
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "46.1%",
+     "id": "bumpy.volatility",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 46.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "43.1%",
+     "id": "bumpy.volatility_common",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 43.1
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "11.7%",
+     "id": "bumpy.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 11.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "61.1%",
+     "id": "panic.gfc",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -61.1
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "18.8%",
+     "id": "panic.covid",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 18.8
+    },
+    {
+     "currency": "GBP",
+     "direction": "flat",
+     "display": "0.0%",
+     "id": "panic.covid.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 0.0
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "7.3%",
+     "id": "panic.rate_shock",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "asset",
+     "unit": "percent",
+     "value": -7.3
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "6.0%",
+     "id": "panic.rate_shock.tracker",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "stress_window",
+     "period_end": "2022-10",
+     "period_start": "2021-12",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -6.0
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.47",
+     "id": "next.correlation",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "correlation",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.47
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.21",
+     "id": "next.rolling_lowest",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_lowest",
+     "period_end": "2013-12",
+     "period_start": "2010-12",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.21
+    },
+    {
+     "currency": null,
+     "direction": null,
+     "display": "0.67",
+     "id": "next.rolling_highest",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "rolling_correlation_36_highest",
+     "period_end": "2024-04",
+     "period_start": "2021-04",
+     "series": "asset",
+     "unit": "ratio",
+     "value": 0.67
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "17.5%",
+     "id": "next.mix_annualised",
+     "instrument": "cry",
+     "kind": "illustration",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": 17.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "12.5%",
+     "id": "next.tracker_annualised",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "annualised_return",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 12.5
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "13.5%",
+     "id": "next.mix_volatility",
+     "instrument": "cry",
+     "kind": "illustration",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": 13.5
+    },
+    {
+     "currency": "GBP",
+     "direction": null,
+     "display": "11.7%",
+     "id": "next.tracker_volatility",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "volatility",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": 11.7
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "17.5%",
+     "id": "next.mix_fall",
+     "instrument": "cry",
+     "kind": "illustration",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "mix",
+     "unit": "percent",
+     "value": -17.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "15.0%",
+     "id": "next.tracker_fall",
+     "instrument": "trk",
+     "kind": "observed",
+     "metric": "largest_fall",
+     "period_end": "2026-08",
+     "period_start": "2010-01",
+     "series": "tracker",
+     "unit": "percent",
+     "value": -15.0
+    },
+    {
+     "currency": "USD",
+     "direction": "up",
+     "display": "28,171.2%",
+     "id": "pound.local",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 28171.2
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "48.9%",
+     "id": "pound.currency",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "currency",
+     "unit": "percent",
+     "value": 48.9
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "41,992.8%",
+     "id": "pound.gbp",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2026-08",
+     "period_start": "2007-08",
+     "series": "asset",
+     "unit": "percent",
+     "value": 41992.8
+    },
+    {
+     "currency": "USD",
+     "direction": "down",
+     "display": "72.8%",
+     "id": "pound.gfc.local",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -72.8
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "43.0%",
+     "id": "pound.gfc.currency",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "currency",
+     "unit": "percent",
+     "value": 43.0
+    },
+    {
+     "currency": "GBP",
+     "direction": "down",
+     "display": "61.1%",
+     "id": "pound.gfc.gbp",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2009-03",
+     "period_start": "2007-09",
+     "series": "asset",
+     "unit": "percent",
+     "value": -61.1
+    },
+    {
+     "currency": "USD",
+     "direction": "up",
+     "display": "11.6%",
+     "id": "pound.covid.local",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "local_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 11.6
+    },
+    {
+     "currency": null,
+     "direction": "up",
+     "display": "6.5%",
+     "id": "pound.covid.currency",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "currency_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "currency",
+     "unit": "percent",
+     "value": 6.5
+    },
+    {
+     "currency": "GBP",
+     "direction": "up",
+     "display": "18.8%",
+     "id": "pound.covid.gbp",
+     "instrument": "cry",
+     "kind": "observed",
+     "metric": "gbp_return",
+     "period_end": "2020-03",
+     "period_start": "2020-01",
+     "series": "asset",
+     "unit": "percent",
+     "value": 18.8
+    }
+   ],
+   "data_as_of": "2026-08",
+   "data_as_of_text": "Data to the end of Aug 2026",
+   "generated_on": "2026-09-29",
+   "headline": null,
+   "instrument": {
+    "id": "cry",
+    "identity": {
+     "currency_hedged": null,
+     "exchange": null,
+     "income": null,
+     "isin": null,
+     "name": "Test Coin",
+     "quote_unit": "dollars",
+     "share_class": null,
+     "sources": [],
+     "ticker": "CRY",
+     "trading_currency": "USD",
+     "type": "cryptocurrency"
+    },
+    "label": "Test coin"
+   },
+   "method_version": "1.0",
+   "page_version": "1",
+   "sources": [
+    {
+     "provider": "Provider A",
+     "url": "https://a.example.com",
+     "used_for": [
+      "Test coin"
+     ]
+    },
+    {
+     "provider": "Provider B",
+     "url": "https://b.example.com",
+     "used_for": [
+      "Test tracker",
+      "US dollars per pound"
+     ]
+    }
+   ]
+  }
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "id": "2026-08",
+    "title": "Aug 2026 refresh",
+    "reviewed_on": "2026-09-30",
+    "data_as_of": "2026-08",
+    "reviewer": "A Reviewer",
+    "assets": {
+     "usa": [
+      {
+       "round": 1,
+       "verdict": "rejected",
+       "text": "US share fell a lot.",
+       "reason": "No figure is cited.",
+       "control": null
+      },
+      {
+       "round": 2,
+       "verdict": "approved",
+       "text": "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+       "reason": null,
+       "control": null
+      }
+     ],
+     "gbf": [
+      {
+       "round": 1,
+       "verdict": "approved",
+       "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+       "reason": null,
+       "control": null
+      }
+     ],
+     "cry": [
+      {
+       "round": 1,
+       "verdict": "rejected",
+       "text": "Test coin had a bumpy ride.",
+       "reason": "\"Bumpy\" is a judgement.",
+       "control": "Still a person's call."
+      }
+     ]
+    }
+   },
+   {
+    "id": "launch",
+    "title": "Launch review",
+    "reviewed_on": "2026-08-31",
+    "data_as_of": "2026-07",
+    "reviewer": "A Reviewer",
+    "assets": {
+     "usa": [
+      {
+       "round": 1,
+       "verdict": "redrafted",
+       "text": "US share fell 70.0% in pounds.",
+       "reason": "Honest; redrafted when the prompt changed.",
+       "control": null
+      },
+      {
+       "round": 2,
+       "verdict": "approved",
+       "text": "US share fell 70.0% in pounds from Sep 2007 to Nov 2008.",
+       "reason": null,
+       "control": null
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "cases": [
+  {
+   "id": "T01",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [],
+   "expected": [
+    [
+     "title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "og-title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "og-description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "site-name",
+     "",
+     "Quant Eyes",
+     null
+    ],
+    [
+     "not-advice",
+     "",
+     "Not advice",
+     null
+    ],
+    [
+     "kicker",
+     "",
+     "A governed AI demo · three investments · in pounds",
+     null
+    ],
+    [
+     "hero",
+     "",
+     "AI drafts it. Code checks it. A person signs it off.",
+     null
+    ],
+    [
+     "tagline",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "search-label",
+     "",
+     "Look up an investment",
+     null
+    ],
+    [
+     "search-hint",
+     "",
+     "Try US share or USA",
+     null
+    ],
+    [
+     "search-count",
+     "",
+     "3 covered",
+     null
+    ],
+    [
+     "result-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "result-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "result-name",
+     "usa",
+     "Test US Corp",
+     null
+    ],
+    [
+     "result-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "result-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "result-name",
+     "gbf",
+     "Test UK Fund",
+     null
+    ],
+    [
+     "result-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "result-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "result-name",
+     "cry",
+     "Test Coin",
+     null
+    ],
+    [
+     "not-covered-title",
+     "",
+     "Not covered yet",
+     null
+    ],
+    [
+     "not-covered-text",
+     "",
+     "This site covers three investments in depth rather than many in outline. Every figure comes from tested code, and every headline is reviewed by a person.",
+     null
+    ],
+    [
+     "section-label",
+     "headlines",
+     "In one line",
+     null
+    ],
+    [
+     "slide-position",
+     "usa",
+     "1 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "slide-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "usa",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "usa",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "usa",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "usa",
+     "Open US share",
+     null
+    ],
+    [
+     "slide-position",
+     "gbf",
+     "2 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "slide-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "gbf",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "gbf",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "gbf",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "gbf",
+     "Open UK fund",
+     null
+    ],
+    [
+     "pause",
+     "",
+     "Pause the headlines",
+     null
+    ],
+    [
+     "play",
+     "",
+     "Play the headlines",
+     null
+    ],
+    [
+     "segment",
+     "usa",
+     "Show the headline for US share",
+     null
+    ],
+    [
+     "segment",
+     "gbf",
+     "Show the headline for UK fund",
+     null
+    ],
+    [
+     "gates-title",
+     "",
+     "How a headline gets published",
+     null
+    ],
+    [
+     "gate-number",
+     "01",
+     "01",
+     null
+    ],
+    [
+     "gate-title",
+     "01",
+     "Drafted by AI",
+     null
+    ],
+    [
+     "gate-text",
+     "01",
+     "A model writes one line per investment. It sees only figures from that investment's own page, and can cite only those.",
+     null
+    ],
+    [
+     "gate-number",
+     "02",
+     "02",
+     null
+    ],
+    [
+     "gate-title",
+     "02",
+     "Checked by code: 16 rules",
+     null
+    ],
+    [
+     "gate-text",
+     "02",
+     "No advice, no forecasts, no rankings, every number traced to the page. One failure and the line is out.",
+     null
+    ],
+    [
+     "gate-number",
+     "03",
+     "03",
+     null
+    ],
+    [
+     "gate-title",
+     "03",
+     "Reviewed by a person",
+     null
+    ],
+    [
+     "gate-text",
+     "03",
+     "In the first round, all 7 drafts passed every code check. A person rejected 6. Most reasons became new rules. The rest are why a person stays in the loop.",
+     null
+    ],
+    [
+     "gate-open",
+     "03",
+     "See the audit trail",
+     null
+    ],
+    [
+     "tiles-label",
+     "",
+     "Or pick one of the three",
+     null
+    ],
+    [
+     "tile-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "tile-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "tile-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "tile-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "tile-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "tile-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "trail-label",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "usa",
+     "How US share's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "usa",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "usa",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.1",
+     "It saw only figures from US share's own page and could cite only those. It cited one of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.3",
+     "Read against US share's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "usa",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "usa",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.1",
+     "Round 1 · Rejected",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.1",
+     "US share fell a lot.",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.2026-08.1",
+     "No figure is cited.",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.2",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.launch",
+     "Launch review · reviewed by A Reviewer, 31 Aug 2026 · data to the end of Jul 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.1",
+     "Round 1 · Redrafted, not used",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.1",
+     "US share fell 70.0% in pounds.",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.launch.1",
+     "Honest; redrafted when the prompt changed.",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.2",
+     "US share fell 70.0% in pounds from Sep 2007 to Nov 2008.",
+     null
+    ],
+    [
+     "trail-label",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "gbf",
+     "How UK fund's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "gbf",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "gbf",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.1",
+     "It saw only figures from UK fund's own page and could cite only those. It cited two of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.3",
+     "Read against UK fund's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "gbf",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "gbf",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "gbf.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "gbf.2026-08.1",
+     "Round 1 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "gbf.2026-08.1",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-label",
+     "cry",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "cry",
+     "Why Test coin has no headline for Aug 2026",
+     null
+    ],
+    [
+     "trail-close",
+     "cry",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "cry",
+     "Not published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-none",
+     "cry",
+     "No draft was approved for this data, so no line is shown until one passes review.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "cry",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "cry",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "cry.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "cry.2026-08.1",
+     "Round 1 · Rejected",
+     null
+    ],
+    [
+     "trail-draft",
+     "cry.2026-08.1",
+     "Test coin had a bumpy ride.",
+     null
+    ],
+    [
+     "trail-reason",
+     "cry.2026-08.1",
+     "\"Bumpy\" is a judgement.",
+     null
+    ],
+    [
+     "trail-control",
+     "cry.2026-08.1",
+     "Now: Still a person's call.",
+     null
+    ],
+    [
+     "footer-data",
+     "",
+     "Data to the end of Aug 2026 · Method 1.0",
+     null
+    ],
+    [
+     "sources-label",
+     "",
+     "Sources",
+     null
+    ],
+    [
+     "source",
+     "Provider A",
+     "Provider A (US share, Test coin)",
+     null
+    ],
+    [
+     "source",
+     "Provider B",
+     "Provider B (Test tracker, US dollars per pound, UK fund)",
+     null
+    ],
+    [
+     "disclaimer",
+     "",
+     "Past results in pounds, measured at month-ends. Descriptive, never advice. Past behaviour does not predict future results.",
+     null
+    ]
+   ],
+   "expected_targets": [
+    "usa",
+    "gbf",
+    "usa"
+   ],
+   "derivation": "Usa and gbf have headlines, cry has none. Openers: the usa and gbf audit rows, then gate 03, which opens usa: the first asset in index order whose latest rounds include a rejection."
+  },
+  {
+   "id": "T02",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa",
+      0,
+      "verdict"
+     ],
+     "set": "redrafted"
+    },
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "cry"
+     ],
+     "set": []
+    }
+   ],
+   "expected": [
+    [
+     "title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "og-title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "og-description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "site-name",
+     "",
+     "Quant Eyes",
+     null
+    ],
+    [
+     "not-advice",
+     "",
+     "Not advice",
+     null
+    ],
+    [
+     "kicker",
+     "",
+     "A governed AI demo · three investments · in pounds",
+     null
+    ],
+    [
+     "hero",
+     "",
+     "AI drafts it. Code checks it. A person signs it off.",
+     null
+    ],
+    [
+     "tagline",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "search-label",
+     "",
+     "Look up an investment",
+     null
+    ],
+    [
+     "search-hint",
+     "",
+     "Try US share or USA",
+     null
+    ],
+    [
+     "search-count",
+     "",
+     "3 covered",
+     null
+    ],
+    [
+     "result-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "result-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "result-name",
+     "usa",
+     "Test US Corp",
+     null
+    ],
+    [
+     "result-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "result-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "result-name",
+     "gbf",
+     "Test UK Fund",
+     null
+    ],
+    [
+     "result-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "result-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "result-name",
+     "cry",
+     "Test Coin",
+     null
+    ],
+    [
+     "not-covered-title",
+     "",
+     "Not covered yet",
+     null
+    ],
+    [
+     "not-covered-text",
+     "",
+     "This site covers three investments in depth rather than many in outline. Every figure comes from tested code, and every headline is reviewed by a person.",
+     null
+    ],
+    [
+     "section-label",
+     "headlines",
+     "In one line",
+     null
+    ],
+    [
+     "slide-position",
+     "usa",
+     "1 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "slide-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "usa",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "usa",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "usa",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "usa",
+     "Open US share",
+     null
+    ],
+    [
+     "slide-position",
+     "gbf",
+     "2 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "slide-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "gbf",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "gbf",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "gbf",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "gbf",
+     "Open UK fund",
+     null
+    ],
+    [
+     "pause",
+     "",
+     "Pause the headlines",
+     null
+    ],
+    [
+     "play",
+     "",
+     "Play the headlines",
+     null
+    ],
+    [
+     "segment",
+     "usa",
+     "Show the headline for US share",
+     null
+    ],
+    [
+     "segment",
+     "gbf",
+     "Show the headline for UK fund",
+     null
+    ],
+    [
+     "gates-title",
+     "",
+     "How a headline gets published",
+     null
+    ],
+    [
+     "gate-number",
+     "01",
+     "01",
+     null
+    ],
+    [
+     "gate-title",
+     "01",
+     "Drafted by AI",
+     null
+    ],
+    [
+     "gate-text",
+     "01",
+     "A model writes one line per investment. It sees only figures from that investment's own page, and can cite only those.",
+     null
+    ],
+    [
+     "gate-number",
+     "02",
+     "02",
+     null
+    ],
+    [
+     "gate-title",
+     "02",
+     "Checked by code: 16 rules",
+     null
+    ],
+    [
+     "gate-text",
+     "02",
+     "No advice, no forecasts, no rankings, every number traced to the page. One failure and the line is out.",
+     null
+    ],
+    [
+     "gate-number",
+     "03",
+     "03",
+     null
+    ],
+    [
+     "gate-title",
+     "03",
+     "Reviewed by a person",
+     null
+    ],
+    [
+     "gate-text",
+     "03",
+     "In the first round, all 7 drafts passed every code check. A person rejected 6. Most reasons became new rules. The rest are why a person stays in the loop.",
+     null
+    ],
+    [
+     "gate-open",
+     "03",
+     "See the audit trail",
+     null
+    ],
+    [
+     "tiles-label",
+     "",
+     "Or pick one of the three",
+     null
+    ],
+    [
+     "tile-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "tile-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "tile-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "tile-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "tile-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "tile-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "trail-label",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "usa",
+     "How US share's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "usa",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "usa",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.1",
+     "It saw only figures from US share's own page and could cite only those. It cited one of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.3",
+     "Read against US share's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "usa",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "usa",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.1",
+     "Round 1 · Redrafted, not used",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.1",
+     "US share fell a lot.",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.2026-08.1",
+     "No figure is cited.",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.2",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.launch",
+     "Launch review · reviewed by A Reviewer, 31 Aug 2026 · data to the end of Jul 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.1",
+     "Round 1 · Redrafted, not used",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.1",
+     "US share fell 70.0% in pounds.",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.launch.1",
+     "Honest; redrafted when the prompt changed.",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.2",
+     "US share fell 70.0% in pounds from Sep 2007 to Nov 2008.",
+     null
+    ],
+    [
+     "trail-label",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "gbf",
+     "How UK fund's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "gbf",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "gbf",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.1",
+     "It saw only figures from UK fund's own page and could cite only those. It cited two of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.3",
+     "Read against UK fund's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "gbf",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "gbf",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "gbf.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "gbf.2026-08.1",
+     "Round 1 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "gbf.2026-08.1",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-label",
+     "cry",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "cry",
+     "Why Test coin has no headline for Aug 2026",
+     null
+    ],
+    [
+     "trail-close",
+     "cry",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "cry",
+     "Not published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-none",
+     "cry",
+     "No draft was approved for this data, so no line is shown until one passes review.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "cry",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "cry",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "cry.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "footer-data",
+     "",
+     "Data to the end of Aug 2026 · Method 1.0",
+     null
+    ],
+    [
+     "sources-label",
+     "",
+     "Sources",
+     null
+    ],
+    [
+     "source",
+     "Provider A",
+     "Provider A (US share, Test coin)",
+     null
+    ],
+    [
+     "source",
+     "Provider B",
+     "Provider B (Test tracker, US dollars per pound, UK fund)",
+     null
+    ],
+    [
+     "disclaimer",
+     "",
+     "Past results in pounds, measured at month-ends. Descriptive, never advice. Past behaviour does not predict future results.",
+     null
+    ]
+   ],
+   "expected_targets": [
+    "usa",
+    "gbf",
+    "usa"
+   ],
+   "derivation": "No rejection in the latest review (usa round 1 becomes redrafted): gate 03 opens the first asset in index order, usa. Cry has an empty list of rounds: no headline, the not-published text, and no rounds from the latest review."
+  },
+  {
+   "id": "T03",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa"
+     ],
+     "set": [
+      {
+       "round": 1,
+       "verdict": "approved",
+       "text": "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+       "reason": null,
+       "control": null
+      }
+     ]
+    },
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "gbf"
+     ],
+     "set": [
+      {
+       "round": 1,
+       "verdict": "rejected",
+       "text": "UK fund is safe.",
+       "reason": "A judgement.",
+       "control": null
+      },
+      {
+       "round": 2,
+       "verdict": "approved",
+       "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+       "reason": null,
+       "control": null
+      }
+     ]
+    },
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "cry"
+     ],
+     "set": [
+      {
+       "round": 1,
+       "verdict": "redrafted",
+       "text": "Test coin x.",
+       "reason": "Prompt changed.",
+       "control": null
+      }
+     ]
+    }
+   ],
+   "expected": [
+    [
+     "title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "og-title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "og-description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "site-name",
+     "",
+     "Quant Eyes",
+     null
+    ],
+    [
+     "not-advice",
+     "",
+     "Not advice",
+     null
+    ],
+    [
+     "kicker",
+     "",
+     "A governed AI demo · three investments · in pounds",
+     null
+    ],
+    [
+     "hero",
+     "",
+     "AI drafts it. Code checks it. A person signs it off.",
+     null
+    ],
+    [
+     "tagline",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "search-label",
+     "",
+     "Look up an investment",
+     null
+    ],
+    [
+     "search-hint",
+     "",
+     "Try US share or USA",
+     null
+    ],
+    [
+     "search-count",
+     "",
+     "3 covered",
+     null
+    ],
+    [
+     "result-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "result-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "result-name",
+     "usa",
+     "Test US Corp",
+     null
+    ],
+    [
+     "result-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "result-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "result-name",
+     "gbf",
+     "Test UK Fund",
+     null
+    ],
+    [
+     "result-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "result-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "result-name",
+     "cry",
+     "Test Coin",
+     null
+    ],
+    [
+     "not-covered-title",
+     "",
+     "Not covered yet",
+     null
+    ],
+    [
+     "not-covered-text",
+     "",
+     "This site covers three investments in depth rather than many in outline. Every figure comes from tested code, and every headline is reviewed by a person.",
+     null
+    ],
+    [
+     "section-label",
+     "headlines",
+     "In one line",
+     null
+    ],
+    [
+     "slide-position",
+     "usa",
+     "1 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "slide-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "usa",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "usa",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "usa",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "usa",
+     "Open US share",
+     null
+    ],
+    [
+     "slide-position",
+     "gbf",
+     "2 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "slide-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "gbf",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "gbf",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "gbf",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "gbf",
+     "Open UK fund",
+     null
+    ],
+    [
+     "pause",
+     "",
+     "Pause the headlines",
+     null
+    ],
+    [
+     "play",
+     "",
+     "Play the headlines",
+     null
+    ],
+    [
+     "segment",
+     "usa",
+     "Show the headline for US share",
+     null
+    ],
+    [
+     "segment",
+     "gbf",
+     "Show the headline for UK fund",
+     null
+    ],
+    [
+     "gates-title",
+     "",
+     "How a headline gets published",
+     null
+    ],
+    [
+     "gate-number",
+     "01",
+     "01",
+     null
+    ],
+    [
+     "gate-title",
+     "01",
+     "Drafted by AI",
+     null
+    ],
+    [
+     "gate-text",
+     "01",
+     "A model writes one line per investment. It sees only figures from that investment's own page, and can cite only those.",
+     null
+    ],
+    [
+     "gate-number",
+     "02",
+     "02",
+     null
+    ],
+    [
+     "gate-title",
+     "02",
+     "Checked by code: 16 rules",
+     null
+    ],
+    [
+     "gate-text",
+     "02",
+     "No advice, no forecasts, no rankings, every number traced to the page. One failure and the line is out.",
+     null
+    ],
+    [
+     "gate-number",
+     "03",
+     "03",
+     null
+    ],
+    [
+     "gate-title",
+     "03",
+     "Reviewed by a person",
+     null
+    ],
+    [
+     "gate-text",
+     "03",
+     "In the first round, all 7 drafts passed every code check. A person rejected 6. Most reasons became new rules. The rest are why a person stays in the loop.",
+     null
+    ],
+    [
+     "gate-open",
+     "03",
+     "See the audit trail",
+     null
+    ],
+    [
+     "tiles-label",
+     "",
+     "Or pick one of the three",
+     null
+    ],
+    [
+     "tile-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "tile-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "tile-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "tile-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "tile-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "tile-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "trail-label",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "usa",
+     "How US share's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "usa",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "usa",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.1",
+     "It saw only figures from US share's own page and could cite only those. It cited one of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.3",
+     "Read against US share's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "usa",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "usa",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.1",
+     "Round 1 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.1",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.launch",
+     "Launch review · reviewed by A Reviewer, 31 Aug 2026 · data to the end of Jul 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.1",
+     "Round 1 · Redrafted, not used",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.1",
+     "US share fell 70.0% in pounds.",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.launch.1",
+     "Honest; redrafted when the prompt changed.",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.2",
+     "US share fell 70.0% in pounds from Sep 2007 to Nov 2008.",
+     null
+    ],
+    [
+     "trail-label",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "gbf",
+     "How UK fund's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "gbf",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "gbf",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.1",
+     "It saw only figures from UK fund's own page and could cite only those. It cited two of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.3",
+     "Read against UK fund's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "gbf",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "gbf",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "gbf.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "gbf.2026-08.1",
+     "Round 1 · Rejected",
+     null
+    ],
+    [
+     "trail-draft",
+     "gbf.2026-08.1",
+     "UK fund is safe.",
+     null
+    ],
+    [
+     "trail-reason",
+     "gbf.2026-08.1",
+     "A judgement.",
+     null
+    ],
+    [
+     "trail-round",
+     "gbf.2026-08.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "gbf.2026-08.2",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-label",
+     "cry",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "cry",
+     "Why Test coin has no headline for Aug 2026",
+     null
+    ],
+    [
+     "trail-close",
+     "cry",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "cry",
+     "Not published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-none",
+     "cry",
+     "No draft was approved for this data, so no line is shown until one passes review.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "cry",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "cry",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "cry.2026-08",
+     "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "cry.2026-08.1",
+     "Round 1 · Redrafted, not used",
+     null
+    ],
+    [
+     "trail-draft",
+     "cry.2026-08.1",
+     "Test coin x.",
+     null
+    ],
+    [
+     "trail-reason",
+     "cry.2026-08.1",
+     "Prompt changed.",
+     null
+    ],
+    [
+     "footer-data",
+     "",
+     "Data to the end of Aug 2026 · Method 1.0",
+     null
+    ],
+    [
+     "sources-label",
+     "",
+     "Sources",
+     null
+    ],
+    [
+     "source",
+     "Provider A",
+     "Provider A (US share, Test coin)",
+     null
+    ],
+    [
+     "source",
+     "Provider B",
+     "Provider B (Test tracker, US dollars per pound, UK fund)",
+     null
+    ],
+    [
+     "disclaimer",
+     "",
+     "Past results in pounds, measured at month-ends. Descriptive, never advice. Past behaviour does not predict future results.",
+     null
+    ]
+   ],
+   "expected_targets": [
+    "usa",
+    "gbf",
+    "gbf"
+   ],
+   "derivation": "Only gbf has a rejection in the latest review: gate 03 opens gbf. Gbf's rejected round has no control line."
+  },
+  {
+   "id": "T04",
+   "index_edits": [
+    {
+     "path": [
+      "assets",
+      0,
+      "label"
+     ],
+     "set": "Q&A <b>\"US\"</b> share's"
+    }
+   ],
+   "page_edits": {
+    "usa": [
+     {
+      "path": [
+       "instrument",
+       "label"
+      ],
+      "set": "Q&A <b>\"US\"</b> share's"
+     }
+    ]
+   },
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "title"
+     ],
+     "set": "Aug <refresh> & \"more\""
+    },
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa",
+      0,
+      "reason"
+     ],
+     "set": "It's <b>bold</b> & wrong"
+    },
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa",
+      0,
+      "text"
+     ],
+     "set": "x < y & \"z\""
+    }
+   ],
+   "expected": [
+    [
+     "title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "og-title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "og-description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "site-name",
+     "",
+     "Quant Eyes",
+     null
+    ],
+    [
+     "not-advice",
+     "",
+     "Not advice",
+     null
+    ],
+    [
+     "kicker",
+     "",
+     "A governed AI demo · three investments · in pounds",
+     null
+    ],
+    [
+     "hero",
+     "",
+     "AI drafts it. Code checks it. A person signs it off.",
+     null
+    ],
+    [
+     "tagline",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "search-label",
+     "",
+     "Look up an investment",
+     null
+    ],
+    [
+     "search-hint",
+     "",
+     "Try Q&A <b>\"US\"</b> share's or USA",
+     null
+    ],
+    [
+     "search-count",
+     "",
+     "3 covered",
+     null
+    ],
+    [
+     "result-label",
+     "usa",
+     "Q&A <b>\"US\"</b> share's",
+     null
+    ],
+    [
+     "result-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "result-name",
+     "usa",
+     "Test US Corp",
+     null
+    ],
+    [
+     "result-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "result-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "result-name",
+     "gbf",
+     "Test UK Fund",
+     null
+    ],
+    [
+     "result-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "result-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "result-name",
+     "cry",
+     "Test Coin",
+     null
+    ],
+    [
+     "not-covered-title",
+     "",
+     "Not covered yet",
+     null
+    ],
+    [
+     "not-covered-text",
+     "",
+     "This site covers three investments in depth rather than many in outline. Every figure comes from tested code, and every headline is reviewed by a person.",
+     null
+    ],
+    [
+     "section-label",
+     "headlines",
+     "In one line",
+     null
+    ],
+    [
+     "slide-position",
+     "usa",
+     "1 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "usa",
+     "Q&A <b>\"US\"</b> share's",
+     null
+    ],
+    [
+     "slide-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "usa",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "usa",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "usa",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "usa",
+     "Open Q&A <b>\"US\"</b> share's",
+     null
+    ],
+    [
+     "slide-position",
+     "gbf",
+     "2 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "slide-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "gbf",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "gbf",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "gbf",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "gbf",
+     "Open UK fund",
+     null
+    ],
+    [
+     "pause",
+     "",
+     "Pause the headlines",
+     null
+    ],
+    [
+     "play",
+     "",
+     "Play the headlines",
+     null
+    ],
+    [
+     "segment",
+     "usa",
+     "Show the headline for Q&A <b>\"US\"</b> share's",
+     null
+    ],
+    [
+     "segment",
+     "gbf",
+     "Show the headline for UK fund",
+     null
+    ],
+    [
+     "gates-title",
+     "",
+     "How a headline gets published",
+     null
+    ],
+    [
+     "gate-number",
+     "01",
+     "01",
+     null
+    ],
+    [
+     "gate-title",
+     "01",
+     "Drafted by AI",
+     null
+    ],
+    [
+     "gate-text",
+     "01",
+     "A model writes one line per investment. It sees only figures from that investment's own page, and can cite only those.",
+     null
+    ],
+    [
+     "gate-number",
+     "02",
+     "02",
+     null
+    ],
+    [
+     "gate-title",
+     "02",
+     "Checked by code: 16 rules",
+     null
+    ],
+    [
+     "gate-text",
+     "02",
+     "No advice, no forecasts, no rankings, every number traced to the page. One failure and the line is out.",
+     null
+    ],
+    [
+     "gate-number",
+     "03",
+     "03",
+     null
+    ],
+    [
+     "gate-title",
+     "03",
+     "Reviewed by a person",
+     null
+    ],
+    [
+     "gate-text",
+     "03",
+     "In the first round, all 7 drafts passed every code check. A person rejected 6. Most reasons became new rules. The rest are why a person stays in the loop.",
+     null
+    ],
+    [
+     "gate-open",
+     "03",
+     "See the audit trail",
+     null
+    ],
+    [
+     "tiles-label",
+     "",
+     "Or pick one of the three",
+     null
+    ],
+    [
+     "tile-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "tile-label",
+     "usa",
+     "Q&A <b>\"US\"</b> share's",
+     null
+    ],
+    [
+     "tile-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "tile-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "tile-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "tile-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "trail-label",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "usa",
+     "How Q&A <b>\"US\"</b> share's's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "usa",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "usa",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.1",
+     "It saw only figures from Q&A <b>\"US\"</b> share's's own page and could cite only those. It cited one of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.3",
+     "Read against Q&A <b>\"US\"</b> share's's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "usa",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "usa",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.2026-08",
+     "Aug <refresh> & \"more\" · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.1",
+     "Round 1 · Rejected",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.1",
+     "x < y & \"z\"",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.2026-08.1",
+     "It's <b>bold</b> & wrong",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.2",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.launch",
+     "Launch review · reviewed by A Reviewer, 31 Aug 2026 · data to the end of Jul 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.1",
+     "Round 1 · Redrafted, not used",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.1",
+     "US share fell 70.0% in pounds.",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.launch.1",
+     "Honest; redrafted when the prompt changed.",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.2",
+     "US share fell 70.0% in pounds from Sep 2007 to Nov 2008.",
+     null
+    ],
+    [
+     "trail-label",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "gbf",
+     "How UK fund's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "gbf",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "gbf",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.1",
+     "It saw only figures from UK fund's own page and could cite only those. It cited two of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.3",
+     "Read against UK fund's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "gbf",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "gbf",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "gbf.2026-08",
+     "Aug <refresh> & \"more\" · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "gbf.2026-08.1",
+     "Round 1 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "gbf.2026-08.1",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-label",
+     "cry",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "cry",
+     "Why Test coin has no headline for Aug 2026",
+     null
+    ],
+    [
+     "trail-close",
+     "cry",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "cry",
+     "Not published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-none",
+     "cry",
+     "No draft was approved for this data, so no line is shown until one passes review.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "cry",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "cry",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "cry.2026-08",
+     "Aug <refresh> & \"more\" · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "cry.2026-08.1",
+     "Round 1 · Rejected",
+     null
+    ],
+    [
+     "trail-draft",
+     "cry.2026-08.1",
+     "Test coin had a bumpy ride.",
+     null
+    ],
+    [
+     "trail-reason",
+     "cry.2026-08.1",
+     "\"Bumpy\" is a judgement.",
+     null
+    ],
+    [
+     "trail-control",
+     "cry.2026-08.1",
+     "Now: Still a person's call.",
+     null
+    ],
+    [
+     "footer-data",
+     "",
+     "Data to the end of Aug 2026 · Method 1.0",
+     null
+    ],
+    [
+     "sources-label",
+     "",
+     "Sources",
+     null
+    ],
+    [
+     "source",
+     "Provider A",
+     "Provider A (US share, Test coin)",
+     null
+    ],
+    [
+     "source",
+     "Provider B",
+     "Provider B (Test tracker, US dollars per pound, UK fund)",
+     null
+    ],
+    [
+     "disclaimer",
+     "",
+     "Past results in pounds, measured at month-ends. Descriptive, never advice. Past behaviour does not predict future results.",
+     null
+    ]
+   ],
+   "expected_targets": [
+    "usa",
+    "gbf",
+    "usa"
+   ],
+   "derivation": "Escaping: an asset label and review texts with markup characters; the label also appears in the trail title and step texts."
+  },
+  {
+   "id": "T05",
+   "index_edits": [],
+   "page_edits": {
+    "gbf": [
+     {
+      "path": [
+       "headline",
+       "claims"
+      ],
+      "set": [
+       "worst.fall"
+      ]
+     }
+    ]
+   },
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "reviewer"
+     ],
+     "set": "Avi Ravisekara"
+    },
+    {
+     "path": [
+      "reviews",
+      0,
+      "reviewed_on"
+     ],
+     "set": "2026-10-01"
+    }
+   ],
+   "expected": [
+    [
+     "title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "og-title",
+     "",
+     "Quant Eyes: three investments in plain English",
+     null
+    ],
+    [
+     "og-description",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "site-name",
+     "",
+     "Quant Eyes",
+     null
+    ],
+    [
+     "not-advice",
+     "",
+     "Not advice",
+     null
+    ],
+    [
+     "kicker",
+     "",
+     "A governed AI demo · three investments · in pounds",
+     null
+    ],
+    [
+     "hero",
+     "",
+     "AI drafts it. Code checks it. A person signs it off.",
+     null
+    ],
+    [
+     "tagline",
+     "",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
+     null
+    ],
+    [
+     "search-label",
+     "",
+     "Look up an investment",
+     null
+    ],
+    [
+     "search-hint",
+     "",
+     "Try US share or USA",
+     null
+    ],
+    [
+     "search-count",
+     "",
+     "3 covered",
+     null
+    ],
+    [
+     "result-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "result-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "result-name",
+     "usa",
+     "Test US Corp",
+     null
+    ],
+    [
+     "result-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "result-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "result-name",
+     "gbf",
+     "Test UK Fund",
+     null
+    ],
+    [
+     "result-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "result-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "result-name",
+     "cry",
+     "Test Coin",
+     null
+    ],
+    [
+     "not-covered-title",
+     "",
+     "Not covered yet",
+     null
+    ],
+    [
+     "not-covered-text",
+     "",
+     "This site covers three investments in depth rather than many in outline. Every figure comes from tested code, and every headline is reviewed by a person.",
+     null
+    ],
+    [
+     "section-label",
+     "headlines",
+     "In one line",
+     null
+    ],
+    [
+     "slide-position",
+     "usa",
+     "1 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "slide-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "usa",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "usa",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "usa",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "usa",
+     "Open US share",
+     null
+    ],
+    [
+     "slide-position",
+     "gbf",
+     "2 / 2",
+     null
+    ],
+    [
+     "slide-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "slide-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "audit-drafted",
+     "gbf",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "gbf",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "gbf",
+     "Reviewed 30 Sep 2026",
+     null
+    ],
+    [
+     "audit-open",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "slide-open",
+     "gbf",
+     "Open UK fund",
+     null
+    ],
+    [
+     "pause",
+     "",
+     "Pause the headlines",
+     null
+    ],
+    [
+     "play",
+     "",
+     "Play the headlines",
+     null
+    ],
+    [
+     "segment",
+     "usa",
+     "Show the headline for US share",
+     null
+    ],
+    [
+     "segment",
+     "gbf",
+     "Show the headline for UK fund",
+     null
+    ],
+    [
+     "gates-title",
+     "",
+     "How a headline gets published",
+     null
+    ],
+    [
+     "gate-number",
+     "01",
+     "01",
+     null
+    ],
+    [
+     "gate-title",
+     "01",
+     "Drafted by AI",
+     null
+    ],
+    [
+     "gate-text",
+     "01",
+     "A model writes one line per investment. It sees only figures from that investment's own page, and can cite only those.",
+     null
+    ],
+    [
+     "gate-number",
+     "02",
+     "02",
+     null
+    ],
+    [
+     "gate-title",
+     "02",
+     "Checked by code: 16 rules",
+     null
+    ],
+    [
+     "gate-text",
+     "02",
+     "No advice, no forecasts, no rankings, every number traced to the page. One failure and the line is out.",
+     null
+    ],
+    [
+     "gate-number",
+     "03",
+     "03",
+     null
+    ],
+    [
+     "gate-title",
+     "03",
+     "Reviewed by a person",
+     null
+    ],
+    [
+     "gate-text",
+     "03",
+     "In the first round, all 7 drafts passed every code check. A person rejected 6. Most reasons became new rules. The rest are why a person stays in the loop.",
+     null
+    ],
+    [
+     "gate-open",
+     "03",
+     "See the audit trail",
+     null
+    ],
+    [
+     "tiles-label",
+     "",
+     "Or pick one of the three",
+     null
+    ],
+    [
+     "tile-ticker",
+     "usa",
+     "USA",
+     null
+    ],
+    [
+     "tile-label",
+     "usa",
+     "US share",
+     null
+    ],
+    [
+     "tile-ticker",
+     "gbf",
+     "GBF",
+     null
+    ],
+    [
+     "tile-label",
+     "gbf",
+     "UK fund",
+     null
+    ],
+    [
+     "tile-ticker",
+     "cry",
+     "CRY",
+     null
+    ],
+    [
+     "tile-label",
+     "cry",
+     "Test coin",
+     null
+    ],
+    [
+     "trail-label",
+     "usa",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "usa",
+     "How US share's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "usa",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "usa",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "usa",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.1",
+     "It saw only figures from US share's own page and could cite only those. It cited one of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "usa.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "usa.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "usa.3",
+     "Read against US share's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "usa",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "usa",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.2026-08",
+     "Aug 2026 refresh · reviewed by Avi Ravisekara, 1 Oct 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.1",
+     "Round 1 · Rejected",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.1",
+     "US share fell a lot.",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.2026-08.1",
+     "No figure is cited.",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.2026-08.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.2026-08.2",
+     "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+     null
+    ],
+    [
+     "trail-review",
+     "usa.launch",
+     "Launch review · reviewed by A Reviewer, 31 Aug 2026 · data to the end of Jul 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.1",
+     "Round 1 · Redrafted, not used",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.1",
+     "US share fell 70.0% in pounds.",
+     null
+    ],
+    [
+     "trail-reason",
+     "usa.launch.1",
+     "Honest; redrafted when the prompt changed.",
+     null
+    ],
+    [
+     "trail-round",
+     "usa.launch.2",
+     "Round 2 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "usa.launch.2",
+     "US share fell 70.0% in pounds from Sep 2007 to Nov 2008.",
+     null
+    ],
+    [
+     "trail-label",
+     "gbf",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "gbf",
+     "How UK fund's headline was made",
+     null
+    ],
+    [
+     "trail-close",
+     "gbf",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "gbf",
+     "Published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-headline",
+     "gbf",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.1",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.1",
+     "It saw only figures from UK fund's own page and could cite only those. It cited one of them.",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.2",
+     "Checked by code: 16 of 16 rules passed",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r01",
+     "Plain text, nothing blank",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r02",
+     "Cites 1 or 2 figures from its page",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r03",
+     "Only the investment's own past",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r04",
+     "One sentence, no questions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r05",
+     "30 words or fewer",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r06",
+     "Every number is a cited figure",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r07",
+     "Figures exactly as the page shows",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r08",
+     "No advice words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r09",
+     "No predictions",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r10",
+     "Numbers as figures, not words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r11",
+     "No comparisons",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r12",
+     "No ranking or loaded words",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r13",
+     "Names no other investment",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r14",
+     "A fall is called a fall",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r15",
+     "Recovery words match the facts",
+     null
+    ],
+    [
+     "trail-rule",
+     "gbf.r16",
+     "\"in pounds\" or \"in dollars\" said",
+     null
+    ],
+    [
+     "trail-step",
+     "gbf.3",
+     "Reviewed by a person · approved 30 Sep 2026",
+     null
+    ],
+    [
+     "trail-step-text",
+     "gbf.3",
+     "Read against UK fund's page. When next month's data arrives, this line comes down until a new one is reviewed.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "gbf",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "gbf",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "gbf.2026-08",
+     "Aug 2026 refresh · reviewed by Avi Ravisekara, 1 Oct 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "gbf.2026-08.1",
+     "Round 1 · Approved",
+     null
+    ],
+    [
+     "trail-draft",
+     "gbf.2026-08.1",
+     "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+     null
+    ],
+    [
+     "trail-label",
+     "cry",
+     "Audit trail",
+     null
+    ],
+    [
+     "trail-title",
+     "cry",
+     "Why Test coin has no headline for Aug 2026",
+     null
+    ],
+    [
+     "trail-close",
+     "cry",
+     "Close the audit trail",
+     null
+    ],
+    [
+     "trail-status",
+     "cry",
+     "Not published · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-none",
+     "cry",
+     "No draft was approved for this data, so no line is shown until one passes review.",
+     null
+    ],
+    [
+     "trail-earlier",
+     "cry",
+     "Every draft, including the rejected ones",
+     null
+    ],
+    [
+     "trail-note",
+     "cry",
+     "Each passed the code checks of its day. Each verdict is a person's.",
+     null
+    ],
+    [
+     "trail-review",
+     "cry.2026-08",
+     "Aug 2026 refresh · reviewed by Avi Ravisekara, 1 Oct 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-round",
+     "cry.2026-08.1",
+     "Round 1 · Rejected",
+     null
+    ],
+    [
+     "trail-draft",
+     "cry.2026-08.1",
+     "Test coin had a bumpy ride.",
+     null
+    ],
+    [
+     "trail-reason",
+     "cry.2026-08.1",
+     "\"Bumpy\" is a judgement.",
+     null
+    ],
+    [
+     "trail-control",
+     "cry.2026-08.1",
+     "Now: Still a person's call.",
+     null
+    ],
+    [
+     "footer-data",
+     "",
+     "Data to the end of Aug 2026 · Method 1.0",
+     null
+    ],
+    [
+     "sources-label",
+     "",
+     "Sources",
+     null
+    ],
+    [
+     "source",
+     "Provider A",
+     "Provider A (US share, Test coin)",
+     null
+    ],
+    [
+     "source",
+     "Provider B",
+     "Provider B (Test tracker, US dollars per pound, UK fund)",
+     null
+    ],
+    [
+     "disclaimer",
+     "",
+     "Past results in pounds, measured at month-ends. Descriptive, never advice. Past behaviour does not predict future results.",
+     null
+    ]
+   ],
+   "expected_targets": [
+    "usa",
+    "gbf",
+    "usa"
+   ],
+   "derivation": "One cited claim: 'It cited one of them.' Reviewer and dates as given."
+  },
+  {
+   "id": "X01",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [],
+   "expected_error": "reviews: unreadable",
+   "derivation": "Not an object.",
+   "reviews_value": [
+    "x"
+   ]
+  },
+  {
+   "id": "X02",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [],
+   "expected_error": "reviews: unreadable",
+   "derivation": "An empty list of reviews.",
+   "reviews_value": {
+    "reviews": []
+   }
+  },
+  {
+   "id": "X03",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      1,
+      "reviewed_on"
+     ],
+     "set": "2026-02-30"
+    }
+   ],
+   "expected_error": "reviews: 2: unreadable",
+   "derivation": "Second review's reviewed_on is not a real date."
+  },
+  {
+   "id": "X04",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "data_as_of"
+     ],
+     "set": "2026-13"
+    }
+   ],
+   "expected_error": "reviews: 1: unreadable",
+   "derivation": "data_as_of month 13."
+  },
+  {
+   "id": "X05",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "title"
+     ],
+     "set": ""
+    }
+   ],
+   "expected_error": "reviews: 1: unreadable",
+   "derivation": "Empty title."
+  },
+  {
+   "id": "X06",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      1,
+      "id"
+     ],
+     "set": "2026-08"
+    }
+   ],
+   "expected_error": "reviews: duplicate id 2026-08",
+   "derivation": "Two reviews share an id."
+  },
+  {
+   "id": "X07",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      1,
+      "data_as_of"
+     ],
+     "set": "2026-08"
+    }
+   ],
+   "expected_error": "reviews: order",
+   "derivation": "Not newest first."
+  },
+  {
+   "id": "X08",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      1,
+      "assets",
+      "zzz"
+     ],
+     "set": []
+    }
+   ],
+   "expected_error": "reviews: launch: unknown asset zzz",
+   "derivation": "An asset that is not in the index, in an older review."
+  },
+  {
+   "id": "X09",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "gbf",
+      0,
+      "note"
+     ],
+     "set": "x"
+    }
+   ],
+   "expected_error": "reviews: 2026-08: gbf: unreadable",
+   "derivation": "A round with an extra field."
+  },
+  {
+   "id": "X10",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa",
+      1,
+      "round"
+     ],
+     "set": 3
+    }
+   ],
+   "expected_error": "reviews: 2026-08: usa: round numbers",
+   "derivation": "Rounds numbered 1, 3."
+  },
+  {
+   "id": "X11",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "cry",
+      0,
+      "verdict"
+     ],
+     "set": "maybe"
+    }
+   ],
+   "expected_error": "reviews: 2026-08: cry: round 1: verdict",
+   "derivation": "Unknown verdict."
+  },
+  {
+   "id": "X12",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "cry",
+      0,
+      "text"
+     ],
+     "set": ""
+    }
+   ],
+   "expected_error": "reviews: 2026-08: cry: round 1: text",
+   "derivation": "Empty draft text."
+  },
+  {
+   "id": "X13",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "cry",
+      0,
+      "reason"
+     ],
+     "set": null
+    }
+   ],
+   "expected_error": "reviews: 2026-08: cry: round 1: reason",
+   "derivation": "A rejection with no reason."
+  },
+  {
+   "id": "X14",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "gbf",
+      0,
+      "reason"
+     ],
+     "set": "Good."
+    }
+   ],
+   "expected_error": "reviews: 2026-08: gbf: round 1: reason",
+   "derivation": "An approval with a reason."
+  },
+  {
+   "id": "X15",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa",
+      0,
+      "verdict"
+     ],
+     "set": "approved"
+    },
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa",
+      0,
+      "reason"
+     ],
+     "set": null
+    }
+   ],
+   "expected_error": "reviews: 2026-08: usa: approved must be the last round",
+   "derivation": "An approval followed by another round."
+  },
+  {
+   "id": "X16",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "data_as_of"
+     ],
+     "set": "2026-09"
+    }
+   ],
+   "expected_error": "reviews: latest is not for 2026-08",
+   "derivation": "The newest review is for another month (the record was not updated after a refresh)."
+  },
+  {
+   "id": "X17",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "gbf"
+     ],
+     "delete": true
+    }
+   ],
+   "expected_error": "reviews: 2026-08: missing gbf",
+   "derivation": "The latest review leaves out an asset in the index."
+  },
+  {
+   "id": "X18",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "cry"
+     ],
+     "set": [
+      {
+       "round": 1,
+       "verdict": "approved",
+       "text": "Test coin fell.",
+       "reason": null,
+       "control": null
+      }
+     ]
+    }
+   ],
+   "expected_error": "reviews: 2026-08: cry: approved without a headline",
+   "derivation": "An approval for an asset whose page has no headline."
+  },
+  {
+   "id": "X19",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "gbf"
+     ],
+     "set": []
+    }
+   ],
+   "expected_error": "reviews: 2026-08: gbf: headline not approved",
+   "derivation": "A published headline with no approval in the latest review."
+  },
+  {
+   "id": "X20",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa",
+      1,
+      "text"
+     ],
+     "set": "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered. "
+    }
+   ],
+   "expected_error": "reviews: 2026-08: usa: approved text differs from the headline",
+   "derivation": "The approved text is not the published text."
+  },
+  {
+   "id": "X21",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa",
+      0,
+      "round"
+     ],
+     "set": true
+    }
+   ],
+   "expected_error": "reviews: 2026-08: usa: round numbers",
+   "derivation": "A round number given as true."
+  },
+  {
+   "id": "X22",
+   "index_edits": [],
+   "page_edits": {},
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "cry",
+      0,
+      "control"
+     ],
+     "set": ""
+    }
+   ],
+   "expected_error": "reviews: 2026-08: cry: round 1: reason",
+   "derivation": "An empty control."
+  }
+ ]
+}

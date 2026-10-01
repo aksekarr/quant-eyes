@@ -1,11 +1,11 @@
 {
  "file": "build_site",
- "spec": "docs/METHODOLOGY.md section 17",
+ "spec": "docs/METHODOLOGY.md section 17 (with Task 10d's review record)",
  "authorship": "Cases and expected results written by Claude (architect), checked against a separate Claude-only reference implementation, committed by Avi. Codex must never edit this file. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
  "interface": {
   "module": "scripts/build_site.py. Load it in tests with importlib.util.spec_from_file_location, as tests/test_build_pages.py loads scripts/build_pages.py.",
   "errors": "SiteWriteError is defined in scripts/build_site.py. SiteError comes from web.render.",
-  "write_site(index, pages, out_dir)": "Section 17.1. Returns the summary.",
+  "write_site(index, pages, out_dir, reviews=None)": "Section 17.1. Returns the summary. Write cases pass reviews only when the case names one.",
   "main(argv, root, out)": "Section 17.2. Returns the exit code. It has no default arguments."
  },
  "case_fields": {
@@ -16,6 +16,7 @@
   "render_failure": "{\"call\": n, \"raise\": \"SiteError\" or \"RuntimeError\", \"message\": text}: replace render_page in the script module (the name write_site uses) so that its n-th call, counting from 1, raises that type with that message; every other call goes to the real render_page.",
   "read_back_mismatch": "\"<id>/index.html\": replace render_page in the script module so that for that id's page it returns the real HTML as an instance of a str subclass whose __eq__ returns False and __ne__ returns True (with __hash__ = str.__hash__); \"index.html\": the same for render_landing. The text encodes and writes normally, but never compares equal when read back.",
   "cli": "main(argv, root, out) cases: root/site/data holds index.json (json.dumps of the index, or index_text exactly if given, or no file if index_missing is true) and <id>.json for each entry in pages (json.dumps of the page, or page_texts[id] exactly if given). out is a StringIO. write_site_raises: replace write_site in the script module with a function that raises RuntimeError(text).",
+  "reviews / review_edits": "A review record fixture below (deep copy) with review_edits applied. Write cases: given to write_site as its fourth argument only if the case has reviews. Cli cases: every cli case has reviews (default REC3); root/words/review_record.json holds json.dumps of it, or reviews_text exactly if given, or no file (and no words folder) if reviews_missing is true.",
   "expected_tree": "After the call, every file and folder under root/site, as sorted paths relative to it, folders ending in \"/\" (os.walk), or null if root/site must not exist.",
   "expected_rendered": "The files that must hold exactly the text render_page (for <id>/index.html) or render_landing (for index.html) returns for the same edited inputs, pages in index order. Every other file holds exactly its before_files text (or, in cli cases, what the case wrote to site/data).",
   "expected_summary / expected_error": "write cases: the returned summary, compared exactly; or the SiteWriteError message, compared exactly.",
@@ -1870,6 +1871,80 @@
    ]
   }
  },
+ "reviews": {
+  "REC3": {
+   "reviews": [
+    {
+     "id": "2026-08",
+     "title": "Aug 2026 refresh",
+     "reviewed_on": "2026-09-30",
+     "data_as_of": "2026-08",
+     "reviewer": "A Reviewer",
+     "assets": {
+      "usa": [
+       {
+        "round": 1,
+        "verdict": "rejected",
+        "text": "US share fell a lot.",
+        "reason": "No figure is cited.",
+        "control": null
+       },
+       {
+        "round": 2,
+        "verdict": "approved",
+        "text": "In pounds, £10,000 invested in US share at its high in Sep 2007 was worth £2,750 at its low in Nov 2008, and it later recovered.",
+        "reason": null,
+        "control": null
+       }
+      ],
+      "gbf": [
+       {
+        "round": 1,
+        "verdict": "approved",
+        "text": "UK fund fell 8.7% from Sep 2021 to Aug 2026 and had not recovered by then, 59 months after its high.",
+        "reason": null,
+        "control": null
+       }
+      ],
+      "cry": [
+       {
+        "round": 1,
+        "verdict": "rejected",
+        "text": "Test coin had a bumpy ride.",
+        "reason": "\"Bumpy\" is a judgement.",
+        "control": "Still a person's call."
+       }
+      ]
+     }
+    },
+    {
+     "id": "launch",
+     "title": "Launch review",
+     "reviewed_on": "2026-08-31",
+     "data_as_of": "2026-07",
+     "reviewer": "A Reviewer",
+     "assets": {
+      "usa": [
+       {
+        "round": 1,
+        "verdict": "redrafted",
+        "text": "US share fell 70.0% in pounds.",
+        "reason": "Honest; redrafted when the prompt changed.",
+        "control": null
+       },
+       {
+        "round": 2,
+        "verdict": "approved",
+        "text": "US share fell 70.0% in pounds from Sep 2007 to Nov 2008.",
+        "reason": null,
+        "control": null
+       }
+      ]
+     }
+    }
+   ]
+  }
+ },
  "cases": [
   {
    "id": "W01",
@@ -2476,6 +2551,7 @@
     "cry": "P_CRY"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "cry/",
     "cry/index.html",
@@ -2514,6 +2590,7 @@
     "gbf": "P_GBF",
     "cry": "P_CRY"
    },
+   "reviews": "REC3",
    "expected_tree": [
     "data/",
     "data/cry.json",
@@ -2538,6 +2615,7 @@
     "cry": "P_CRY"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "data/",
     "data/cry.json",
@@ -2562,6 +2640,7 @@
     "cry": "P_CRY"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "data/",
     "data/cry.json",
@@ -2594,6 +2673,7 @@
     "cry": "P_CRY"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "data/",
     "data/cry.json",
@@ -2621,6 +2701,7 @@
     "cry": "P_CRY"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "data/",
     "data/cry.json",
@@ -2644,6 +2725,7 @@
     "gbf": "P_GBF"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "data/",
     "data/gbf.json",
@@ -2670,6 +2752,7 @@
     "cry": "P_CRY"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "data/",
     "data/cry.json",
@@ -2696,6 +2779,7 @@
     "cry": "P_CRY"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "data/",
     "data/cry.json",
@@ -2732,12 +2816,41 @@
      }
     ]
    },
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "usa"
+     ],
+     "set": [
+      {
+       "round": 1,
+       "verdict": "rejected",
+       "text": "US share fell.",
+       "reason": "No figure.",
+       "control": null
+      }
+     ]
+    },
+    {
+     "path": [
+      "reviews",
+      0,
+      "assets",
+      "gbf"
+     ],
+     "set": []
+    }
+   ],
    "pages": {
     "usa": "P_USA",
     "gbf": "P_GBF",
     "cry": "P_CRY"
    },
    "argv": [],
+   "reviews": "REC3",
    "expected_tree": [
     "cry/",
     "cry/index.html",
@@ -2763,7 +2876,138 @@
     "Pages for data as of 2026-08: 0 of 3 have an approved headline.",
     "Wrote 4 files to site."
    ],
-   "derivation": "No headlines yet (the month after a refresh, before review)."
+   "derivation": "No headlines yet (the month after a refresh, before review): the review record has no approvals for this month either."
+  },
+  {
+   "id": "B11",
+   "check": "cli",
+   "reviews_missing": true,
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "reviews": "REC3",
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: reviews: load: FileNotFoundError",
+    "Nothing was written."
+   ],
+   "derivation": "No review record (root/words/review_record.json). Nothing is written."
+  },
+  {
+   "id": "B12",
+   "check": "cli",
+   "reviews_text": "{",
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "reviews": "REC3",
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: reviews: load: JSONDecodeError",
+    "Nothing was written."
+   ],
+   "derivation": "The review record isn't JSON."
+  },
+  {
+   "id": "B13",
+   "check": "cli",
+   "review_edits": [
+    {
+     "path": [
+      "reviews",
+      0,
+      "data_as_of"
+     ],
+     "set": "2026-09"
+    }
+   ],
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "argv": [],
+   "reviews": "REC3",
+   "expected_tree": [
+    "data/",
+    "data/cry.json",
+    "data/gbf.json",
+    "data/index.json",
+    "data/usa.json"
+   ],
+   "expected_rendered": [],
+   "expected_exit": 1,
+   "expected_stdout": [
+    "FAILED: site: render: SiteError: reviews: latest is not for 2026-08",
+    "Check git status --short before committing anything."
+   ],
+   "derivation": "The review record was not updated after a refresh: its newest review is for another month. The landing page refuses to render, so nothing is written."
+  },
+  {
+   "id": "W25",
+   "check": "write",
+   "reviews": "REC3",
+   "before_files": {
+    "data/index.json": "{}"
+   },
+   "pages": {
+    "usa": "P_USA",
+    "gbf": "P_GBF",
+    "cry": "P_CRY"
+   },
+   "expected_tree": [
+    "cry/",
+    "cry/index.html",
+    "data/",
+    "data/index.json",
+    "gbf/",
+    "gbf/index.html",
+    "index.html",
+    "usa/",
+    "usa/index.html"
+   ],
+   "expected_rendered": [
+    "cry/index.html",
+    "gbf/index.html",
+    "index.html",
+    "usa/index.html"
+   ],
+   "expected_summary": {
+    "data_as_of": "2026-08",
+    "headlines": [
+     "usa",
+     "gbf"
+    ],
+    "written": [
+     "usa/index.html",
+     "gbf/index.html",
+     "cry/index.html",
+     "index.html"
+    ]
+   },
+   "derivation": "write_site given the review record: the summary is unchanged and the landing page is rendered with the audit trail (section 16.9)."
   }
  ]
 }

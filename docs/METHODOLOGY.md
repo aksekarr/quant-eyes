@@ -1839,6 +1839,104 @@ equals the number of distinct rule names in the `expected_rules` of
 `tests/golden/headline.json`, so adding or removing a headline rule fails a test until
 the site's number is updated.
 
+### 16.9 The audit trail (Task 10d): `render_landing(index, pages, reviews)`
+
+`render_landing` takes an optional third argument, `reviews`: the value of
+`words/review_record.json`. Without it (`None`) the landing page is exactly as in section
+16.5. With it, the record is checked first (`check_reviews`, below; after the existing
+index and page checks), and the landing page gains openers and one hidden drawer per asset.
+Asset pages are unchanged.
+
+**The record.** `{"reviews": [review, …]}`, newest first. A review is `{"id", "title",
+"reviewed_on" (YYYY-MM-DD), "data_as_of" (YYYY-MM), "reviewer", "assets"}`; `assets` maps
+an asset id to its list of rounds; a round is exactly `{"round", "verdict", "text",
+"reason", "control"}`. `verdict` is `approved`, `rejected` or `redrafted`. Only drafts that
+passed the code checks of their day are recorded. Claude drafts the reasons on each
+monthly review and Avi approves them; the newest review is added before
+`scripts/build_site.py` runs.
+
+**`check_reviews(reviews, index, pages)`** raises `SiteError` with the first problem, in
+this order:
+
+1. `reviews: unreadable`: not an object, or `reviews` is not a list with at least one item.
+2. For each review in order (n = 1, 2, …): `reviews: <n>: unreadable` if it is not an
+   object, `id`, `title` or `reviewer` is not non-empty text, `reviewed_on` is not a real
+   date written `YYYY-MM-DD`, `data_as_of` is not `YYYY-MM` with a month from 01 to 12, or
+   `assets` is not an object. Then `reviews: duplicate id <id>` if an earlier review has
+   the same id.
+3. `reviews: order`: each review's `data_as_of` must be later than the next one's.
+4. For each review, for each asset in the record's order: `reviews: <id>: unknown asset
+   <asset>` (not in the index); `reviews: <id>: <asset>: unreadable` (not a list, or a round
+   that is not an object with exactly the five keys); `…: round numbers` (rounds are not
+   numbered 1, 2, 3 … in order, as integers, never `true`/`false`); then for each round
+   `…: round <n>: verdict` (not one of the three), `…: round <n>: text` (not non-empty
+   text), `…: round <n>: reason` (an approval with a `reason` or `control` that is not
+   `null`; a rejection or redraft whose `reason` is not non-empty text or whose `control`
+   is neither `null` nor non-empty text); then `…: approved must be the last round` (an
+   approval before the last round).
+5. The newest review: `reviews: latest is not for <index data_as_of>` if its `data_as_of`
+   differs from the index's. Then for each asset in index order: `reviews: <id>: missing
+   <asset>` (not in it); `…: <asset>: headline not approved` (the page has a headline but
+   its last round there is not an approval, or it has no rounds); `…: <asset>: approved
+   without a headline` (an approval but no headline on the page); `…: <asset>: approved
+   text differs from the headline` (the approved text is not exactly the headline's text).
+
+This ties the published lines to the record: a refresh whose review was not recorded, or a
+headline with no recorded approval, stops the site build.
+
+**Openers** (buttons with `type="button"`, `aria-haspopup="dialog"` and
+`data-trail="<asset id>"`; no `data-qx` on the button itself):
+
+- Each slide's audit row (16.5 item 5) is inside its button, followed by `audit-open`, key
+  the asset id: `Audit trail`.
+- Gate `03` (16.5 item 6), after its text: a button holding `gate-open`, key `03`: `See
+  the audit trail`, opening the **gate target**: the first asset in index order whose rounds
+  in the newest review include a `rejected` one; if none, the first asset.
+
+**Drawers**, after `</main>` and before the footer, in an element with the `hidden`
+attribute holding, for each asset in index order, an element with `role="dialog"`,
+`aria-modal="true"`, `id="trail-<asset id>"`, `aria-labelledby="trail-title-<asset id>"`
+and the `hidden` attribute. In it, in order (key = the asset id unless stated; `<Mon
+YYYY>` = the index's `data_as_of`; `{label}` = the index label):
+
+1. `trail-label`: `Audit trail`.
+2. `trail-title`, an `<h2>` with `id="trail-title-<asset id>"`: with a headline, `How
+   {label}'s headline was made`; without, `Why {label} has no headline for <Mon YYYY>`.
+3. `trail-close`: an empty button, `data-qx-attr="aria-label"`, `aria-label` `Close the
+   audit trail`.
+4. With a headline: `trail-status`: `Published · data to the end of <Mon YYYY>`;
+   `trail-headline`: its text; then three steps, keys `<id>.1`, `<id>.2`, `<id>.3`:
+   - `trail-step` `<id>.1`: `Drafted by {drafted_by}`; `trail-step-text` `<id>.1`: `It saw
+     only figures from {label}'s own page and could cite only those. It cited {one|two} of
+     them.` (the number of cited claims);
+   - `trail-step` `<id>.2`: `Checked by code: {N} of {N} rules passed` (N =
+     `HEADLINE_RULE_COUNT`); then one `trail-rule` per rule, keys `<id>.r01` to `<id>.r16`,
+     in section 15.1 order: `Plain text, nothing blank` · `Cites 1 or 2 figures from its
+     page` · `Only the investment's own past` · `One sentence, no questions` · `30 words or
+     fewer` · `Every number is a cited figure` · `Figures exactly as the page shows` · `No
+     advice words` · `No predictions` · `Numbers as figures, not words` · `No comparisons` ·
+     `No ranking or loaded words` · `Names no other investment` · `A fall is called a fall`
+     · `Recovery words match the facts` · `"in pounds" or "in dollars" said`;
+   - `trail-step` `<id>.3`: `Reviewed by a person · approved {day of reviewed_on}`;
+     `trail-step-text` `<id>.3`: `Read against {label}'s page. When next month's data
+     arrives, this line comes down until a new one is reviewed.`
+   Without a headline: `trail-status`: `Not published · data to the end of <Mon YYYY>`;
+   `trail-none`: `No draft was approved for this data, so no line is shown until one
+   passes review.`
+5. `trail-earlier`, an `<h3>`: `Every draft, including the rejected ones`; `trail-note`:
+   `Each passed the code checks of its day. Each verdict is a person's.`
+6. For each review in record order that lists this asset (even with no rounds),
+   `trail-review`, key `<id>.<review id>`: `{title} · reviewed by {reviewer}, {day of
+   reviewed_on} · data to the end of {Mon YYYY of its data_as_of}`; then for each round,
+   key `<id>.<review id>.<round>`: `trail-round`: `Round {n} · {Approved | Rejected |
+   Redrafted, not used}`; `trail-draft`: its text; `trail-reason`: its reason, if not
+   `null`; `trail-control`: `Now: {control}`, if not `null`.
+
+`tests/golden/audit_trail.json` holds the cases (renders with their full read-back and
+the `data-trail` values in document order, and the check's errors). Every rendered case
+passes section 16.7, which allows `role`, `aria-modal`, `aria-labelledby`,
+`aria-haspopup` and `data-trail` as above.
+
 ## 17. Writing the site's pages
 
 `scripts/build_site.py` writes the HTML of section 16 into `site/`, and is the command Avi
@@ -1848,7 +1946,7 @@ only `site/index.html` and `site/<id>/index.html`. The same inputs always give
 byte-identical files, so a run with nothing new shows no change in `git status`. It
 imports only `json`, `os`, `pathlib`, `sys` and `web.render`.
 
-### 17.1 `write_site(index, pages, out_dir)`
+### 17.1 `write_site(index, pages, out_dir, reviews=None)`
 
 `index` is the value of `site/data/index.json`; `pages` maps each asset id to the value
 of `site/data/<id>.json`. In order:
@@ -1868,7 +1966,8 @@ of `site/data/<id>.json`. In order:
    order (`output folder: unexpected <name>`); then each id's folder, in index order
    (`output folder: unexpected <id>/<name>`). A removed asset's folder is deleted by hand
    (`git rm -r`), never silently.
-3. **Render.** `render_landing(index, pages)` (section 16.5), with the pages in index
+3. **Render.** `render_landing(index, pages, reviews)` (sections 16.5 and 16.9; `reviews`
+   is the fourth argument, `None` if not given), with the pages in index
    order; then `render_page(page, index)` (section 16.4) for each id in index order. A
    `SiteError` is reported as `site: render: SiteError: <message>`; any other error type
    is named alone (`site: render: RuntimeError`).
@@ -1900,14 +1999,16 @@ a traceback or a value.
 - **Loading**, each file read as UTF-8 with `json.load`: `root/site/data/index.json`
   (`FAILED: index: load: <ErrorType>`); then the ids, as in 17.1 step 1 (`FAILED: index:
   assets: unreadable`); then `root/site/data/<id>.json` for each id in order (`FAILED:
-  <id>: load: <ErrorType>`). Each failure prints its line, then `Nothing was written.`,
-  and returns 1.
-- `write_site(index, pages, root/site)`. On success it prints `Pages for data as of
+  <id>: load: <ErrorType>`); then `root/words/review_record.json` (`FAILED: reviews:
+  load: <ErrorType>`). Each failure prints its line, then `Nothing was written.`, and
+  returns 1.
+- `write_site(index, pages, root/site, reviews)`. On success it prints `Pages for data as of
   <data_as_of>: <k> of <n> have an approved headline.` (`<n>` is the number of ids) and
   `Wrote <n + 1> files to site.`, and returns 0.
 - On a `SiteWriteError`: `FAILED: <message>`. On anything else: `FAILED: unexpected
   <ErrorType>.` Either way, then `Check git status --short before committing anything.`,
   and exit code 1.
 
-Each month, after the pages are built again with their headlines (section 15.4): run
+Each month, after the pages are built again with their headlines (section 15.4), and after
+the month's review is added to `words/review_record.json` (section 16.9): run
 `scripts/build_site.py`, then commit `site/data` and the site's HTML together.

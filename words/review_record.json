@@ -113,7 +113,7 @@
             "verdict": "rejected",
             "text": "Microsoft’s largest fall was 35.5%, and it recovered to its previous high 9 months after the low.",
             "reason": "\"Largest\" claims all of history, but these figures in pounds start in Aug 2007. Counting from the low is the flattering measure.",
-            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+            "control": "Ranking words fail rule 12, and the figure counted from the low is never offered."
           },
           {
             "round": 2,
@@ -136,7 +136,7 @@
             "verdict": "rejected",
             "text": "Apple’s largest fall was 41.5%, and it recovered to its previous high 8 months after the low.",
             "reason": "Same two slips as Microsoft: a ranking word, and recovery counted from the low.",
-            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+            "control": "Ranking words fail rule 12, and the figure counted from the low is never offered."
           },
           {
             "round": 2,
@@ -159,7 +159,7 @@
             "verdict": "rejected",
             "text": "Nvidia fell 72.5% in its largest decline and regained its previous high 83 months after the low.",
             "reason": "A ranking word, and recovery counted from the low. From the high it took 97 months.",
-            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+            "control": "Ranking words fail rule 12, and the figure counted from the low is never offered."
           },
           {
             "round": 2,
@@ -228,7 +228,7 @@
             "verdict": "rejected",
             "text": "AstraZeneca’s largest fall was 41.0%, and it recovered to its previous high 24 months after the low.",
             "reason": "A ranking word (its history starts in Feb 2005), and recovery counted from the low.",
-            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+            "control": "Ranking words fail rule 12, and the figure counted from the low is never offered."
           },
           {
             "round": 2,
@@ -251,7 +251,7 @@
             "verdict": "rejected",
             "text": "Bitcoin’s largest fall was 74.2%, and it recovered 21 months after reaching its low.",
             "reason": "\"Largest\" claims all of history, but these figures start in Dec 2014, and bitcoin fell further before that. Recovery was counted from the low.",
-            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+            "control": "Ranking words fail rule 12, and the figure counted from the low is never offered."
           },
           {
             "round": 2,
