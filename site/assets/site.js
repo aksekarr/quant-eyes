@@ -18,9 +18,11 @@
   var pauseHeadlines = function () { return false; };
   var resumeHeadlines = function () {};
   var trailOpen = false;
+  var dismissHint = function () {};
+  var positionHint = function () {};
   var guidedActive = false;
   var layoutAccordions = function () {};
-  var motionClasses = ["qx-grow", "qx-drain", "qx-timeline", "qx-correlation", "qx-sweep", "qx-chain", "qx-guided-enter"];
+  var motionClasses = ["qx-grow", "qx-drain", "qx-timeline", "qx-correlation", "qx-sweep", "qx-chain", "qx-guided-enter", "qx-hint-enter"];
 
   function all(selector, root) {
     return Array.from((root || document).querySelectorAll(selector));
@@ -215,6 +217,7 @@
 
     function display() {
       slides.forEach(function (slide, index) { slide.hidden = index !== current; });
+      positionHint();
       segments.forEach(function (segment, index) {
         segment.setAttribute("aria-pressed", String(index === current));
         segment.style.setProperty("--qx-progress", index === current ? String(elapsed / 6000) : "0");
@@ -257,7 +260,7 @@
     }
     function interact() { interacted = true; stop(); }
     // A drawer temporarily pauses the pass; other card interactions still stop it.
-    function opensTrail(event) { return event.target.closest("[data-trail]") !== null; }
+    function opensTrail(event) { return event.target.closest('[data-trail], [data-qx="hint-open"]') !== null; }
     listen(card, "pointerdown", function (event) {
       if (opensTrail(event)) return;
       toggleWasPlaying = toggle.contains(event.target) ? playing : null;
@@ -281,6 +284,52 @@
     // Share the card's visibility trigger with its border sweep.
     var sweep = pending.get(card);
     onceVisible(card, function () { if (sweep) sweep(); if (!interacted) start(); });
+  }
+
+  function setupHint() {
+    var hint = document.querySelector('[data-layout="hint"]');
+    if (!hint) return;
+    var card = hint.parentElement;
+    var next = hint.nextSibling;
+    var dismissed = false;
+    function currentAudit() {
+      var slide = all("article", card).find(function (item) { return !item.hidden; });
+      return slide && slide.querySelector('[data-layout="audit"][data-trail]');
+    }
+    positionHint = function () {
+      var audit = currentAudit();
+      if (audit) audit.parentElement.insertBefore(hint, audit.nextSibling);
+    };
+    dismissHint = function () {
+      dismissed = true;
+      hint.hidden = true;
+      hint.classList.remove("qx-hint-enter");
+    };
+    disposers.push(function () { card.insertBefore(hint, next); });
+    listen(hint.querySelector('[data-qx="hint-open"]'), "click", function () {
+      var audit = currentAudit();
+      if (audit) audit.click();
+    });
+    listen(document, "click", dismissHint);
+    listen(document, "keydown", dismissHint, true);
+    function checkScroll() { if (window.scrollY > 200) dismissHint(); }
+    listen(window, "scroll", checkScroll, { passive: true });
+    checkScroll();
+    // An address-opened drawer suppresses the hint even if it closes before the delay.
+    if (all('[role="dialog"][id^="trail-"]').some(function (drawer) {
+      return window.location.hash === "#" + drawer.id;
+    })) dismissHint();
+    function schedule() {
+      later(function () {
+        checkScroll();
+        if (dismissed || trailOpen || !currentAudit()) return;
+        positionHint();
+        hint.hidden = false;
+        animate(hint, "qx-hint-enter", 750);
+      }, 1200);
+    }
+    if (document.readyState === "complete") schedule();
+    else listen(window, "load", schedule);
   }
 
   function setupTrails() {
@@ -341,6 +390,7 @@
       }
     });
     function open(drawer, source) {
+      dismissHint();
       if (!active) {
         wasPlaying = pauseHeadlines();
         trailOpen = true;
@@ -628,6 +678,7 @@
     setupMotion();
     setupSearch();
     setupHeadlines();
+    setupHint();
     setupTrails();
     setupRail();
     setupSpotlights();

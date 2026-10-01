@@ -893,6 +893,8 @@ def _trail_drawers(out, index, pages, reviews):
                     out.text("trail-reason", item["reason"], round_key)
                 if item["control"] is not None:
                     out.text("trail-control", "Now: " + item["control"], round_key)
+        out.text("trail-guided", "Try guided mode on " + label, key,
+                 tag="a", attrs={"href": key + "/#guided"})
         out.end("section")
     out.end("div")
 
@@ -989,6 +991,13 @@ def render_landing(index, pages, reviews=None):
             out.text("segment", "Show the headline for " + asset["label"], asset["id"],
                      tag="button", attrs={"type": "button"}, text_attr="aria-label")
         out.end("div")
+        if reviews is not None:
+            out.start("div", {"data-layout": "hint", "hidden": None})
+            out.text("hint-open", "See how this line was checked", tag="button",
+                     attrs={"type": "button"})
+            out.text("hint-close", "Close the hint", tag="button",
+                     attrs={"type": "button"}, text_attr="aria-label")
+            out.end("div")
         out.end("section")
     out.start("section", {"data-layout": "gates"})
     out.text("gates-title", "How a headline gets published", tag="h2")

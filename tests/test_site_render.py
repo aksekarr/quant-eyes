@@ -162,6 +162,7 @@ class SiteRenderGoldenTests(unittest.TestCase):
         allowed_links = {"./"} if is_landing else {"../"}
         if is_landing:
             allowed_links.update(asset["id"] + "/" for asset in index["assets"])
+            allowed_links.update(asset["id"] + "/#guided" for asset in index["assets"])
         else:
             allowed_links.update("#" + card["id"] for card in pages[0]["cards"])
             allowed_links.update(pages[0]["instrument"]["identity"]["sources"])
