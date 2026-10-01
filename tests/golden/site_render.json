@@ -8685,7 +8685,7 @@
     [
      "description",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -8697,7 +8697,7 @@
     [
      "og-description",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -8715,19 +8715,19 @@
     [
      "kicker",
      "",
-     "Three investments · in pounds · data to the end of Aug 2026",
+     "A governed AI demo · three investments · in pounds",
      null
     ],
     [
      "hero",
      "",
-     "What am I actually getting into?",
+     "AI drafts it. Code checks it. A person signs it off.",
      null
     ],
     [
      "tagline",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -8817,7 +8817,7 @@
     [
      "section-label",
      "headlines",
-     "Headlines",
+     "In one line",
      null
     ],
     [
@@ -8845,9 +8845,21 @@
      null
     ],
     [
-     "slide-meta",
+     "audit-drafted",
      "usa",
-     "gpt-6.1-sol · reviewed 30 Sep 2026",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "usa",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "usa",
+     "Reviewed 30 Sep 2026",
      null
     ],
     [
@@ -8881,33 +8893,27 @@
      null
     ],
     [
-     "slide-meta",
+     "audit-drafted",
      "gbf",
-     "gpt-6.1-sol · reviewed 30 Sep 2026",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "gbf",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "gbf",
+     "Reviewed 30 Sep 2026",
      null
     ],
     [
      "slide-open",
      "gbf",
      "Open UK fund",
-     null
-    ],
-    [
-     "chain",
-     "drafted",
-     "Drafted by AI",
-     null
-    ],
-    [
-     "chain",
-     "checked",
-     "Checked by code: 16 of 16 rules passed",
-     null
-    ],
-    [
-     "chain",
-     "reviewed",
-     "Reviewed by a person",
      null
     ],
     [
@@ -8932,6 +8938,66 @@
      "segment",
      "gbf",
      "Show the headline for UK fund",
+     null
+    ],
+    [
+     "gates-title",
+     "",
+     "How a headline gets published",
+     null
+    ],
+    [
+     "gate-number",
+     "01",
+     "01",
+     null
+    ],
+    [
+     "gate-title",
+     "01",
+     "Drafted by AI",
+     null
+    ],
+    [
+     "gate-text",
+     "01",
+     "A model writes one line per investment. It sees only figures from that investment's own page, and can cite only those.",
+     null
+    ],
+    [
+     "gate-number",
+     "02",
+     "02",
+     null
+    ],
+    [
+     "gate-title",
+     "02",
+     "Checked by code: 16 rules",
+     null
+    ],
+    [
+     "gate-text",
+     "02",
+     "No advice, no forecasts, no rankings, every number traced to the page. One failure and the line is out.",
+     null
+    ],
+    [
+     "gate-number",
+     "03",
+     "03",
+     null
+    ],
+    [
+     "gate-title",
+     "03",
+     "Reviewed by a person",
+     null
+    ],
+    [
+     "gate-text",
+     "03",
+     "In the first round, all 7 drafts passed every code check. A person rejected 6. Most reasons became new rules. The rest are why a person stays in the loop.",
      null
     ],
     [
@@ -8974,12 +9040,6 @@
      "tile-label",
      "cry",
      "Test coin",
-     null
-    ],
-    [
-     "strip",
-     "",
-     "Every figure comes from tested code. Every headline is reviewed by a person.",
      null
     ],
     [
@@ -9053,7 +9113,7 @@
     [
      "description",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -9065,7 +9125,7 @@
     [
      "og-description",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -9083,19 +9143,19 @@
     [
      "kicker",
      "",
-     "Three investments · in pounds · data to the end of Aug 2026",
+     "A governed AI demo · three investments · in pounds",
      null
     ],
     [
      "hero",
      "",
-     "What am I actually getting into?",
+     "AI drafts it. Code checks it. A person signs it off.",
      null
     ],
     [
      "tagline",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -9183,6 +9243,66 @@
      null
     ],
     [
+     "gates-title",
+     "",
+     "How a headline gets published",
+     null
+    ],
+    [
+     "gate-number",
+     "01",
+     "01",
+     null
+    ],
+    [
+     "gate-title",
+     "01",
+     "Drafted by AI",
+     null
+    ],
+    [
+     "gate-text",
+     "01",
+     "A model writes one line per investment. It sees only figures from that investment's own page, and can cite only those.",
+     null
+    ],
+    [
+     "gate-number",
+     "02",
+     "02",
+     null
+    ],
+    [
+     "gate-title",
+     "02",
+     "Checked by code: 16 rules",
+     null
+    ],
+    [
+     "gate-text",
+     "02",
+     "No advice, no forecasts, no rankings, every number traced to the page. One failure and the line is out.",
+     null
+    ],
+    [
+     "gate-number",
+     "03",
+     "03",
+     null
+    ],
+    [
+     "gate-title",
+     "03",
+     "Reviewed by a person",
+     null
+    ],
+    [
+     "gate-text",
+     "03",
+     "In the first round, all 7 drafts passed every code check. A person rejected 6. Most reasons became new rules. The rest are why a person stays in the loop.",
+     null
+    ],
+    [
      "tiles-label",
      "",
      "Or pick one of the three",
@@ -9225,12 +9345,6 @@
      null
     ],
     [
-     "strip",
-     "",
-     "Every figure comes from tested code. Every headline is reviewed by a person.",
-     null
-    ],
-    [
      "footer-data",
      "",
      "Data to the end of Aug 2026 · Method 1.0",
@@ -9261,7 +9375,7 @@
      null
     ]
    ],
-   "derivation": "No page has a headline: the headlines section, its chain and its controls are left out entirely."
+   "derivation": "No page has a headline: the headlines section, its audit rows and its controls are left out entirely; the gates section still shows."
   },
   {
    "id": "L03",
@@ -9330,7 +9444,7 @@
     [
      "description",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -9342,7 +9456,7 @@
     [
      "og-description",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -9360,19 +9474,19 @@
     [
      "kicker",
      "",
-     "Three investments · in pounds · data to the end of Aug 2026",
+     "A governed AI demo · three investments · in pounds",
      null
     ],
     [
      "hero",
      "",
-     "What am I actually getting into?",
+     "AI drafts it. Code checks it. A person signs it off.",
      null
     ],
     [
      "tagline",
      "",
-     "How one more investment has behaved, and what it did next to a developed-world tracker. In plain English, in pounds.",
+     "Plain-English explanations of how three investments have behaved, in pounds. Every figure comes from tested code. The one line an AI writes is checked against 16 rules and read by a person before it goes live.",
      null
     ],
     [
@@ -9462,7 +9576,7 @@
     [
      "section-label",
      "headlines",
-     "Headlines",
+     "In one line",
      null
     ],
     [
@@ -9490,9 +9604,21 @@
      null
     ],
     [
-     "slide-meta",
+     "audit-drafted",
      "usa",
-     "gpt-6.1-sol · reviewed 30 Sep 2026",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "usa",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "usa",
+     "Reviewed 30 Sep 2026",
      null
     ],
     [
@@ -9526,33 +9652,27 @@
      null
     ],
     [
-     "slide-meta",
+     "audit-drafted",
      "gbf",
-     "gpt-6.1-sol · reviewed 30 Sep 2026",
+     "Drafted by gpt-6.1-sol",
+     null
+    ],
+    [
+     "audit-checked",
+     "gbf",
+     "16 of 16 rules",
+     null
+    ],
+    [
+     "audit-reviewed",
+     "gbf",
+     "Reviewed 30 Sep 2026",
      null
     ],
     [
      "slide-open",
      "gbf",
      "Open UK fund",
-     null
-    ],
-    [
-     "chain",
-     "drafted",
-     "Drafted by AI",
-     null
-    ],
-    [
-     "chain",
-     "checked",
-     "Checked by code: 16 of 16 rules passed",
-     null
-    ],
-    [
-     "chain",
-     "reviewed",
-     "Reviewed by a person",
      null
     ],
     [
@@ -9577,6 +9697,66 @@
      "segment",
      "gbf",
      "Show the headline for UK fund",
+     null
+    ],
+    [
+     "gates-title",
+     "",
+     "How a headline gets published",
+     null
+    ],
+    [
+     "gate-number",
+     "01",
+     "01",
+     null
+    ],
+    [
+     "gate-title",
+     "01",
+     "Drafted by AI",
+     null
+    ],
+    [
+     "gate-text",
+     "01",
+     "A model writes one line per investment. It sees only figures from that investment's own page, and can cite only those.",
+     null
+    ],
+    [
+     "gate-number",
+     "02",
+     "02",
+     null
+    ],
+    [
+     "gate-title",
+     "02",
+     "Checked by code: 16 rules",
+     null
+    ],
+    [
+     "gate-text",
+     "02",
+     "No advice, no forecasts, no rankings, every number traced to the page. One failure and the line is out.",
+     null
+    ],
+    [
+     "gate-number",
+     "03",
+     "03",
+     null
+    ],
+    [
+     "gate-title",
+     "03",
+     "Reviewed by a person",
+     null
+    ],
+    [
+     "gate-text",
+     "03",
+     "In the first round, all 7 drafts passed every code check. A person rejected 6. Most reasons became new rules. The rest are why a person stays in the loop.",
      null
     ],
     [
@@ -9619,12 +9799,6 @@
      "tile-label",
      "cry",
      "Test coin",
-     null
-    ],
-    [
-     "strip",
-     "",
-     "Every figure comes from tested code. Every headline is reviewed by a person.",
      null
     ],
     [

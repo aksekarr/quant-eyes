@@ -1697,16 +1697,18 @@ joined with `; `, then `. Method {method_version}.`
 
 ### 16.5 The landing page: `render_landing(index, pages)`
 
-`pages` is the list of asset pages in the index's order. The title is `{SITE_NAME}:
-{count word} investments in plain English`; the description is the tagline:
-`How one more investment has behaved, and what it did next to a developed-world tracker.
-In plain English, in pounds.` Then, in this order:
+Landing v2 (Task 10c, copy approved 30 Sept 2026). `pages` is the list of asset pages in
+the index's order. The title is `{SITE_NAME}: {count word} investments in plain English`;
+the description is the landing tagline: `Plain-English explanations of how {count word}
+investments have behaved, in pounds. Every figure comes from tested code. The one line an
+AI writes is checked against {HEADLINE_RULE_COUNT} rules and read by a person before it
+goes live.` (Asset pages keep their own description, section 16.4.) Then, in this order:
 
-1. `kicker`: `{Count word, first letter capital} investments · in pounds ·
-   {data_as_of_text, first letter lower case}`.
-2. `hero`, the page's only `<h1>`: `What am I actually getting into?`
-3. `tagline`: the tagline.
-4. The search, in an element with the `hidden` attribute (JavaScript shows it):
+1. `kicker`: `A governed AI demo · {count word} investments · in pounds` (the stylesheet
+   sets it in capitals; the text is as written here).
+2. `hero`, the page's only `<h1>`: `AI drafts it. Code checks it. A person signs it off.`
+3. `tagline`: the landing tagline.
+4. The search, unchanged: in an element with the `hidden` attribute (JavaScript shows it):
    `search-label`, a `<label>` for the input: `Look up an investment`; `search-hint`, a
    search input whose `placeholder` is the text: `Try {first asset's label} or {first
    asset's ticker}`; `search-count`: `{number of assets} covered`; then for each asset in
@@ -1718,23 +1720,34 @@ In plain English, in pounds.` Then, in this order:
    tested code, and every headline is reviewed by a person.`
 5. The headlines, only if at least one page has a headline, for the assets that have
    one, in index order (number *k* of *m*): `section-label`, key `headlines`:
-   `Headlines`; then for each, keyed by the asset id: `slide-position`: `{k} / {m}`;
-   `slide-label`: the label; `slide-ticker`: the ticker; `headline`: its text;
-   `slide-meta`: `{drafted_by} · reviewed {day of reviewed_on}`; `slide-open`, a link to
-   `{id}/`: `Open {label}`. Then `chain` keyed `drafted`: `Drafted by AI`, `checked`:
-   `Checked by code: {HEADLINE_RULE_COUNT} of {HEADLINE_RULE_COUNT} rules passed`,
-   `reviewed`: `Reviewed by a person`. Then, in an element with the `hidden` attribute:
-   a button holding `pause`: `Pause the headlines` and `play`: `Play the headlines` (with
-   the `hidden` attribute); then for each headline an empty button, role `segment`, key
-   the asset id, `data-qx-attr="aria-label"`, whose `aria-label` is `Show the headline for
-   {label}`.
-6. `tiles-label`: `Or pick one of the {count word}`; then for each asset, a link to
+   `In one line`; then for each, keyed by the asset id: `slide-position`: `{k} / {m}`;
+   `slide-label`: the label; `slide-ticker`: the ticker; `headline`: its text; the
+   **audit row**: `audit-drafted`: `Drafted by {drafted_by}`, `audit-checked`:
+   `{HEADLINE_RULE_COUNT} of {HEADLINE_RULE_COUNT} rules`, `audit-reviewed`: `Reviewed
+   {day of reviewed_on}`; `slide-open`, a link to `{id}/`: `Open {label}`. (The landing
+   page no longer has the `chain` roles; asset pages keep theirs.) Then, in an element
+   with the `hidden` attribute: a button holding `pause`: `Pause the headlines` and
+   `play`: `Play the headlines` (with the `hidden` attribute); then for each headline an
+   empty button, role `segment`, key the asset id, `data-qx-attr="aria-label"`, whose
+   `aria-label` is `Show the headline for {label}`.
+6. The **gates**, always (with or without headlines): `gates-title`: `How a headline
+   gets published`; then three gates, keyed `01`, `02`, `03`, each `gate-number` (the
+   key), `gate-title` (an `<h3>`) and `gate-text`:
+   - `01`: `Drafted by AI`; `A model writes one line per investment. It sees only
+     figures from that investment's own page, and can cite only those.`
+   - `02`: `Checked by code: {HEADLINE_RULE_COUNT} rules`; `No advice, no forecasts, no
+     rankings, every number traced to the page. One failure and the line is out.`
+   - `03`: `Reviewed by a person`; `In the first round, all 7 drafts passed every code
+     check. A person rejected 6. Most reasons became new rules. The rest are why a person
+     stays in the loop.` (A dated fact about the launch review, 30 Sept 2026, so its
+     numbers are fixed copy. `A person rejected 6.` may be wrapped in `<strong>`.)
+   The links "The full method and evidence →" and "See the audit trail →" are added by
+   Tasks 10e and 10d, not here.
+7. `tiles-label`: `Or pick one of the {count word}`; then for each asset, a link to
    `{id}/` holding `tile-ticker` and `tile-label`, keyed by the asset id.
-7. `strip`: `Every figure comes from tested code. Every headline is reviewed by a
-   person.`
 
-The labels, names and tickers on the landing page come from the index; everything else
-from the pages.
+There is no `strip` on the landing page any more. The labels, names and tickers on the
+landing page come from the index; everything else from the pages.
 
 ### 16.6 Checks and errors
 

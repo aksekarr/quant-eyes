@@ -69,6 +69,33 @@ no `::before`/`::after` on the site name. `site/assets/brand/` is provided: neve
 or remove a file in it. The favicon is `site/assets/brand/favicon.svg` (METHODOLOGY 16.3).
 `site/assets/icons/mark.svg` is retired in Task 10b.
 
+## Landing v2 (Task 10c)
+
+As on the design canvas (artboard ProofLanding, approved 30 Sept 2026). Words and order are
+fixed by METHODOLOGY 16.5; this is the look.
+
+- **Top:** the same two columns as now: intro (kicker, hero, tagline, search) on the left,
+  the "In one line" headline card on the right. The hero keeps the gradient on its last
+  sentence, `A person signs it off.` (wrap it in a `span`, as `hero-accent` does now).
+- **Audit row** (inside each slide, under the headline): one rounded chip row, min-height
+  48px, padding 10px 14px, radius 14px, border `rgba(134, 204, 255, 0.30)`, background
+  `rgba(134, 204, 255, 0.07)`, 14px semibold `#DCE3F7`. Three steps, each with its icon
+  as a CSS mask (`sparkle`, `shield-check`, `user-check`, as the asset page's chain), and a
+  decorative `→` between steps in `#6F7BA6`, drawn with CSS (`::before`/`::after` with
+  `content: "→"` is allowed here), never as page text. It wraps on narrow screens. It may
+  reuse the chain's light-up motion (`data-layout="chain"`) if that needs no new script.
+- **Gates** (full width, under the top two columns, above the tiles), margin-top about
+  44px: `gates-title` as a small mono label (12px, 500, 0.14em, `#A9B6E0`); then three
+  cards in a grid `1fr 1fr 1.25fr`, gap 14px; each card padding 20px 22px, radius 20px,
+  border `rgba(255, 255, 255, 0.12)`, background `rgba(255, 255, 255, 0.035)`; number in
+  mono 12px accent, title in Sora 19px 600 on the same line, text 15px/1.5 `#B6C1E2`. Gate
+  03 is highlighted: border `rgba(134, 204, 255, 0.35)`, background
+  `linear-gradient(160deg, rgba(134, 204, 255, 0.12), rgba(134, 204, 255, 0.03))`, text
+  `#DCE3F7`, its `strong` white. At 1023px and below the cards stack in one column.
+- Remove the rules for roles the landing page no longer has (`strip`, `slide-meta`) and any
+  landing-only `chain` placement; keep everything the asset pages use.
+- No new colours outside this list and the existing palette; no red or green.
+
 ## Icons
 
 Decorative only, drawn with CSS masks from `site/assets/icons/` (`mask`/`-webkit-mask`
