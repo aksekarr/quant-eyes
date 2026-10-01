@@ -72,6 +72,42 @@
 </div>
 </nav>
 <div data-layout="cards">
+<nav data-layout="guided-controls" hidden>
+<div data-layout="guided-mode">
+<button data-qx="mode-guided" type="button" aria-pressed="false">Guided</button>
+<button data-qx="mode-full" type="button" aria-pressed="true">Full page</button>
+</div>
+<div data-layout="guided-track">
+<button data-qx="step-back" type="button">Back</button>
+<ol data-layout="guided-steps">
+<li data-layout="guided-step">
+<button data-qx="step-node" data-qx-key="bumpy" data-qx-attr="aria-label" aria-label="Step 1: How bumpy is the ride?" type="button" data-step="bumpy"></button>
+<span data-qx="step-label" data-qx-key="bumpy">Bumpy</span>
+</li>
+<li data-layout="guided-step">
+<button data-qx="step-node" data-qx-key="worst" data-qx-attr="aria-label" aria-label="Step 2: What&#x27;s the worst it&#x27;s been?" type="button" data-step="worst"></button>
+<span data-qx="step-label" data-qx-key="worst">Worst fall</span>
+</li>
+<li data-layout="guided-step">
+<button data-qx="step-node" data-qx-key="panic" data-qx-attr="aria-label" aria-label="Step 3: What happened when markets panicked?" type="button" data-step="panic"></button>
+<span data-qx="step-label" data-qx-key="panic">Panics</span>
+</li>
+<li data-layout="guided-step">
+<button data-qx="step-node" data-qx-key="next" data-qx-attr="aria-label" aria-label="Step 4: What does it do next to the tracker?" type="button" data-step="next"></button>
+<span data-qx="step-label" data-qx-key="next">Next to tracker</span>
+</li>
+<li data-layout="guided-step">
+<button data-qx="step-node" data-qx-key="pound" data-qx-attr="aria-label" aria-label="Step 5: How much of it was the pound?" type="button" data-step="pound"></button>
+<span data-qx="step-label" data-qx-key="pound">The pound</span>
+</li>
+<li data-layout="guided-step">
+<button data-qx="step-node" data-qx-key="limits" data-qx-attr="aria-label" aria-label="Step 6: What these numbers don&#x27;t capture" type="button" data-step="limits"></button>
+<span data-qx="step-label" data-qx-key="limits">Limits</span>
+</li>
+</ol>
+<button data-qx="step-next" type="button">Next</button>
+</div>
+</nav>
 <section id="bumpy">
 <div data-layout="card-heading">
 <p data-qx="card-number" data-qx-key="bumpy">01</p>

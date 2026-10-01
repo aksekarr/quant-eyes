@@ -18,7 +18,9 @@
   var pauseHeadlines = function () { return false; };
   var resumeHeadlines = function () {};
   var trailOpen = false;
-  var motionClasses = ["qx-grow", "qx-drain", "qx-timeline", "qx-correlation", "qx-sweep", "qx-chain"];
+  var guidedActive = false;
+  var layoutAccordions = function () {};
+  var motionClasses = ["qx-grow", "qx-drain", "qx-timeline", "qx-correlation", "qx-sweep", "qx-chain", "qx-guided-enter"];
 
   function all(selector, root) {
     return Array.from((root || document).querySelectorAll(selector));
@@ -80,7 +82,7 @@
   function animate(node, name, duration) {
     if (reduced.matches || node.classList.contains(name)) return;
     node.classList.add(name);
-    later(function () { node.classList.remove(name); }, duration);
+    return later(function () { node.classList.remove(name); }, duration);
   }
 
   function count(figure) {
@@ -379,6 +381,7 @@
   function setupAccordions() {
     var toggles = all("[data-accordion-toggle]");
     function layout() {
+      if (guidedActive) return;
       toggles.forEach(function (toggle) {
         var content = document.getElementById(toggle.getAttribute("aria-controls"));
         content.hidden = phone.matches;
@@ -388,14 +391,177 @@
     }
     toggles.forEach(function (toggle) {
       listen(toggle, "click", function () {
-        if (!phone.matches) return;
+        if (!phone.matches || guidedActive) return;
         var content = document.getElementById(toggle.getAttribute("aria-controls"));
         content.hidden = !content.hidden;
         toggle.setAttribute("aria-expanded", String(!content.hidden));
       });
     });
     listen(phone, "change", layout);
+    layoutAccordions = layout;
     layout();
+  }
+
+  function setupGuided() {
+    var nav = document.querySelector('[data-layout="guided-controls"]');
+    if (!nav) return;
+    var main = nav.closest("main");
+    var container = nav.parentElement;
+    var cards = all(':scope > section', container);
+    var titles = cards.map(function (card) { return card.querySelector('[data-qx="card-title"]'); });
+    var details = cards.map(function (card) {
+      var node = card.querySelector('[data-layout="guided"]');
+      return { node: node, parent: node.parentElement, next: node.nextSibling };
+    });
+    var headline = main.querySelector('[data-layout="headline"]');
+    var rail = main.querySelector('[data-layout="rail"]');
+    var track = nav.querySelector('[data-layout="guided-track"]');
+    var guided = nav.querySelector('[data-qx="mode-guided"]');
+    var full = nav.querySelector('[data-qx="mode-full"]');
+    var back = nav.querySelector('[data-qx="step-back"]');
+    var next = nav.querySelector('[data-qx="step-next"]');
+    var nodes = all('[data-qx="step-node"]', nav);
+    var visited = new Set();
+    var current = 0;
+    var saved = [];
+    var wasPhone;
+    var enterTimer;
+
+    function stopEntrance() {
+      if (enterTimer === undefined) return;
+      window.clearTimeout(enterTimer);
+      timers.delete(enterTimer);
+      enterTimer = undefined;
+    }
+
+    function restoreDetails() {
+      details.forEach(function (record) { record.parent.insertBefore(record.node, record.next); });
+    }
+    function restorePositions() {
+      restoreDetails();
+      container.insertBefore(nav, cards[0]);
+    }
+    disposers.push(restorePositions);
+
+    function remember(node, names) {
+      saved.push({ node: node, attributes: names.map(function (name) { return [name, node.getAttribute(name)]; }) });
+    }
+    function rememberPage() {
+      saved = [];
+      wasPhone = phone.matches;
+      [headline, rail].concat(cards).forEach(function (node) { remember(node, ["hidden"]); });
+      titles.forEach(function (title) { remember(title, ["tabindex"]); });
+      details.forEach(function (record) { remember(record.node, ["open"]); });
+      all("[data-accordion-toggle]", main).forEach(function (toggle) {
+        remember(toggle, ["aria-expanded", "aria-disabled"]);
+        var content = document.getElementById(toggle.getAttribute("aria-controls"));
+        remember(content, ["hidden"]);
+        content.hidden = false;
+        toggle.setAttribute("aria-expanded", "true");
+        toggle.setAttribute("aria-disabled", "true");
+      });
+    }
+    function focusCard() {
+      titles[current].setAttribute("tabindex", "-1");
+      titles[current].focus({ preventScroll: true });
+      cards[current].scrollIntoView({ block: "start", behavior: reduced.matches ? "auto" : "smooth" });
+    }
+    function move(index, address, focus) {
+      if (index < 0 || index >= cards.length) return;
+      stopEntrance();
+      restoreDetails();
+      details[current].node.open = false;
+      current = index;
+      visited.add(current);
+      cards.forEach(function (card, number) {
+        card.hidden = number !== current;
+        card.classList.remove("qx-guided-enter");
+      });
+      details[current].node.open = false;
+      container.insertBefore(nav, cards[current].nextSibling);
+      container.insertBefore(details[current].node, nav.nextSibling);
+      nodes.forEach(function (node, number) {
+        node.classList.toggle("qx-visited", visited.has(number));
+        if (number === current) node.setAttribute("aria-current", "step");
+        else node.removeAttribute("aria-current");
+      });
+      back.setAttribute("aria-disabled", String(current === 0));
+      next.setAttribute("aria-disabled", String(current === cards.length - 1));
+      if (address) window.history.replaceState(window.history.state, "", address);
+      if (focus) focusCard();
+      enterTimer = animate(cards[current], "qx-guided-enter", 300);
+    }
+    function enter(index, address, focus) {
+      if (!guidedActive) {
+        rememberPage();
+        guidedActive = true;
+        visited.clear();
+        main.classList.add("qx-guided");
+        headline.hidden = true;
+        rail.hidden = true;
+        track.hidden = false;
+        guided.setAttribute("aria-pressed", "true");
+        full.setAttribute("aria-pressed", "false");
+      }
+      move(index, address, focus);
+    }
+    function leave(clearAddress) {
+      if (!guidedActive) return;
+      stopEntrance();
+      guidedActive = false;
+      restorePositions();
+      saved.forEach(function (record) {
+        record.attributes.forEach(function (attribute) {
+          if (attribute[1] === null) record.node.removeAttribute(attribute[0]);
+          else record.node.setAttribute(attribute[0], attribute[1]);
+        });
+      });
+      cards.forEach(function (card) { card.classList.remove("qx-guided-enter"); });
+      main.classList.remove("qx-guided");
+      track.hidden = true;
+      guided.setAttribute("aria-pressed", "false");
+      full.setAttribute("aria-pressed", "true");
+      if (wasPhone !== phone.matches) layoutAccordions();
+      if (clearAddress) {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+      }
+    }
+    function jump(index) {
+      if (index < 0 || index >= cards.length || index === current) return;
+      move(index, "#guided-" + cards[index].id, true);
+    }
+    function linkedStep() {
+      if (window.location.hash === "#guided") return 0;
+      return cards.findIndex(function (card) { return window.location.hash === "#guided-" + card.id; });
+    }
+    listen(guided, "click", function () { if (!guidedActive) enter(0, "#guided", true); });
+    listen(full, "click", function () { leave(true); full.focus({ preventScroll: true }); });
+    listen(back, "click", function () { jump(current - 1); });
+    listen(next, "click", function () { jump(current + 1); });
+    nodes.forEach(function (node, index) { listen(node, "click", function () { jump(index); }); });
+    listen(track, "keydown", function (event) {
+      if (!guidedActive || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.isComposing) return;
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        jump(current + (event.key === "ArrowRight" ? 1 : -1));
+      }
+    });
+    listen(window, "hashchange", function () {
+      var index = linkedStep();
+      if (index !== -1) enter(index, null, true);
+      else leave(false);
+    });
+    track.hidden = true;
+    nav.hidden = false;
+    var linked = linkedStep();
+    if (linked !== -1) {
+      enter(linked, null, false);
+      if (document.readyState === "complete") focusCard();
+      else listen(window, "load", function () {
+        // Safari restores document focus at load, after deferred scripts run.
+        frame(function () { if (guidedActive) focusCard(); });
+      });
+    }
   }
 
   function setupRail() {
@@ -407,6 +573,7 @@
     var queued = false;
     function update() {
       queued = false;
+      if (guidedActive) return;
       var most = 0;
       var chosen = -1;
       cards.forEach(function (card, index) {
@@ -449,7 +616,7 @@
   }
 
   guard(function () {
-    var attributes = ["class", "style", "hidden", "inert", "aria-expanded", "aria-disabled", "aria-current", "aria-pressed"];
+    var attributes = ["class", "style", "hidden", "inert", "open", "tabindex", "aria-expanded", "aria-disabled", "aria-current", "aria-pressed"];
     originals = all("html, body, body *").map(function (node) {
       return { node: node, attributes: attributes.map(function (name) { return [name, node.getAttribute(name)]; }) };
     });
@@ -457,6 +624,7 @@
     fine = window.matchMedia("(hover: hover) and (pointer: fine)");
     phone = window.matchMedia("(max-width: 639px)");
     setupAccordions();
+    setupGuided();
     setupMotion();
     setupSearch();
     setupHeadlines();

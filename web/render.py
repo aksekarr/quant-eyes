@@ -448,6 +448,35 @@ def _guided(out, step):
     out.end("details")
 
 
+def _guided_controls(out, cards):
+    labels = {
+        "bumpy": "Bumpy", "worst": "Worst fall", "panic": "Panics",
+        "next": "Next to tracker", "pound": "The pound", "limits": "Limits",
+    }
+    out.start("nav", {"data-layout": "guided-controls", "hidden": None})
+    out.start("div", {"data-layout": "guided-mode"})
+    out.text("mode-guided", "Guided", tag="button",
+             attrs={"type": "button", "aria-pressed": "false"})
+    out.text("mode-full", "Full page", tag="button",
+             attrs={"type": "button", "aria-pressed": "true"})
+    out.end("div")
+    out.start("div", {"data-layout": "guided-track"})
+    out.text("step-back", "Back", tag="button", attrs={"type": "button"})
+    out.start("ol", {"data-layout": "guided-steps"})
+    for number, card in enumerate(cards, 1):
+        card_id = card["id"]
+        out.start("li", {"data-layout": "guided-step"})
+        out.text("step-node", "Step {}: {}".format(number, card["title"]),
+                 card_id, tag="button", text_attr="aria-label",
+                 attrs={"type": "button", "data-step": card_id})
+        out.text("step-label", labels[card_id], card_id, tag="span")
+        out.end("li")
+    out.end("ol")
+    out.text("step-next", "Next", tag="button", attrs={"type": "button"})
+    out.end("div")
+    out.end("nav")
+
+
 def _bumpy(out, page, card, claims):
     asset_id = page["instrument"]["id"]
     out.start("div", {"data-layout": "card-lead"})
@@ -665,6 +694,8 @@ def render_page(page, index):
     out.end("div")
     out.end("nav")
     out.start("div", {"data-layout": "cards"})
+    if guided is not None:
+        _guided_controls(out, page["cards"])
     renderers = {"bumpy": _bumpy, "worst": _worst, "panic": _panic, "next": _next}
     for i, card in enumerate(page["cards"], 1):
         card_id = card["id"]

@@ -6,13 +6,16 @@ import re
 import unittest
 
 from golden_support import apply_edits, load_golden
+from test_site_render import _PageReader
 from web.render import render_landing, render_page
+from words.guided import build_guided
 
 
 _ASSETS = Path(__file__).resolve().parents[1] / "site" / "assets"
 _SCRIPT = _ASSETS / "site.js"
 _STYLESHEET = _ASSETS / "site.css"
 _GOLDEN = load_golden("site_render.json")
+_GUIDED_GOLDEN = load_golden("guided.json")
 _BANNED_SCRIPT_PATTERNS = {
     "fetch": r"\bfetch\b",
     "XMLHttpRequest": r"\bXMLHttpRequest\b",
@@ -70,6 +73,71 @@ class SiteMotionTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertNotRegex(script, pattern)
 
+    def test_script_text_writes_are_only_the_silent_count_overlay(self):
+        script = _SCRIPT.read_text(encoding="utf-8")
+        writes = re.findall(
+            r"\b([A-Za-z_$][\w$]*)\s*\.\s*(textContent|innerText|nodeValue)"
+            r"\s*(?:[+*/-]?=(?!=)|\+\+|--)",
+            script,
+        )
+        self.assertEqual(writes, [("digits", "textContent")])
+        self.assertRegex(script, r'digits\.setAttribute\("aria-hidden", "true"\)')
+        self.assertNotRegex(script, r"\b(?:createTextNode|insertAdjacentText)\s*\(")
+        self.assertNotRegex(
+            script,
+            r'''\[\s*["'](?:textContent|innerText|nodeValue)["']\s*\]\s*[+*/-]?=(?!=)''',
+        )
+
+    def test_script_does_not_write_accessible_copy(self):
+        script = _SCRIPT.read_text(encoding="utf-8")
+        self.assertNotRegex(
+            script,
+            r'''\bsetAttribute\s*\(\s*["'](?:aria-label|placeholder|alt|title)["']''',
+        )
+        self.assertNotRegex(
+            script,
+            r"\.\s*(?:ariaLabel|placeholder|alt|title)\s*[+*/-]?=(?!=)",
+        )
+
+    def test_guided_controls_are_hidden_buttons_before_the_cards(self):
+        for case in _GUIDED_GOLDEN["cases"]:
+            if case["check"] != "render_page" or "expected_error" in case:
+                continue
+            with self.subTest(case=case["id"]):
+                page = apply_edits(_GUIDED_GOLDEN["fixture_pages"][case["fixture"]], [])
+                page["guided"] = build_guided(page, case["facts"])
+                reader = _PageReader()
+                reader.feed(render_page(page, _GUIDED_GOLDEN["index"]))
+                reader.close()
+                controls = [element for element in reader.elements
+                            if element["attrs"].get("data-layout") == "guided-controls"]
+                self.assertEqual(len(controls), 1)
+                nav = controls[0]
+                self.assertEqual(nav["tag"], "nav")
+                self.assertIn("hidden", nav["attrs"])
+                parent = nav["ancestors"][-1]
+                siblings = [element for element in reader.elements
+                            if element["ancestors"] and element["ancestors"][-1] is parent]
+                self.assertIs(siblings[0], nav)
+                self.assertEqual(siblings[1]["tag"], "section")
+                self.assertEqual(siblings[1]["attrs"]["id"], page["cards"][0]["id"])
+                buttons = [element for element in reader.elements
+                           if element["tag"] == "button"
+                           and any(ancestor is nav for ancestor in element["ancestors"])]
+                expected_roles = ["mode-guided", "mode-full", "step-back"]
+                expected_roles += ["step-node"] * len(page["cards"]) + ["step-next"]
+                self.assertEqual([button["attrs"].get("data-qx") for button in buttons],
+                                 expected_roles)
+                for button in buttons:
+                    self.assertEqual(button["attrs"].get("type"), "button")
+                self.assertEqual(buttons[0]["attrs"].get("aria-pressed"), "false")
+                self.assertEqual(buttons[1]["attrs"].get("aria-pressed"), "true")
+                for card, node in zip(page["cards"], buttons[3:-1]):
+                    self.assertEqual(node["attrs"].get("data-qx-key"), card["id"])
+                    self.assertEqual(node["attrs"].get("data-step"), card["id"])
+                    self.assertEqual(node["attrs"].get("data-qx-attr"), "aria-label")
+                    self.assertEqual("".join(node["text"]).strip(), "")
+
     def test_stylesheet_animations_have_only_one_iteration(self):
         css = _STYLESHEET.read_text(encoding="utf-8")
         self.assertNotIn("infinite", css.lower())
@@ -115,6 +183,7 @@ class SiteMotionTests(unittest.TestCase):
                 reader = _ScriptReader()
                 reader.feed(rendered)
                 reader.close()
+                self.assertNotIn('data-layout="guided-controls"', rendered)
                 self.assertEqual(len(reader.scripts), 1)
                 script = reader.scripts[0]
                 self.assertTrue(script["in_head"])
