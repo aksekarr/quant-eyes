@@ -27,13 +27,13 @@
           "claims": [
             "bumpy.volatility"
           ],
-          "text": "Its volatility was 16.9% a year, measured on monthly returns in pounds from the end of May 2011 to the end of Aug 2026."
+          "text": "Its volatility was 16.9% a year, measured on monthly returns in pounds from the end of May 2011 to the end of Sep 2026."
         },
         {
           "claims": [
             "bumpy.tracker_volatility"
           ],
-          "text": "Over the same months, the tracker's was 11.5%."
+          "text": "Over the same months, the tracker's was 11.4%."
         },
         {
           "claims": [],
@@ -122,7 +122,7 @@
           "claims": [
             "next.correlation"
           ],
-          "text": "Its correlation with the tracker was 0.04, measured on monthly returns in pounds from the end of May 2011 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+          "text": "Its correlation with the tracker was 0.04, measured on monthly returns in pounds from the end of May 2011 to the end of Sep 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
         },
         {
           "claims": [
@@ -140,7 +140,7 @@
             "next.mix_annualised",
             "next.tracker_annualised"
           ],
-          "text": "As an illustration, not a recommendation: from the end of May 2011 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 12.2% a year, against 12.4% a year for the tracker alone."
+          "text": "As an illustration, not a recommendation: from the end of May 2011 to the end of Sep 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 12.1% a year, against 12.4% a year for the tracker alone."
         },
         {
           "claims": [
@@ -149,7 +149,7 @@
             "next.mix_fall",
             "next.tracker_fall"
           ],
-          "text": "The mix's volatility was 10.5% against the tracker's 11.5%, and its largest fall at month-end was 12.4% against 15.0%."
+          "text": "The mix's volatility was 10.4% against the tracker's 11.4%, and its largest fall at month-end was 12.4% against 15.0%."
         },
         {
           "claims": [],
@@ -192,7 +192,7 @@
       "instrument": "sgln",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "asset",
       "unit": "percent",
@@ -201,16 +201,16 @@
     {
       "currency": "GBP",
       "direction": null,
-      "display": "11.5%",
+      "display": "11.4%",
       "id": "bumpy.tracker_volatility",
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "tracker",
       "unit": "percent",
-      "value": 11.5
+      "value": 11.4
     },
     {
       "currency": "GBP",
@@ -360,7 +360,7 @@
       "instrument": "sgln",
       "kind": "observed",
       "metric": "correlation",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "asset",
       "unit": "ratio",
@@ -397,16 +397,16 @@
     {
       "currency": "GBP",
       "direction": "up",
-      "display": "12.2%",
+      "display": "12.1%",
       "id": "next.mix_annualised",
       "instrument": "sgln",
       "kind": "illustration",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "mix",
       "unit": "percent",
-      "value": 12.2
+      "value": 12.1
     },
     {
       "currency": "GBP",
@@ -416,7 +416,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "tracker",
       "unit": "percent",
@@ -425,30 +425,30 @@
     {
       "currency": "GBP",
       "direction": null,
-      "display": "10.5%",
+      "display": "10.4%",
       "id": "next.mix_volatility",
       "instrument": "sgln",
       "kind": "illustration",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "mix",
       "unit": "percent",
-      "value": 10.5
+      "value": 10.4
     },
     {
       "currency": "GBP",
       "direction": null,
-      "display": "11.5%",
+      "display": "11.4%",
       "id": "next.tracker_volatility",
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "tracker",
       "unit": "percent",
-      "value": 11.5
+      "value": 11.4
     },
     {
       "currency": "GBP",
@@ -458,7 +458,7 @@
       "instrument": "sgln",
       "kind": "illustration",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "mix",
       "unit": "percent",
@@ -472,23 +472,24 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2011-05",
       "series": "tracker",
       "unit": "percent",
       "value": -15.0
     }
   ],
-  "data_as_of": "2026-08",
-  "data_as_of_text": "Data to the end of Aug 2026",
-  "generated_on": "2026-09-29",
+  "data_as_of": "2026-09",
+  "data_as_of_text": "Data to the end of Sep 2026",
+  "generated_on": "2026-10-01",
   "headline": {
     "claims": [
+      "bumpy.volatility",
       "worst.fall"
     ],
     "drafted_by": "gpt-6.1-sol",
-    "reviewed_on": "2026-09-30",
-    "text": "The physical gold fund fell 38.2% in pounds from Aug 2011 to Jul 2015."
+    "reviewed_on": "2026-10-01",
+    "text": "Physical gold ETC had annual volatility of 16.9% and fell 38.2% in pounds from Aug 2011 to Jul 2015."
   },
   "instrument": {
     "id": "sgln",
@@ -508,7 +509,7 @@
       "trading_currency": "GBP",
       "type": "etc"
     },
-    "label": "Physical gold fund"
+    "label": "Physical gold ETC"
   },
   "method_version": "1.0",
   "page_version": "1",
@@ -517,7 +518,7 @@
       "provider": "Alpha Vantage",
       "url": "https://www.alphavantage.co",
       "used_for": [
-        "Physical gold fund",
+        "Physical gold ETC",
         "Developed-world tracker"
       ]
     }

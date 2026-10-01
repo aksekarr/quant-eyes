@@ -27,7 +27,7 @@
           "claims": [
             "bumpy.volatility"
           ],
-          "text": "Its volatility was 72.5% a year, measured on monthly returns in pounds from the end of Dec 2014 to the end of Aug 2026."
+          "text": "Its volatility was 72.2% a year, measured on monthly returns in pounds from the end of Dec 2014 to the end of Sep 2026."
         },
         {
           "claims": [
@@ -122,7 +122,7 @@
           "claims": [
             "next.correlation"
           ],
-          "text": "Its correlation with the tracker was 0.39, measured on monthly returns in pounds from the end of Dec 2014 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+          "text": "Its correlation with the tracker was 0.39, measured on monthly returns in pounds from the end of Dec 2014 to the end of Sep 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
         },
         {
           "claims": [
@@ -140,7 +140,7 @@
             "next.mix_annualised",
             "next.tracker_annualised"
           ],
-          "text": "As an illustration, not a recommendation: from the end of Dec 2014 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 24.8% a year, against 12.9% a year for the tracker alone."
+          "text": "As an illustration, not a recommendation: from the end of Dec 2014 to the end of Sep 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 24.8% a year, against 12.8% a year for the tracker alone."
         },
         {
           "claims": [
@@ -167,7 +167,7 @@
             "pound.currency",
             "pound.gbp"
           ],
-          "text": "From the end of Dec 2014 to the end of Aug 2026: up 24,999.5% in dollars, and the dollar rose 15.0% against the pound, so in pounds it was up 28,756.7%."
+          "text": "From the end of Dec 2014 to the end of Sep 2026: up 26,595.8% in dollars, and the dollar rose 17.4% against the pound, so in pounds it was up 31,244.5%."
         },
         {
           "claims": [
@@ -211,16 +211,16 @@
     {
       "currency": "GBP",
       "direction": null,
-      "display": "72.5%",
+      "display": "72.2%",
       "id": "bumpy.volatility",
       "instrument": "btc",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "asset",
       "unit": "percent",
-      "value": 72.5
+      "value": 72.2
     },
     {
       "currency": "GBP",
@@ -230,7 +230,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "tracker",
       "unit": "percent",
@@ -384,7 +384,7 @@
       "instrument": "btc",
       "kind": "observed",
       "metric": "correlation",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "asset",
       "unit": "ratio",
@@ -426,7 +426,7 @@
       "instrument": "btc",
       "kind": "illustration",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "mix",
       "unit": "percent",
@@ -435,16 +435,16 @@
     {
       "currency": "GBP",
       "direction": "up",
-      "display": "12.9%",
+      "display": "12.8%",
       "id": "next.tracker_annualised",
       "instrument": "swda",
       "kind": "observed",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "tracker",
       "unit": "percent",
-      "value": 12.9
+      "value": 12.8
     },
     {
       "currency": "GBP",
@@ -454,7 +454,7 @@
       "instrument": "btc",
       "kind": "illustration",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "mix",
       "unit": "percent",
@@ -468,7 +468,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "tracker",
       "unit": "percent",
@@ -482,7 +482,7 @@
       "instrument": "btc",
       "kind": "illustration",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "mix",
       "unit": "percent",
@@ -496,7 +496,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "tracker",
       "unit": "percent",
@@ -505,44 +505,44 @@
     {
       "currency": "USD",
       "direction": "up",
-      "display": "24,999.5%",
+      "display": "26,595.8%",
       "id": "pound.local",
       "instrument": "btc",
       "kind": "observed",
       "metric": "local_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "asset",
       "unit": "percent",
-      "value": 24999.5
+      "value": 26595.8
     },
     {
       "currency": null,
       "direction": "up",
-      "display": "15.0%",
+      "display": "17.4%",
       "id": "pound.currency",
       "instrument": "btc",
       "kind": "observed",
       "metric": "currency_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "currency",
       "unit": "percent",
-      "value": 15.0
+      "value": 17.4
     },
     {
       "currency": "GBP",
       "direction": "up",
-      "display": "28,756.7%",
+      "display": "31,244.5%",
       "id": "pound.gbp",
       "instrument": "btc",
       "kind": "observed",
       "metric": "gbp_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2014-12",
       "series": "asset",
       "unit": "percent",
-      "value": 28756.7
+      "value": 31244.5
     },
     {
       "currency": "USD",
@@ -629,17 +629,17 @@
       "value": -47.7
     }
   ],
-  "data_as_of": "2026-08",
-  "data_as_of_text": "Data to the end of Aug 2026",
-  "generated_on": "2026-09-29",
+  "data_as_of": "2026-09",
+  "data_as_of_text": "Data to the end of Sep 2026",
+  "generated_on": "2026-10-01",
   "headline": {
     "claims": [
       "bumpy.volatility",
       "worst.fall"
     ],
     "drafted_by": "gpt-6.1-sol",
-    "reviewed_on": "2026-09-30",
-    "text": "Bitcoin’s volatility was 72.5% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019."
+    "reviewed_on": "2026-10-01",
+    "text": "Bitcoin’s volatility was 72.2% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019."
   },
   "instrument": {
     "id": "btc",

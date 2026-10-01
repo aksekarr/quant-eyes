@@ -27,14 +27,14 @@
           "claims": [
             "bumpy.volatility"
           ],
-          "text": "Its volatility was 7.2% a year, measured on monthly returns in pounds from the end of Jan 2007 to the end of Aug 2026."
+          "text": "Its volatility was 7.2% a year, measured on monthly returns in pounds from the end of Jan 2007 to the end of Sep 2026."
         },
         {
           "claims": [
             "bumpy.volatility_common",
             "bumpy.tracker_volatility"
           ],
-          "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 7.3% against the tracker's 11.7%."
+          "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Sep 2026, it was 7.3% against the tracker's 11.7%."
         },
         {
           "claims": [],
@@ -65,7 +65,7 @@
             "worst.below_high_at_end",
             "worst.months_underwater"
           ],
-          "text": "It had not recovered by the end of Aug 2026: it was still 25.9% below its high, 75 months after it."
+          "text": "It had not recovered by the end of Sep 2026: it was still 26.8% below its high, 76 months after it."
         },
         {
           "claims": [],
@@ -125,7 +125,7 @@
           "claims": [
             "next.correlation"
           ],
-          "text": "Its correlation with the tracker was 0.12, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+          "text": "Its correlation with the tracker was 0.12, measured on monthly returns in pounds from the end of Jan 2010 to the end of Sep 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
         },
         {
           "claims": [
@@ -143,7 +143,7 @@
             "next.mix_annualised",
             "next.tracker_annualised"
           ],
-          "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 11.5% a year, against 12.5% a year for the tracker alone."
+          "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Sep 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 11.5% a year, against 12.5% a year for the tracker alone."
         },
         {
           "claims": [
@@ -195,7 +195,7 @@
       "instrument": "iglt",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2007-01",
       "series": "asset",
       "unit": "percent",
@@ -209,7 +209,7 @@
       "instrument": "iglt",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "asset",
       "unit": "percent",
@@ -223,7 +223,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -288,30 +288,30 @@
     {
       "currency": "GBP",
       "direction": "down",
-      "display": "25.9%",
+      "display": "26.8%",
       "id": "worst.below_high_at_end",
       "instrument": "iglt",
       "kind": "observed",
       "metric": "drawdown_at_end",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2020-05",
       "series": "asset",
       "unit": "percent",
-      "value": -25.9
+      "value": -26.8
     },
     {
       "currency": null,
       "direction": null,
-      "display": "75 months",
+      "display": "76 months",
       "id": "worst.months_underwater",
       "instrument": "iglt",
       "kind": "observed",
       "metric": "months_underwater",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2020-05",
       "series": "asset",
       "unit": "months",
-      "value": 75
+      "value": 76
     },
     {
       "currency": "GBP",
@@ -391,7 +391,7 @@
       "instrument": "iglt",
       "kind": "observed",
       "metric": "correlation",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "asset",
       "unit": "ratio",
@@ -433,7 +433,7 @@
       "instrument": "iglt",
       "kind": "illustration",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -447,7 +447,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -461,7 +461,7 @@
       "instrument": "iglt",
       "kind": "illustration",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -475,7 +475,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -489,7 +489,7 @@
       "instrument": "iglt",
       "kind": "illustration",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -503,24 +503,24 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
       "value": -15.0
     }
   ],
-  "data_as_of": "2026-08",
-  "data_as_of_text": "Data to the end of Aug 2026",
-  "generated_on": "2026-09-29",
+  "data_as_of": "2026-09",
+  "data_as_of_text": "Data to the end of Sep 2026",
+  "generated_on": "2026-10-01",
   "headline": {
     "claims": [
       "worst.fall",
       "worst.below_high_at_end"
     ],
     "drafted_by": "gpt-6.1-sol",
-    "reviewed_on": "2026-09-30",
-    "text": "The fund fell 31.9% from May 2020 to Oct 2023 and remained 25.9% below its high at the end of Aug 2026."
+    "reviewed_on": "2026-10-01",
+    "text": "The UK government bond fund fell 31.9% from May 2020 to Oct 2023 and remained 26.8% below that high in Sep 2026."
   },
   "instrument": {
     "id": "iglt",

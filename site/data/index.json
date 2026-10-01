@@ -23,7 +23,7 @@
     },
     {
       "id": "sgln",
-      "label": "Physical gold fund",
+      "label": "Physical gold ETC",
       "name": "iShares Physical Gold ETC",
       "ticker": "SGLN",
       "type": "etc"
@@ -56,9 +56,9 @@
     "name": "iShares Core MSCI World UCITS ETF",
     "ticker": "SWDA"
   },
-  "data_as_of": "2026-08",
-  "data_as_of_text": "Data to the end of Aug 2026",
-  "generated_on": "2026-09-29",
+  "data_as_of": "2026-09",
+  "data_as_of_text": "Data to the end of Sep 2026",
+  "generated_on": "2026-10-01",
   "index_version": "1",
   "method_version": "1.0"
 }

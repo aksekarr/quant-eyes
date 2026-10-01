@@ -27,14 +27,14 @@
           "claims": [
             "bumpy.volatility"
           ],
-          "text": "Its volatility was 28.9% a year, measured on monthly returns in pounds from the end of Aug 2007 to the end of Aug 2026."
+          "text": "Its volatility was 28.9% a year, measured on monthly returns in pounds from the end of Sep 2007 to the end of Sep 2026."
         },
         {
           "claims": [
             "bumpy.volatility_common",
             "bumpy.tracker_volatility"
           ],
-          "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 25.7% against the tracker's 11.7%."
+          "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Sep 2026, it was 25.6% against the tracker's 11.7%."
         },
         {
           "claims": [],
@@ -51,7 +51,7 @@
             "worst.fall",
             "worst.months_to_low"
           ],
-          "text": "Since the end of Aug 2007, its largest fall, measured at month-end, was 41.5%: from its high at the end of Dec 2007 to its low at the end of Dec 2008, 12 months later."
+          "text": "Since the end of Sep 2007, its largest fall, measured at month-end, was 41.5%: from its high at the end of Dec 2007 to its low at the end of Dec 2008, 12 months later."
         },
         {
           "claims": [
@@ -125,7 +125,7 @@
           "claims": [
             "next.correlation"
           ],
-          "text": "Its correlation with the tracker was 0.53, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+          "text": "Its correlation with the tracker was 0.53, measured on monthly returns in pounds from the end of Jan 2010 to the end of Sep 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
         },
         {
           "claims": [
@@ -143,7 +143,7 @@
             "next.mix_annualised",
             "next.tracker_annualised"
           ],
-          "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 14.3% a year, against 12.5% a year for the tracker alone."
+          "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Sep 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 14.3% a year, against 12.5% a year for the tracker alone."
         },
         {
           "claims": [
@@ -174,7 +174,7 @@
             "pound.currency",
             "pound.gbp"
           ],
-          "text": "From the end of Aug 2007 to the end of Aug 2026: up 7,550.2% in dollars, and the dollar rose 48.9% against the pound, so in pounds it was up 11,290.4%."
+          "text": "From the end of Sep 2007 to the end of Sep 2026: up 7,155.3% in dollars, and the dollar rose 54.3% against the pound, so in pounds it was up 11,096.6%."
         },
         {
           "claims": [
@@ -231,8 +231,8 @@
       "instrument": "aapl",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
-      "period_start": "2007-08",
+      "period_end": "2026-09",
+      "period_start": "2007-09",
       "series": "asset",
       "unit": "percent",
       "value": 28.9
@@ -240,16 +240,16 @@
     {
       "currency": "GBP",
       "direction": null,
-      "display": "25.7%",
+      "display": "25.6%",
       "id": "bumpy.volatility_common",
       "instrument": "aapl",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "asset",
       "unit": "percent",
-      "value": 25.7
+      "value": 25.6
     },
     {
       "currency": "GBP",
@@ -259,7 +259,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -427,7 +427,7 @@
       "instrument": "aapl",
       "kind": "observed",
       "metric": "correlation",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "asset",
       "unit": "ratio",
@@ -469,7 +469,7 @@
       "instrument": "aapl",
       "kind": "illustration",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -483,7 +483,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -497,7 +497,7 @@
       "instrument": "aapl",
       "kind": "illustration",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -511,7 +511,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -525,7 +525,7 @@
       "instrument": "aapl",
       "kind": "illustration",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -539,7 +539,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -548,44 +548,44 @@
     {
       "currency": "USD",
       "direction": "up",
-      "display": "7,550.2%",
+      "display": "7,155.3%",
       "id": "pound.local",
       "instrument": "aapl",
       "kind": "observed",
       "metric": "local_return",
-      "period_end": "2026-08",
-      "period_start": "2007-08",
+      "period_end": "2026-09",
+      "period_start": "2007-09",
       "series": "asset",
       "unit": "percent",
-      "value": 7550.2
+      "value": 7155.3
     },
     {
       "currency": null,
       "direction": "up",
-      "display": "48.9%",
+      "display": "54.3%",
       "id": "pound.currency",
       "instrument": "aapl",
       "kind": "observed",
       "metric": "currency_return",
-      "period_end": "2026-08",
-      "period_start": "2007-08",
+      "period_end": "2026-09",
+      "period_start": "2007-09",
       "series": "currency",
       "unit": "percent",
-      "value": 48.9
+      "value": 54.3
     },
     {
       "currency": "GBP",
       "direction": "up",
-      "display": "11,290.4%",
+      "display": "11,096.6%",
       "id": "pound.gbp",
       "instrument": "aapl",
       "kind": "observed",
       "metric": "gbp_return",
-      "period_end": "2026-08",
-      "period_start": "2007-08",
+      "period_end": "2026-09",
+      "period_start": "2007-09",
       "series": "asset",
       "unit": "percent",
-      "value": 11290.4
+      "value": 11096.6
     },
     {
       "currency": "USD",
@@ -714,16 +714,17 @@
       "value": 2.2
     }
   ],
-  "data_as_of": "2026-08",
-  "data_as_of_text": "Data to the end of Aug 2026",
-  "generated_on": "2026-09-29",
+  "data_as_of": "2026-09",
+  "data_as_of_text": "Data to the end of Sep 2026",
+  "generated_on": "2026-10-01",
   "headline": {
     "claims": [
-      "worst.fall"
+      "worst.fall",
+      "worst.months_underwater"
     ],
     "drafted_by": "gpt-6.1-sol",
-    "reviewed_on": "2026-09-30",
-    "text": "Apple fell 41.5% in pounds from Dec 2007 to Dec 2008."
+    "reviewed_on": "2026-10-01",
+    "text": "Apple fell 41.5% in pounds from Dec 2007 to Dec 2008 and regained its previous high 20 months after that peak."
   },
   "instrument": {
     "id": "aapl",

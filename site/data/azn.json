@@ -27,14 +27,14 @@
           "claims": [
             "bumpy.volatility"
           ],
-          "text": "Its volatility was 20.5% a year, measured on monthly returns in pounds from the end of Feb 2005 to the end of Aug 2026."
+          "text": "Its volatility was 20.4% a year, measured on monthly returns in pounds from the end of Feb 2005 to the end of Sep 2026."
         },
         {
           "claims": [
             "bumpy.volatility_common",
             "bumpy.tracker_volatility"
           ],
-          "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Aug 2026, it was 20.0% against the tracker's 11.7%."
+          "text": "Over the same months as the tracker, from the end of Jan 2010 to the end of Sep 2026, it was 19.9% against the tracker's 11.7%."
         },
         {
           "claims": [],
@@ -125,7 +125,7 @@
           "claims": [
             "next.correlation"
           ],
-          "text": "Its correlation with the tracker was 0.23, measured on monthly returns in pounds from the end of Jan 2010 to the end of Aug 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
+          "text": "Its correlation with the tracker was 0.23, measured on monthly returns in pounds from the end of Jan 2010 to the end of Sep 2026: 1 would mean always moving in step, 0 no pattern, and −1 always opposite."
         },
         {
           "claims": [
@@ -143,7 +143,7 @@
             "next.mix_annualised",
             "next.tracker_annualised"
           ],
-          "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Aug 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 12.7% a year, against 12.5% a year for the tracker alone."
+          "text": "As an illustration, not a recommendation: from the end of Jan 2010 to the end of Sep 2026, a mix of 90% in the tracker and 10% in this investment, reset to 90/10 at the end of every December, returned 12.7% a year, against 12.5% a year for the tracker alone."
         },
         {
           "claims": [
@@ -194,30 +194,30 @@
     {
       "currency": "GBP",
       "direction": null,
-      "display": "20.5%",
+      "display": "20.4%",
       "id": "bumpy.volatility",
       "instrument": "azn",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2005-02",
       "series": "asset",
       "unit": "percent",
-      "value": 20.5
+      "value": 20.4
     },
     {
       "currency": "GBP",
       "direction": null,
-      "display": "20.0%",
+      "display": "19.9%",
       "id": "bumpy.volatility_common",
       "instrument": "azn",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "asset",
       "unit": "percent",
-      "value": 20.0
+      "value": 19.9
     },
     {
       "currency": "GBP",
@@ -227,7 +227,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -395,7 +395,7 @@
       "instrument": "azn",
       "kind": "observed",
       "metric": "correlation",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "asset",
       "unit": "ratio",
@@ -437,7 +437,7 @@
       "instrument": "azn",
       "kind": "illustration",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -451,7 +451,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "annualised_return",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -465,7 +465,7 @@
       "instrument": "azn",
       "kind": "illustration",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -479,7 +479,7 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "volatility",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
@@ -493,7 +493,7 @@
       "instrument": "azn",
       "kind": "illustration",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "mix",
       "unit": "percent",
@@ -507,24 +507,24 @@
       "instrument": "swda",
       "kind": "observed",
       "metric": "largest_fall",
-      "period_end": "2026-08",
+      "period_end": "2026-09",
       "period_start": "2010-01",
       "series": "tracker",
       "unit": "percent",
       "value": -15.0
     }
   ],
-  "data_as_of": "2026-08",
-  "data_as_of_text": "Data to the end of Aug 2026",
-  "generated_on": "2026-09-29",
+  "data_as_of": "2026-09",
+  "data_as_of_text": "Data to the end of Sep 2026",
+  "generated_on": "2026-10-01",
   "headline": {
     "claims": [
       "worst.fall",
       "worst.months_underwater"
     ],
     "drafted_by": "gpt-6.1-sol",
-    "reviewed_on": "2026-09-30",
-    "text": "AstraZeneca fell 41.0% from Aug 2006 to Mar 2008, spending 43 months below its previous high before recovering."
+    "reviewed_on": "2026-10-01",
+    "text": "AstraZeneca fell 41.0% from Aug 2006 to Mar 2008 and regained its previous high 43 months after the fall began."
   },
   "instrument": {
     "id": "azn",
