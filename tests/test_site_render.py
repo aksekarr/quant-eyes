@@ -285,7 +285,8 @@ class SiteRenderGoldenTests(unittest.TestCase):
             self.assertEqual(label["tag"], "label")
             self.assertIn("id", search["attrs"])
             self.assertEqual(label["attrs"].get("for"), search["attrs"]["id"])
-            for role in ("search-label", "search-hint", "search-count"):
+            self.assertNotIn(("search-count", ""), entries)
+            for role in ("search-label", "search-hint"):
                 self.assertTrue(
                     any(
                         "hidden" in item["attrs"]

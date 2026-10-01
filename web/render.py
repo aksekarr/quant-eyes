@@ -640,7 +640,7 @@ def render_page(page, index):
     _head(out, instrument["label"] + ", in pounds · " + SITE_NAME,
           headline["text"] if headline is not None else _TAGLINE, "../")
     out.start("main", {"data-layout": "asset"})
-    out.text("back", "All " + _COUNTS[len(index["assets"]) - 1], tag="a", attrs={"href": "../"})
+    out.text("back", "All investments", tag="a", attrs={"href": "../"})
     out.start("div", {"data-layout": "asset-intro"})
     out.start("div", {"data-layout": "identity"})
     kicker = _TYPES[identity["type"]]
@@ -912,17 +912,16 @@ def render_landing(index, pages, reviews=None):
     if reviews is not None:
         check_reviews(reviews, index, pages)
     assets = index["assets"]
-    count = _COUNTS[len(assets) - 1]
     tagline = (
-        "Plain-English explanations of how " + count + " investments have behaved, in pounds. "
+        "Plain-English explanations of how investments have behaved, in pounds. "
         "Every figure comes from tested code. The one line an AI writes is checked against "
         + str(HEADLINE_RULE_COUNT) + " rules and read by a person before it goes live."
     )
     out = _Markup()
-    _head(out, SITE_NAME + ": " + count + " investments in plain English", tagline, "")
+    _head(out, SITE_NAME + ": investments in plain English", tagline, "")
     out.start("main", {"data-layout": "landing"})
     out.start("div", {"data-layout": "landing-intro"})
-    out.text("kicker", "A governed AI demo · " + count + " investments · in pounds")
+    out.text("kicker", "A governed AI demo · in pounds")
     out.start("h1", {"data-qx": "hero"})
     out.parts[-1] += html.escape("AI drafts it. Code checks it.", quote=True)
     out.start("span", {"data-layout": "hero-accent"})
@@ -931,11 +930,10 @@ def render_landing(index, pages, reviews=None):
     out.end("h1")
     out.text("tagline", tagline)
     out.start("div", {"data-layout": "search", "hidden": None})
-    out.text("search-label", "Look up an investment", tag="label", attrs={"for": "asset-search"})
+    out.text("search-label", "What am I actually getting into?", tag="label", attrs={"for": "asset-search"})
     out.start("div", {"data-layout": "search-field"})
     out.text("search-hint", "Try " + assets[0]["label"] + " or " + assets[0]["ticker"],
              tag="input", attrs={"id": "asset-search", "type": "search"}, text_attr="placeholder")
-    out.text("search-count", str(len(assets)) + " covered")
     out.end("div")
     out.start("ul")
     for asset in assets:
@@ -949,8 +947,8 @@ def render_landing(index, pages, reviews=None):
     out.end("ul")
     out.start("div", {"data-layout": "not-covered", "hidden": None})
     out.text("not-covered-title", "Not covered yet")
-    out.text("not-covered-text", "This site covers " + count + " investments in depth rather than "
-             "many in outline. Every figure comes from tested code, and every headline is reviewed by a person.")
+    out.text("not-covered-text", "Each investment here is covered in depth: every figure comes from "
+             "tested code, and every headline is reviewed by a person.")
     out.end("div")
     out.end("div")
     out.end("div")
@@ -1034,7 +1032,7 @@ def render_landing(index, pages, reviews=None):
     out.end("div")
     out.end("section")
     out.start("div", {"data-layout": "tiles"})
-    out.text("tiles-label", "Or pick one of the " + count)
+    out.text("tiles-label", "Or pick one")
     out.start("div", {"data-layout": "tile-grid"})
     for asset in assets:
         key = asset["id"]
