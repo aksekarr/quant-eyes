@@ -60,8 +60,8 @@ the words carry direction.
 ## Header logo (Task 10b)
 
 The site name is drawn as the Quant Eyes logotype, `site/assets/brand/logo.svg` (ASSETS.md),
-as a CSS background on the `site-name` link: about 28px high on wider screens and 24px at
-639px and below, keeping its proportions (5475 × 1142). The link's text, `Quant Eyes`, stays
+as a CSS background on the `site-name` link: about 40px high on wider screens and 30px at
+639px and below (enlarged in Task 10f from 28px and 24px), keeping its proportions (5475 × 1142). The link's text, `Quant Eyes`, stays
 in the page for screen readers and the read-back, moved out of view with `overflow: hidden`,
 `white-space: nowrap` and `text-indent: 100%`; never `display: none`, `visibility: hidden`,
 `font-size: 0` or a `content` replacement. The link keeps a 44px touch target. No tile and

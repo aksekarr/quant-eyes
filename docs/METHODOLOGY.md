@@ -1565,7 +1565,8 @@ The title is `{label}, in pounds · {SITE_NAME}`; the description is the headlin
 if the page has a headline, otherwise the tagline (section 16.5). `{label}` is the
 instrument's label and "the tracker's label" is the benchmark's. Then, in this order:
 
-1. `back`, a link to `../`: `All {count word}`.
+1. `back`, a link to `../`: `All investments` (Task 10f: the site never states how many
+   investments it covers).
 2. `kicker`: the type (`share` → `Share`, `etf` → `Exchange-traded fund`, `etc` →
    `Exchange-traded commodity`, `cryptocurrency` → `Cryptocurrency`), followed by
    ` · {exchange}` when the exchange is not empty.
@@ -1700,26 +1701,26 @@ joined with `; `, then `. Method {method_version}.`
 ### 16.5 The landing page: `render_landing(index, pages)`
 
 Landing v2 (Task 10c, copy approved 30 Sept 2026). `pages` is the list of asset pages in
-the index's order. The title is `{SITE_NAME}: {count word} investments in plain English`;
-the description is the landing tagline: `Plain-English explanations of how {count word}
+the index's order. The title is `{SITE_NAME}: investments in plain English`;
+the description is the landing tagline: `Plain-English explanations of how
 investments have behaved, in pounds. Every figure comes from tested code. The one line an
 AI writes is checked against {HEADLINE_RULE_COUNT} rules and read by a person before it
 goes live.` (Asset pages keep their own description, section 16.4.) Then, in this order:
 
-1. `kicker`: `A governed AI demo · {count word} investments · in pounds` (the stylesheet
+1. `kicker`: `A governed AI demo · in pounds` (the stylesheet
    sets it in capitals; the text is as written here).
 2. `hero`, the page's only `<h1>`: `AI drafts it. Code checks it. A person signs it off.`
 3. `tagline`: the landing tagline.
-4. The search, unchanged: in an element with the `hidden` attribute (JavaScript shows it):
-   `search-label`, a `<label>` for the input: `Look up an investment`; `search-hint`, a
-   search input whose `placeholder` is the text: `Try {first asset's label} or {first
-   asset's ticker}`; `search-count`: `{number of assets} covered`; then for each asset in
-   order, a list item with the `hidden` attribute holding a link to `{id}/` with
-   `result-label`, `result-ticker` and `result-name` (the index's label, ticker and name),
-   keyed by the asset id; then, in an element with the `hidden` attribute,
-   `not-covered-title`: `Not covered yet` and `not-covered-text`: `This site covers
-   {count word} investments in depth rather than many in outline. Every figure comes from
-   tested code, and every headline is reviewed by a person.`
+4. The search: in an element with the `hidden` attribute (JavaScript shows it):
+   `search-label`, a `<label>` for the input: `What am I actually getting into?`;
+   `search-hint`, a search input whose `placeholder` is the text: `Try {first asset's
+   label} or {first asset's ticker}`; then for each asset in order, a list item with the
+   `hidden` attribute holding a link to `{id}/` with `result-label`, `result-ticker` and
+   `result-name` (the index's label, ticker and name), keyed by the asset id; then, in an
+   element with the `hidden` attribute, `not-covered-title`: `Not covered yet` and
+   `not-covered-text`: `Each investment here is covered in depth: every figure comes from
+   tested code, and every headline is reviewed by a person.` (No `search-count`: the site
+   never states how many investments it covers.)
 5. The headlines, only if at least one page has a headline, for the assets that have
    one, in index order (number *k* of *m*): `section-label`, key `headlines`:
    `In one line`; then for each, keyed by the asset id: `slide-position`: `{k} / {m}`;
@@ -1745,7 +1746,7 @@ goes live.` (Asset pages keep their own description, section 16.4.) Then, in thi
      numbers are fixed copy. `A person rejected 6.` may be wrapped in `<strong>`.)
    The links "The full method and evidence →" and "See the audit trail →" are added by
    Tasks 10e and 10d, not here.
-7. `tiles-label`: `Or pick one of the {count word}`; then for each asset, a link to
+7. `tiles-label`: `Or pick one`; then for each asset, a link to
    `{id}/` holding `tile-ticker` and `tile-label`, keyed by the asset id.
 
 There is no `strip` on the landing page any more. The labels, names and tickers on the
