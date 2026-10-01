@@ -42,13 +42,15 @@ class _UnequalText(str):
     __hash__ = str.__hash__
 
 
-def _expected_rendered(case, index, pages):
+def _expected_rendered(case, index, pages, reviews):
     """Use the already-tested renderer for the exact expected UTF-8 contents."""
     if not case["expected_rendered"]:
         return {}
     ordered_pages = [pages[asset["id"]] for asset in index["assets"]]
     texts = {
-        "index.html": render_landing(deepcopy(index), deepcopy(ordered_pages)),
+        "index.html": render_landing(
+            deepcopy(index), deepcopy(ordered_pages), deepcopy(reviews),
+        ),
     }
     for asset in index["assets"]:
         instrument_id = asset["id"]
@@ -90,7 +92,7 @@ class BuildSiteGoldenTests(unittest.TestCase):
                 path.write_bytes(files[name])
         return files
 
-    def _prepare_cli(self, case, index, pages, out_dir, original_files):
+    def _prepare_cli(self, case, index, pages, reviews, out_dir, original_files):
         data_dir = out_dir / "data"
         data_dir.mkdir(parents=True, exist_ok=True)
         texts = {}
@@ -104,6 +106,11 @@ class BuildSiteGoldenTests(unittest.TestCase):
             encoded = contents.encode("utf-8")
             (data_dir / name).write_bytes(encoded)
             original_files["data/" + name] = encoded
+        if not case.get("reviews_missing"):
+            words_dir = out_dir.parent / "words"
+            words_dir.mkdir()
+            text = case.get("reviews_text", json.dumps(reviews))
+            (words_dir / "review_record.json").write_bytes(text.encode("utf-8"))
 
     def _patch_renderers(self, case, patches):
         mismatch = case.get("read_back_mismatch")
@@ -125,8 +132,8 @@ class BuildSiteGoldenTests(unittest.TestCase):
                 _BUILD_SITE, "render_page", side_effect=render_page_for_case,
             ))
         if mismatch == "index.html":
-            def render_landing_for_case(index, pages):
-                return _UnequalText(render_landing(index, pages))
+            def render_landing_for_case(index, pages, reviews=None):
+                return _UnequalText(render_landing(index, pages, reviews))
 
             patches.enter_context(patch.object(
                 _BUILD_SITE, "render_landing", side_effect=render_landing_for_case,
@@ -137,9 +144,11 @@ class BuildSiteGoldenTests(unittest.TestCase):
                 side_effect=RuntimeError(case["write_site_raises"]),
             ))
 
-    def _exercise_write(self, case, index, pages, out_dir):
+    def _exercise_write(self, case, index, pages, reviews, out_dir):
         def write():
             try:
+                if "reviews" in case:
+                    return _BUILD_SITE.write_site(index, pages, out_dir, reviews)
                 return _BUILD_SITE.write_site(index, pages, out_dir)
             except _BUILD_SITE.SiteWriteError as error:
                 if "expected_error" in case:
@@ -190,7 +199,13 @@ class BuildSiteGoldenTests(unittest.TestCase):
             )
             for instrument_id, fixture in case["pages"].items()
         }
-        rendered = _expected_rendered(case, index, pages)
+        reviews = None
+        if "reviews" in case or case["check"] == "cli":
+            reviews = apply_edits(
+                _GOLDEN["reviews"][case.get("reviews", "REC3")],
+                case.get("review_edits", []),
+            )
+        rendered = _expected_rendered(case, index, pages, reviews)
 
         with tempfile.TemporaryDirectory() as temporary_root, ExitStack() as patches:
             root = Path(temporary_root)
@@ -201,11 +216,13 @@ class BuildSiteGoldenTests(unittest.TestCase):
                     out_dir, case.get("before_files", {}),
                 )
             if case["check"] == "cli":
-                self._prepare_cli(case, index, pages, out_dir, original_files)
+                self._prepare_cli(case, index, pages, reviews, out_dir, original_files)
                 exercise = lambda: self._exercise_cli(case, root)
                 successful = case["expected_exit"] == 0
             elif case["check"] == "write":
-                exercise = lambda: self._exercise_write(case, index, pages, out_dir)
+                exercise = lambda: self._exercise_write(
+                    case, index, pages, reviews, out_dir,
+                )
                 successful = "expected_error" not in case
             else:
                 self.fail("Unsupported golden check type: {}".format(case["check"]))

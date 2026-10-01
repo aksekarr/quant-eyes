@@ -11,6 +11,24 @@ HEADLINE_RULE_COUNT = 16
 
 _MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
 _COUNTS = "one two three four five six seven eight nine ten eleven twelve".split()
+_TRAIL_RULES = (
+    "Plain text, nothing blank",
+    "Cites 1 or 2 figures from its page",
+    "Only the investment's own past",
+    "One sentence, no questions",
+    "30 words or fewer",
+    "Every number is a cited figure",
+    "Figures exactly as the page shows",
+    "No advice words",
+    "No predictions",
+    "Numbers as figures, not words",
+    "No comparisons",
+    "No ranking or loaded words",
+    "Names no other investment",
+    "A fall is called a fall",
+    "Recovery words match the facts",
+    '"in pounds" or "in dollars" said',
+)
 _CARD_IDS = ("bumpy", "worst", "panic", "next", "pound", "limits")
 _WINDOWS = ("gfc", "covid", "rate_shock")
 _TYPES = {
@@ -656,7 +674,151 @@ def _merge_sources(pages):
     return list(merged.values())
 
 
-def render_landing(index, pages):
+def check_reviews(reviews, index, pages):
+    """Check the review record and its published approvals in section 16.9 order."""
+    if (not isinstance(reviews, dict) or not isinstance(reviews.get("reviews"), list)
+            or not reviews["reviews"]):
+        raise SiteError("reviews: unreadable")
+    records = reviews["reviews"]
+    seen = set()
+    for number, review in enumerate(records, 1):
+        message = "reviews: {}: unreadable".format(number)
+        if (not isinstance(review, dict)
+                or any(not _nonblank(review.get(key)) for key in ("id", "title", "reviewer"))
+                or not isinstance(review.get("reviewed_on"), str)
+                or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", review["reviewed_on"])
+                or not isinstance(review.get("data_as_of"), str)
+                or not re.fullmatch(r"[0-9]{4}-(0[1-9]|1[0-2])", review["data_as_of"])
+                or not isinstance(review.get("assets"), dict)):
+            raise SiteError(message)
+        try:
+            datetime.date.fromisoformat(review["reviewed_on"])
+        except ValueError:
+            raise SiteError(message) from None
+        if review["id"] in seen:
+            raise SiteError("reviews: duplicate id " + review["id"])
+        seen.add(review["id"])
+    if any(newer["data_as_of"] <= older["data_as_of"]
+           for newer, older in zip(records, records[1:])):
+        raise SiteError("reviews: order")
+
+    asset_ids = {asset["id"] for asset in index["assets"]}
+    round_keys = {"round", "verdict", "text", "reason", "control"}
+    for review in records:
+        prefix = "reviews: " + review["id"] + ": "
+        for asset_id, rounds in review["assets"].items():
+            if asset_id not in asset_ids:
+                raise SiteError(prefix + "unknown asset " + str(asset_id))
+            asset_prefix = prefix + asset_id + ": "
+            if (not isinstance(rounds, list) or any(
+                    not isinstance(item, dict) or set(item) != round_keys
+                    for item in rounds)):
+                raise SiteError(asset_prefix + "unreadable")
+            if any(type(item["round"]) is not int or item["round"] != number
+                   for number, item in enumerate(rounds, 1)):
+                raise SiteError(asset_prefix + "round numbers")
+            for item in rounds:
+                round_prefix = asset_prefix + "round {}: ".format(item["round"])
+                if item["verdict"] not in ("approved", "rejected", "redrafted"):
+                    raise SiteError(round_prefix + "verdict")
+                if not _nonblank(item["text"]):
+                    raise SiteError(round_prefix + "text")
+                if item["verdict"] == "approved":
+                    invalid_reason = item["reason"] is not None or item["control"] is not None
+                else:
+                    invalid_reason = (not _nonblank(item["reason"])
+                                      or (item["control"] is not None
+                                          and not _nonblank(item["control"])))
+                if invalid_reason:
+                    raise SiteError(round_prefix + "reason")
+            if any(item["verdict"] == "approved" for item in rounds[:-1]):
+                raise SiteError(asset_prefix + "approved must be the last round")
+
+    latest = records[0]
+    if latest["data_as_of"] != index["data_as_of"]:
+        raise SiteError("reviews: latest is not for " + index["data_as_of"])
+    prefix = "reviews: " + latest["id"] + ": "
+    for asset, page in zip(index["assets"], pages):
+        asset_id = asset["id"]
+        if asset_id not in latest["assets"]:
+            raise SiteError(prefix + "missing " + asset_id)
+        rounds = latest["assets"][asset_id]
+        approved = bool(rounds) and rounds[-1]["verdict"] == "approved"
+        headline = page["headline"]
+        asset_prefix = prefix + asset_id + ": "
+        if headline is not None and not approved:
+            raise SiteError(asset_prefix + "headline not approved")
+        if approved and headline is None:
+            raise SiteError(asset_prefix + "approved without a headline")
+        if approved and rounds[-1]["text"] != headline["text"]:
+            raise SiteError(asset_prefix + "approved text differs from the headline")
+
+
+def _trail_button(out, asset_id, attrs=None):
+    attributes = {"type": "button", "aria-haspopup": "dialog", "data-trail": asset_id}
+    attributes.update(attrs or {})
+    out.start("button", attributes)
+
+
+def _trail_drawers(out, index, pages, reviews):
+    """Write the complete, initially hidden audit history in index order."""
+    month = _month(index["data_as_of"])
+    verdicts = {"approved": "Approved", "rejected": "Rejected", "redrafted": "Redrafted, not used"}
+    out.start("div", {"hidden": None})
+    for asset, page in zip(index["assets"], pages):
+        key, label, headline = asset["id"], asset["label"], page["headline"]
+        out.start("section", {
+            "role": "dialog", "aria-modal": "true", "id": "trail-" + key,
+            "aria-labelledby": "trail-title-" + key, "hidden": None,
+        })
+        out.text("trail-label", "Audit trail", key)
+        title = ("How " + label + "'s headline was made" if headline is not None
+                 else "Why " + label + " has no headline for " + month)
+        out.text("trail-title", title, key, tag="h2", attrs={"id": "trail-title-" + key})
+        out.text("trail-close", "Close the audit trail", key, tag="button",
+                 attrs={"type": "button"}, text_attr="aria-label")
+        if headline is not None:
+            out.text("trail-status", "Published · data to the end of " + month, key)
+            out.text("trail-headline", headline["text"], key)
+            out.text("trail-step", "Drafted by " + headline["drafted_by"], key + ".1")
+            out.text("trail-step-text", "It saw only figures from " + label
+                     + "'s own page and could cite only those. It cited "
+                     + _COUNTS[len(headline["claims"]) - 1] + " of them.", key + ".1")
+            out.text("trail-step", "Checked by code: " + _rules_passed(), key + ".2")
+            for number, rule in enumerate(_TRAIL_RULES, 1):
+                out.text("trail-rule", rule, key + ".r{:02d}".format(number))
+            out.text("trail-step", "Reviewed by a person · approved "
+                     + _day(headline["reviewed_on"]), key + ".3")
+            out.text("trail-step-text", "Read against " + label
+                     + "'s page. When next month's data arrives, this line comes down "
+                     "until a new one is reviewed.", key + ".3")
+        else:
+            out.text("trail-status", "Not published · data to the end of " + month, key)
+            out.text("trail-none", "No draft was approved for this data, so no line is shown "
+                     "until one passes review.", key)
+        out.text("trail-earlier", "Every draft, including the rejected ones", key, tag="h3")
+        out.text("trail-note", "Each passed the code checks of its day. Each verdict is a person's.", key)
+        for review in reviews["reviews"]:
+            if key not in review["assets"]:
+                continue
+            review_key = key + "." + review["id"]
+            out.text("trail-review", review["title"] + " · reviewed by " + review["reviewer"]
+                     + ", " + _day(review["reviewed_on"]) + " · data to the end of "
+                     + _month(review["data_as_of"]), review_key)
+            for item in review["assets"][key]:
+                round_key = review_key + "." + str(item["round"])
+                out.text("trail-round", "Round {} · {}".format(
+                    item["round"], verdicts[item["verdict"]]), round_key)
+                out.text("trail-draft", item["text"], round_key)
+                if item["reason"] is not None:
+                    out.text("trail-reason", item["reason"], round_key)
+                if item["control"] is not None:
+                    out.text("trail-control", "Now: " + item["control"], round_key)
+        out.end("section")
+    out.end("div")
+
+
+def render_landing(index, pages, reviews=None):
     """Return the landing page as finished HTML, preserving index order."""
     _check_index(index)
     if (not isinstance(pages, list)
@@ -668,6 +830,8 @@ def render_landing(index, pages):
     for page in pages:
         _check_page(page, index)
     sources = _merge_sources(pages)
+    if reviews is not None:
+        check_reviews(reviews, index, pages)
     assets = index["assets"]
     count = _COUNTS[len(assets) - 1]
     tagline = (
@@ -724,11 +888,18 @@ def render_landing(index, pages):
             out.text("slide-ticker", asset["ticker"], key)
             out.end("div")
             out.text("headline", headline["text"], key)
-            out.start("div", {"data-layout": "audit"})
+            if reviews is None:
+                out.start("div", {"data-layout": "audit"})
+            else:
+                _trail_button(out, key, {"data-layout": "audit"})
             out.text("audit-drafted", "Drafted by " + headline["drafted_by"], key)
             out.text("audit-checked", "{0} of {0} rules".format(HEADLINE_RULE_COUNT), key)
             out.text("audit-reviewed", "Reviewed " + _day(headline["reviewed_on"]), key)
-            out.end("div")
+            if reviews is None:
+                out.end("div")
+            else:
+                out.text("audit-open", "Audit trail", key, tag="span")
+                out.end("button")
             out.text("slide-open", "Open " + asset["label"], key, tag="a", attrs={"href": key + "/"})
             out.end("article")
         out.start("div", {"data-layout": "headline-controls", "hidden": None})
@@ -770,6 +941,14 @@ def render_landing(index, pages):
                 quote=True,
             )
             out.end("p")
+            if reviews is not None:
+                latest_assets = reviews["reviews"][0]["assets"]
+                target = next((asset["id"] for asset in assets
+                               if any(item["verdict"] == "rejected"
+                                      for item in latest_assets[asset["id"]])), assets[0]["id"])
+                _trail_button(out, target)
+                out.text("gate-open", "See the audit trail", key, tag="span")
+                out.end("button")
         else:
             out.text("gate-text", text, key)
         out.end("article")
@@ -787,5 +966,7 @@ def render_landing(index, pages):
     out.end("div")
     out.end("div")
     out.end("main")
+    if reviews is not None:
+        _trail_drawers(out, index, pages, reviews)
     _footer(out, index, sources)
     return out.finish()

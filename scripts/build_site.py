@@ -118,7 +118,7 @@ def _write_values(values, asset_ids, out_dir):
         raise
 
 
-def write_site(index, pages, out_dir):
+def write_site(index, pages, out_dir, reviews=None):
     """Check and render all pages before writing and verifying temporary files."""
     asset_ids = _asset_ids(index)
     for instrument_id in asset_ids:
@@ -132,7 +132,7 @@ def write_site(index, pages, out_dir):
     _check_output_folder(out_dir, asset_ids)
     ordered_pages = [pages[instrument_id] for instrument_id in asset_ids]
     try:
-        landing = render_landing(index, ordered_pages)
+        landing = render_landing(index, ordered_pages, reviews)
         values = [
             (instrument_id + "/index.html", render_page(page, index))
             for instrument_id, page in zip(asset_ids, ordered_pages)
@@ -194,7 +194,14 @@ def main(argv, root, out):
             return 1
 
     try:
-        summary = write_site(index, pages, root / "site")
+        reviews = _load_json(root / "words" / "review_record.json")
+    except Exception as error:
+        print("FAILED: reviews: load: " + type(error).__name__, file=out)
+        print("Nothing was written.", file=out)
+        return 1
+
+    try:
+        summary = write_site(index, pages, root / "site", reviews)
         print("Pages for data as of {}: {} of {} have an approved headline.".format(
             summary["data_as_of"], len(summary["headlines"]), len(asset_ids),
         ), file=out)
