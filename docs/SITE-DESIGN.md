@@ -23,7 +23,8 @@ attribute stay hidden.
 
 - `site/assets/site.css`: the only stylesheet (new).
 - `site/assets/fonts/` and `site/assets/icons/`: provided and recorded in `ASSETS.md`.
-  Never edit, add or remove a file in them.
+  Never edit, add or remove a file in them (the one exception: Task 10b removes
+  `icons/mark.svg`).
 - `web/render.py`: markup only. Add wrappers, element choices and class names wherever
   the layout needs them. Every text, order and size stays exactly as section 16 fixes it:
   `tests/test_site_render.py` and `tests/test_build_site.py` must pass unchanged, and
@@ -56,12 +57,24 @@ fading to 1.5%, a 9% white border, a soft glow shadow); focus ring 2px `#9AD4FF`
 offset 3px. **No red and no green anywhere**, and up or down is never shown by colour:
 the words carry direction.
 
+## Header logo (Task 10b)
+
+The site name is drawn as the Quant Eyes logotype, `site/assets/brand/logo.svg` (ASSETS.md),
+as a CSS background on the `site-name` link: about 28px high on wider screens and 24px at
+639px and below, keeping its proportions (5475 × 1142). The link's text, `Quant Eyes`, stays
+in the page for screen readers and the read-back, moved out of view with `overflow: hidden`,
+`white-space: nowrap` and `text-indent: 100%`; never `display: none`, `visibility: hidden`,
+`font-size: 0` or a `content` replacement. The link keeps a 44px touch target. No tile and
+no `::before`/`::after` on the site name. `site/assets/brand/` is provided: never edit, add
+or remove a file in it. The favicon is `site/assets/brand/favicon.svg` (METHODOLOGY 16.3).
+`site/assets/icons/mark.svg` is retired in Task 10b.
+
 ## Icons
 
 Decorative only, drawn with CSS masks from `site/assets/icons/` (`mask`/`-webkit-mask`
 with `url("icons/<name>.svg")` and `background-color: currentColor`), on pseudo-elements
 or empty decorative elements, never as `<img>` or inline SVG. Where each goes, as on the
-canvas: `mark` beside the site name; `chevron-left` on the back link; `search` in the
+canvas: `chevron-left` on the back link; `search` in the
 search field; `circle-alert` on "Not covered yet"; `sparkle`, `shield-check` and
 `user-check` on the three steps of the provenance chain; `pause` and `play` on the
 headline control; `arrow-right` on "Open …" and the tiles; `chevron-down` on "Show the

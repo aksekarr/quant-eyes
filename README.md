@@ -1,4 +1,4 @@
-# Quant explainer (working title)
+# Quant Eyes
 
 A plain-English explanation of how an investment has behaved, and what it would have
 done to a portfolio you already hold. Built for a UK investor holding a developed-world

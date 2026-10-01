@@ -1462,8 +1462,8 @@ messages in section 16.6.
 
 ### 16.1 Fixed values and formats
 
-- `SITE_NAME` is `"Quant explainer"` (the working title; Avi names the product later,
-  and changing it changes this line and the golden cases). `HEADLINE_RULE_COUNT` is `16`,
+- `SITE_NAME` is `"Quant Eyes"` (named 30 Sept 2026; Task 10b replaced the working title
+  "Quant explainer" here and in the golden cases). `HEADLINE_RULE_COUNT` is `16`,
   the number of rules in section 15.1; a test checks it against the rule names used in
   `tests/golden/headline.json` (section 16.8).
 - **Month:** `YYYY-MM` is written `Mon YYYY` (`2007-12` → `Dec 2007`), with the months
@@ -1526,13 +1526,15 @@ with a `data-qx` attribute begins an entry, in document order:
 <meta property="og:description" data-qx="og-description" data-qx-attr="content" content="{description}">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="{prefix}assets/site.css">
+<link rel="icon" type="image/svg+xml" href="{prefix}assets/brand/favicon.svg">
 <script src="{prefix}assets/site.js" defer></script>
 </head>
 ```
 
 `{prefix}` is empty on the landing page and `../` on an asset page (each asset page will
 be `site/<id>/index.html`, written by a later task). Task 9b may add `<link>` elements
-whose `rel` is `stylesheet`, `preload` or `icon` with an `href` under `{prefix}assets/`.
+whose `rel` is `stylesheet` or `preload` with an `href` under `{prefix}assets/`. The icon
+link above is the only one whose `rel` is `icon` (Task 10b; `tests/test_brand.py`).
 
 **Header:** a link to the landing page (`href="./"` on the landing page, `"../"` on an
 asset page) with role `site-name` and the text `SITE_NAME`; then role `not-advice`:

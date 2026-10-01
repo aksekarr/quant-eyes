@@ -1,4 +1,4 @@
-# Quant explainer (working title): working instructions for Codex
+# Quant Eyes: working instructions for Codex
 
 A static website that explains how an investment has behaved, in plain English, for a
 UK retail investor. Descriptive, never advice. It is a CV portfolio piece for product

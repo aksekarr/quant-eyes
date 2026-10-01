@@ -46,8 +46,8 @@ the volatility method text; browsers draw that one character from a system font.
 - Source: Original, drawn by Claude on the design canvas, 30 Sept 2026
 - Licence: original work for this project; attribution: none
 - File: `site/assets/icons/mark.svg`
-- Used in: the site header
-- Chosen: 2026-09-30 (with the design canvas)
+- Used in: the site header until Task 10b, which replaced it with the Quant Eyes logo below and removed the file
+- Chosen: 2026-09-30 (with the design canvas); retired 2026-10-01
 
 Files copied onto Avi's Mac by Claude's file bridge carry an embedded content-credentials
 (`<metadata>`) block in the SVGs; it doesn't change how they draw.

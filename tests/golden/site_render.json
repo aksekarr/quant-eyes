@@ -6,7 +6,7 @@
   "module": "web.render (package web, with an empty web/__init__.py)",
   "errors": "SiteError, defined in web/render.py, a subclass of Exception. Its str() is the message.",
   "constants": {
-   "SITE_NAME": "Quant explainer",
+   "SITE_NAME": "Quant Eyes",
    "HEADLINE_RULE_COUNT": 16
   },
   "render_page(page, index)": "Section 16.4. Returns the page's HTML as a str, or raises SiteError (section 16.6).",
@@ -1980,7 +1980,7 @@
     [
      "title",
      "",
-     "US share, in pounds · Quant explainer",
+     "US share, in pounds · Quant Eyes",
      null
     ],
     [
@@ -1992,7 +1992,7 @@
     [
      "og-title",
      "",
-     "US share, in pounds · Quant explainer",
+     "US share, in pounds · Quant Eyes",
      null
     ],
     [
@@ -2004,7 +2004,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
@@ -3157,7 +3157,7 @@
     [
      "title",
      "",
-     "UK fund, in pounds · Quant explainer",
+     "UK fund, in pounds · Quant Eyes",
      null
     ],
     [
@@ -3169,7 +3169,7 @@
     [
      "og-title",
      "",
-     "UK fund, in pounds · Quant explainer",
+     "UK fund, in pounds · Quant Eyes",
      null
     ],
     [
@@ -3181,7 +3181,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
@@ -4278,7 +4278,7 @@
     [
      "title",
      "",
-     "Test coin, in pounds · Quant explainer",
+     "Test coin, in pounds · Quant Eyes",
      null
     ],
     [
@@ -4290,7 +4290,7 @@
     [
      "og-title",
      "",
-     "Test coin, in pounds · Quant explainer",
+     "Test coin, in pounds · Quant Eyes",
      null
     ],
     [
@@ -4302,7 +4302,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
@@ -5191,7 +5191,7 @@
     [
      "title",
      "",
-     "Q&A <b>\"US\"</b> share's, in pounds · Quant explainer",
+     "Q&A <b>\"US\"</b> share's, in pounds · Quant Eyes",
      null
     ],
     [
@@ -5203,7 +5203,7 @@
     [
      "og-title",
      "",
-     "Q&A <b>\"US\"</b> share's, in pounds · Quant explainer",
+     "Q&A <b>\"US\"</b> share's, in pounds · Quant Eyes",
      null
     ],
     [
@@ -5215,7 +5215,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
@@ -6360,7 +6360,7 @@
     [
      "title",
      "",
-     "US share, in pounds · Quant explainer",
+     "US share, in pounds · Quant Eyes",
      null
     ],
     [
@@ -6372,7 +6372,7 @@
     [
      "og-title",
      "",
-     "US share, in pounds · Quant explainer",
+     "US share, in pounds · Quant Eyes",
      null
     ],
     [
@@ -6384,7 +6384,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
@@ -7554,7 +7554,7 @@
     [
      "title",
      "",
-     "UK fund, in pounds · Quant explainer",
+     "UK fund, in pounds · Quant Eyes",
      null
     ],
     [
@@ -7566,7 +7566,7 @@
     [
      "og-title",
      "",
-     "UK fund, in pounds · Quant explainer",
+     "UK fund, in pounds · Quant Eyes",
      null
     ],
     [
@@ -7578,7 +7578,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
@@ -8679,7 +8679,7 @@
     [
      "title",
      "",
-     "Quant explainer: three investments in plain English",
+     "Quant Eyes: three investments in plain English",
      null
     ],
     [
@@ -8691,7 +8691,7 @@
     [
      "og-title",
      "",
-     "Quant explainer: three investments in plain English",
+     "Quant Eyes: three investments in plain English",
      null
     ],
     [
@@ -8703,7 +8703,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
@@ -9047,7 +9047,7 @@
     [
      "title",
      "",
-     "Quant explainer: three investments in plain English",
+     "Quant Eyes: three investments in plain English",
      null
     ],
     [
@@ -9059,7 +9059,7 @@
     [
      "og-title",
      "",
-     "Quant explainer: three investments in plain English",
+     "Quant Eyes: three investments in plain English",
      null
     ],
     [
@@ -9071,7 +9071,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
@@ -9324,7 +9324,7 @@
     [
      "title",
      "",
-     "Quant explainer: three investments in plain English",
+     "Quant Eyes: three investments in plain English",
      null
     ],
     [
@@ -9336,7 +9336,7 @@
     [
      "og-title",
      "",
-     "Quant explainer: three investments in plain English",
+     "Quant Eyes: three investments in plain English",
      null
     ],
     [
@@ -9348,7 +9348,7 @@
     [
      "site-name",
      "",
-     "Quant explainer",
+     "Quant Eyes",
      null
     ],
     [
