@@ -1,11 +1,11 @@
 {
   "file": "build_pages",
-  "spec": "docs/METHODOLOGY.md section 14, amended by section 15.4",
+  "spec": "docs/METHODOLOGY.md section 14, amended by sections 15.4 and 18",
   "authorship": "Cases and expected behaviour written by hand by Claude (architect), checked against a separate Claude-only reference implementation, committed by Avi. Codex must never edit this file. The fixture DOC_GBF was produced from synthetic monthly series with the already-verified section 6 and 8 functions, and DOC_GBF_THIN from publish.json's RES_GBF with build_document; both pass check_document. DOC_USA is page.json's. If a case fails and you believe the expected value is wrong, stop and report the case ID and your reasoning.",
   "interface": {
     "module": "scripts/build_pages.py. Load it in tests with importlib.util.spec_from_file_location, as tests/test_runner.py loads scripts/build_data.py.",
     "errors": "PageError is defined in scripts/build_pages.py. WordsError is words.cards.WordsError; RegistryError and PublishError come from pipeline.publish.",
-    "write_pages(registry, context, documents, approvals, out_dir)": "Section 14.1 (amended by section 15.4). Returns the summary.",
+    "write_pages(registry, context, documents, approvals, out_dir)": "Section 14.1 (amended by sections 15.4 and 18). Returns the summary.",
     "main(argv, root, out)": "Section 14.2. Returns the exit code. It has no default arguments."
   },
   "case_fields": {
@@ -19,7 +19,7 @@
     "read_back_mismatch": "{\"call\": n}: replace build_page in the script module so that its n-th call returns the real page with its \"claims\" list turned into a tuple. json.dumps writes the tuple as a list, so the file reads back as a value that is not equal to the page built.",
     "approvals / approvals_edits": "Write and cli cases: the named approvals fixture below (\"NONE\" when the case names none), deep-copied, with approvals_edits applied with apply_edits. Write cases pass it to write_pages. Cli cases write it to root/words/headlines.json as json.dumps, unless headlines_missing is true (no file) or headlines_text is given (written exactly).",
     "write_pages_raises": "cli: replace write_pages in the script module with a function that raises RuntimeError(text).",
-    "expected_files": "After the call, the output folder holds exactly these names, or null if it must not exist. Each name in expected_pages must hold exactly json.dumps(value, indent=2, sort_keys=True, allow_nan=False, ensure_ascii=False) + \"\\n\", where the test builds the value itself from the same edited inputs: <id>.json from build_page(document, facts), with facts the context entry without \"why\", and its \"headline\" then set to check_approvals(approvals, pages, registry).get(id) (null when absent), the pages in list order; index.json from build_index(registry, pages), with the pages in list order. Every other name holds exactly its before_files text, or is still an empty subfolder.",
+    "expected_files": "After the call, the output folder holds exactly these names, or null if it must not exist. Each name in expected_pages must hold exactly json.dumps(value, indent=2, sort_keys=True, allow_nan=False, ensure_ascii=False) + \"\\n\", where the test builds the value itself from the same edited inputs: <id>.json from build_page(document, facts), with facts the context entry without \"why\", then its \"guided\" set to build_guided(that page, facts) (section 18, words.guided), and its \"headline\" then set to check_approvals(approvals, pages, registry).get(id) (null when absent), the pages in list order; index.json from build_index(registry, pages), with the pages in list order. Every other name holds exactly its before_files text, or is still an empty subfolder.",
     "expected_summary": "write cases: the returned summary, compared exactly.",
     "expected_error / message_equals / message_must_contain / message_must_not_contain": "As in runner.json. message_equals compares the whole message. For cli cases, message_must_contain and message_must_not_contain apply to everything written to out.",
     "cli": "main(argv, root, out) cases: root is a new temporary folder containing pipeline/instruments.json (json.dumps of the registry, or registry_text if given), words/context.json (json.dumps of the context, unless context_missing is true) and data/derived/<id>.json for each entry in documents (json.dumps of the document). out is a StringIO. expected_stdout is the exact list of lines written; expected_exit is the return value; expected_files refers to root/site/data."

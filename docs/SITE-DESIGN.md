@@ -153,6 +153,19 @@ them work and look as on the design canvas (artboard ProofDrawer). Script and st
   `history.replaceState`, read `location.hash` and listen for `hashchange` and `keydown`
   (on the open drawer only). It never changes any `data-qx` text.
 
+## Explain further (Task 11a)
+
+The closed `<details>` at the end of each card (METHODOLOGY 18.2), styled like "Show the
+maths": a full-width summary row, 44px minimum, accent text `Explain further` with the
+`chevron-down` mask turning when open. Inside: `everyday-label` as a small mono label,
+`everyday` in 17px italic-free body text in `#DCE3F7` inside a soft accent block
+(`rgba(134, 204, 255, 0.07)` background, radius 14px, padding 14px 16px); then the panels
+in a grid `repeat(auto-fill, minmax(240px, 1fr))`, gap 12px, each a card (radius 16px,
+border `rgba(255, 255, 255, 0.10)`, background `rgba(255, 255, 255, 0.03)`, padding 16px
+18px) with `more-number` mono accent 12px, `more-title` Sora 17px 600, `more-text` 15px
+`#B6C1E2`. One column at 639px and below. Closed by default on every page; no script
+needed. Guided mode (Task 11b) reuses these sections.
+
 ## Icons
 
 Decorative only, drawn with CSS masks from `site/assets/icons/` (`mask`/`-webkit-mask`

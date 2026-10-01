@@ -1011,7 +1011,9 @@ shows no change in `git status`.
 5. **Pages**, for each asset in list order, finishing one asset before the next:
    `check_document(document, registry)` (section 8.3); the document's instrument must be
    that asset; then `build_page(document, facts)` (section 13.2), where `facts` is the
-   asset's context entry without `why`.
+   asset's context entry without `why`; then the page's `guided` becomes
+   `build_guided(page, facts)` (section 18). A `WordsError` from it is reported as
+   `<id>: page: WordsError: <message>`, like `build_page`'s.
 6. **Headlines** (section 15.4): `check_approvals(approvals, pages, registry)` (section
    15.2), with the pages in list order. Each page's `headline` becomes its asset's approved
    headline, or stays empty (null) if it has none.
@@ -2012,3 +2014,136 @@ a traceback or a value.
 Each month, after the pages are built again with their headlines (section 15.4), and after
 the month's review is added to `words/review_record.json` (section 16.9): run
 `scripts/build_site.py`, then commit `site/data` and the site's HTML together.
+
+## 18. Guided explanations (Task 11)
+
+Each asset page carries, beside its cards, a fixed set of plain-English explanations:
+one "in everyday terms" line and a few short panels per card. They are fixed templates
+filled only with the page's own claim `display` values and dates: no new figure, no
+rounding, no AI. Copy approved by Avi, 1 Oct 2026. The site shows them under each card as
+a closed "Explain further" section; guided mode (Task 11b) steps through them.
+
+### 18.1 `build_guided(page, facts)` (`words/guided.py`)
+
+`page` is a built page (section 13.2); `facts` its asset's context entry without `why`
+(`held_by_tracker`, `priced_in_pounds_holds_dollars`). Returns `{"steps": [step, …]}`, one
+step per card in the page's card order, each `{"card": <card id>, "everyday": <text>,
+"more": [{"title": <text>, "text": <text>}, …]}`. It never changes `page`. A card id not
+listed below is a `WordsError`: `guided: unknown card <id>`.
+
+Notation: `{x}` is claim `x`'s `display`; `{start x}` / `{end x}` its period's months as
+`Mon YYYY`; **moved** `x` is `up {x}`, `down {x}` or `unchanged ({x})` by its direction;
+**fx** `x` is `rose {x}`, `fell {x}` or `was unchanged ({x})`. A **dollar asset** has
+claim `pound.local`. A panel marked *if …* is left out when any claim it names is missing
+(never an error, never a placeholder). Titles are as written, in this order.
+
+**bumpy** — everyday: `Two roads to the same town, one flat, one hilly. Volatility
+measures the hills, not where the road ends up.`
+1. *if `bumpy.volatility`*: `What goes in`: `One number for each month: how much a
+   holding changed in pounds from one month-end to the next, with any income added back,
+   from the end of {start bumpy.volatility} to the end of {end bumpy.volatility}.`
+2. `How spread out they were`: `Volatility measures how far those monthly changes
+   typically sat from their average, rises and falls alike. Bigger swings either way give
+   a higher figure.`
+3. `Why "a year"`: `The monthly spread is scaled to a yearly figure by multiplying it by
+   the square root of 12. It is the usual convention, so investments can be compared on
+   the same footing.`
+4. *if `bumpy.tracker_volatility`* and the asset value `a` exists (`bumpy.volatility_common`
+   if present, else `bumpy.volatility`): `Next to the tracker`: `Over the months both cover,
+   from the end of {start bumpy.tracker_volatility} to the end of {end
+   bumpy.tracker_volatility}: {a}, against {bumpy.tracker_volatility} for the
+   developed-world tracker.`
+5. `What it can't tell you`: `It treats a rise and a fall of the same size alike, and it
+   says nothing about next month. A calm stretch can end suddenly.`
+
+**worst** — everyday: `The deepest dip on a walk, measured from the highest point you'd
+reached so far.`
+1. *if `worst.months_to_low`, `worst.fall`*: `From high to low`: `{worst.months_to_low},
+   from the end of {start worst.fall} to the end of {end worst.fall}.`
+2. *if `worst.ten_thousand_left`, `worst.ten_thousand_lost`*: `In money`: `£10,000
+   invested at that high would have been worth {worst.ten_thousand_left} at the low,
+   {worst.ten_thousand_lost} less. That applies only to money put in at the high.`
+3. *if `worst.months_to_recover`, `worst.months_underwater`*: `Getting back`: `It was back
+   at that high by the end of {end worst.months_to_recover}: {worst.months_to_recover}
+   after the low, {worst.months_underwater} after the high.` Otherwise *if
+   `worst.below_high_at_end`, `worst.months_underwater`*: `Still below the high`: `It had
+   not recovered by the end of {end worst.below_high_at_end}: still
+   {worst.below_high_at_end} below its high, {worst.months_underwater} after it.`
+4. `What month-ends hide`: `A fall that recovered within the same month doesn't show, so
+   the worst moment may have been deeper.`
+
+**panic** — everyday: `Three storms, and how it came out of each one, start to finish.`
+1. `Three named periods`: `Global financial crisis: {g}. Covid crash: {c}. 2022 rate
+   shock: {r}. In pounds, from the start to the end of each period.`, where each is
+   **moved** `panic.gfc` / `panic.covid` / `panic.rate_shock`, or `not covered` when the
+   claim is missing.
+2. A dollar asset: the first window, in the order gfc, covid, rate_shock, that has all
+   three of `pound.<w>.local`, `pound.<w>.currency`, `pound.<w>.gbp`: `Why the dollar
+   matters here`: `Over the {global financial crisis | Covid crash | 2022 rate shock} it
+   was {moved local} in dollars, and the dollar {fx currency} against the pound, so in
+   pounds it was {moved gbp}. Step 5 shows how the two parts combine.` No such window: no
+   panel. Not a dollar asset, with `priced_in_pounds_holds_dollars`: `Priced in pounds,
+   holding dollars`: `It is priced in pounds, but what it holds is priced in dollars, so
+   the exchange rate is already inside these figures.` Otherwise: `Priced in pounds`: `It
+   is priced in pounds, so these figures have no separate exchange-rate part.`
+3. `What start-to-end hides`: `Prices may have fallen further in between and partly
+   recovered before the period ended.`
+
+**next** — everyday: `Two friends' moods: near 1, when one is up the other usually is
+too; near 0, one's mood tells you nothing about the other's.`
+1. `What the number means`: `1 would mean always moving in step, 0 no pattern, and −1
+   always opposite. It measures how consistently the monthly moves lined up, not how big
+   they were.` (U+2212 minus.)
+2. *if `next.rolling_lowest`, `next.rolling_highest`*: `It moves around`: `Over each
+   36-month stretch it ranged from {next.rolling_lowest} (the 36 months to the end of {end
+   next.rolling_lowest}) to {next.rolling_highest} (to the end of {end
+   next.rolling_highest}).`
+3. *if `next.mix_annualised`, `next.tracker_annualised`, `next.mix_volatility`,
+   `next.tracker_volatility`*: `A 90/10 illustration`: `90% in the tracker and 10% in this
+   investment, reset every December: {next.mix_annualised} a year against
+   {next.tracker_annualised} for the tracker alone, with volatility of
+   {next.mix_volatility} against {next.tracker_volatility}. An illustration, not a
+   recommendation, before fees, trading costs and tax.`
+4. `Not protection`: `A low figure does not mean it protects a portfolio: correlation says
+   nothing about how big the moves were.`
+5. *if `held_by_tracker` is true*: `You may already hold it`: `The tracker already holds
+   these shares, so the 10% adds to a holding it already has.`
+
+**pound** — a dollar asset: everyday `Buying something abroad: the price can change, and
+so can the exchange rate. You feel both.`; panels `Two parts`: `What it did in dollars,
+and what the dollar did against the pound. A UK holder gets both.`; *if `pound.local`,
+`pound.currency`, `pound.gbp`*: `How they combine`: `Over the whole period: {moved
+pound.local} in dollars, the dollar {fx pound.currency} against the pound, so {moved
+pound.gbp} in pounds. The two parts multiply rather than add, so they never simply add
+up.`; `It cuts both ways`: `When the pound rises against the dollar, a dollar holding
+loses some of its gain for a UK holder.` Not a dollar asset, with
+`priced_in_pounds_holds_dollars`: the same everyday line; `Hidden in the price`: `It is
+priced in pounds, but what it holds is priced in dollars, so when the dollar moves against
+the pound, its price in pounds moves too.`; `Why it isn't split out`: `With only a price
+in pounds, the part that came from the exchange rate can't be separated out.` Otherwise:
+everyday `Shopping at home: there is no exchange rate between you and the price.`;
+`Nothing to split`: `It is priced in pounds, so a UK holder's figures have no separate
+exchange-rate part.`
+
+**limits** — everyday: `A rear-view mirror: it shows clearly where you've been, not
+what's round the next bend.`; `The basis`: `Past results in pounds, measured at
+month-ends, before platform fees, trading costs and tax.`; `Not a forecast`: `Past
+behaviour does not predict future results. Nothing here says what to do.`
+
+### 18.2 On the page (`render_page`)
+
+A page may carry `guided` (pages written before Task 11 do not; without it the page is
+exactly as in section 16.4). With it, `render_page` checks it first, after the existing
+page checks: `<id>: guided: unreadable` unless it is an object with exactly the key
+`steps`, a list of objects with exactly `card`, `everyday` (non-empty text) and `more` (a
+list of 1 to 6 objects with exactly `title` and `text`, both non-empty text); then
+`<id>: guided: cards differ` unless the steps' `card` values are the page's card ids in
+order. Then, at the end of each card's section, after everything section 16.4 puts there:
+a closed `<details>` whose `<summary>` holds `more-open`, key the card id: `Explain
+further`; then `everyday-label`, key the card id: `In everyday terms`; `everyday`, key the
+card id: the step's line; then for each panel *k* (1, 2, …), keys `<card id>.<k>`:
+`more-number`: *k* as two digits (`01`), `more-title` (an `<h3>`): its title, `more-text`:
+its text. `<details>`, `<summary>` and `<h3>` are already allowed by section 16.7.
+
+`tests/golden/guided.json` holds the cases: `build_guided` on the seven published Sep 2026
+pages and on edited ones, and `render_page` with guided steps.
