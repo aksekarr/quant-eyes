@@ -252,6 +252,7 @@ class InvarianceTests(unittest.TestCase):
             },
             "headline.py": {"copy", "json", "re", "pipeline.publish", "words.cards"},
             "page.py": {"copy", "pipeline.publish", "words.cards", "words.cards_567"},
+            "guided.py": {"words.cards"},
         }
         source_paths.extend(root / "words" / name for name in allowed_words_imports)
         source_paths.append(root / "web" / "render.py")
@@ -310,7 +311,7 @@ class InvarianceTests(unittest.TestCase):
             pages_path,
             {
                 "json", "os", "pathlib", "sys", "pipeline.publish", "words.cards",
-                "words.headline", "words.page",
+                "words.guided", "words.headline", "words.page",
             },
             {"eval", "exec", "__import__", "getenv"},
         )

@@ -227,6 +227,28 @@ def _check_page(page, index):
     return claims
 
 
+def _check_guided(page):
+    """Check optional section 18 explanations before rendering any markup."""
+    guided = page["guided"]
+    prefix = page["instrument"]["id"] + ": guided: "
+    if (not isinstance(guided, dict) or set(guided) != {"steps"}
+            or not isinstance(guided["steps"], list)):
+        raise SiteError(prefix + "unreadable")
+    for step in guided["steps"]:
+        if (not isinstance(step, dict) or set(step) != {"card", "everyday", "more"}
+                or not _nonblank(step["everyday"])
+                or not isinstance(step["more"], list)
+                or not 1 <= len(step["more"]) <= 6):
+            raise SiteError(prefix + "unreadable")
+        for panel in step["more"]:
+            if (not isinstance(panel, dict) or set(panel) != {"title", "text"}
+                    or not _nonblank(panel["title"]) or not _nonblank(panel["text"])):
+                raise SiteError(prefix + "unreadable")
+    if [step["card"] for step in guided["steps"]] != [card["id"] for card in page["cards"]]:
+        raise SiteError(prefix + "cards differ")
+    return guided["steps"]
+
+
 def _month(value):
     year, month = value.split("-")
     return _MONTHS[int(month) - 1] + " " + year
@@ -404,6 +426,28 @@ def _maths(out, page, card_id, claims):
     out.end("details")
 
 
+def _guided(out, step):
+    card_id = step["card"]
+    out.start("details", {"data-layout": "guided"})
+    out.start("summary")
+    out.text("more-open", "Explain further", card_id, tag="span")
+    out.end("summary")
+    out.start("div", {"data-layout": "guided-everyday"})
+    out.text("everyday-label", "In everyday terms", card_id)
+    out.text("everyday", step["everyday"], card_id)
+    out.end("div")
+    out.start("div", {"data-layout": "guided-panels"})
+    for number, panel in enumerate(step["more"], 1):
+        key = card_id + "." + str(number)
+        out.start("div", {"data-layout": "guided-panel"})
+        out.text("more-number", format(number, "02d"), key)
+        out.text("more-title", panel["title"], key, tag="h3")
+        out.text("more-text", panel["text"], key)
+        out.end("div")
+    out.end("div")
+    out.end("details")
+
+
 def _bumpy(out, page, card, claims):
     asset_id = page["instrument"]["id"]
     out.start("div", {"data-layout": "card-lead"})
@@ -559,6 +603,7 @@ def render_page(page, index):
     """Return an asset page as finished HTML after section 16.6 checks."""
     _check_index(index)
     claims = _check_page(page, index)
+    guided = _check_guided(page) if "guided" in page else None
     instrument = page["instrument"]
     identity = instrument["identity"]
     headline = page["headline"]
@@ -644,6 +689,8 @@ def render_page(page, index):
             _maths(out, page, card_id, claims)
         else:
             _sentences(out, card)
+        if guided is not None:
+            _guided(out, guided[i - 1])
         if card_id in ("next", "pound"):
             out.end("div")
         out.end("section")

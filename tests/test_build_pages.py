@@ -11,6 +11,7 @@ import unittest
 from unittest.mock import patch
 
 from words.cards import WordsError
+from words.guided import build_guided
 from words.headline import check_approvals
 from words.page import build_index, build_page
 from golden_support import (
@@ -47,6 +48,7 @@ def _expected_pages(case, registry, context, documents, approvals):
             if key != "why"
         }
         page = build_page(deepcopy(documents[instrument_id]), deepcopy(facts))
+        page["guided"] = build_guided(page, deepcopy(facts))
         pages.append(page)
         values[instrument_id + ".json"] = page
     headlines = check_approvals(approvals, pages, registry)

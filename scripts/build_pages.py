@@ -13,6 +13,7 @@ from pipeline.publish import (
     PublishError, RegistryError, check_document, check_registry,
 )
 from words.cards import WordsError
+from words.guided import build_guided
 from words.headline import check_approvals
 from words.page import build_index, build_page, check_context
 
@@ -127,7 +128,9 @@ def write_pages(registry, context, documents, approvals, out_dir):
             key: value for key, value in context["instruments"][instrument_id].items()
             if key != "why"
         }
-        pages.append(_step(instrument_id, "page", build_page, document, facts))
+        page = _step(instrument_id, "page", build_page, document, facts)
+        page["guided"] = _step(instrument_id, "page", build_guided, page, facts)
+        pages.append(page)
 
     headlines = _step("headlines", "check", check_approvals, approvals, pages, registry)
     for instrument_id, page in zip(asset_ids, pages):

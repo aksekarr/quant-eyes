@@ -337,6 +337,16 @@ details[open] [data-qx="maths-show"] { display: none; }
 details[open] [data-qx="maths-hide"][hidden] { display: inline !important; }
 details > p { margin-block: 16px; font-size: 14px; line-height: 1.55; color: var(--qx-secondary); }
 [data-qx="maths-note"], [data-qx="maths-sources"] { font-size: 13px; color: #A3AFD4; }
+/* Guided explanations use native disclosure and keep each panel in reading order. */
+[data-layout="guided"] > summary { width: 100%; min-height: 44px; justify-content: space-between; }
+[data-layout="guided-everyday"] { margin-top: 12px; padding: 14px 16px; border-radius: 14px; background: rgba(134, 204, 255, 0.07); }
+[data-qx="everyday-label"] { color: var(--qx-label); font: 400 12px / 1.6 var(--qx-mono); letter-spacing: 0.10em; text-transform: uppercase; }
+[data-qx="everyday"] { margin-top: 6px; color: #DCE3F7; font-size: 17px; font-style: normal; line-height: 1.55; }
+[data-layout="guided-panels"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
+[data-layout="guided-panel"] { padding: 16px 18px; border: 1px solid rgba(255, 255, 255, 0.10); border-radius: 16px; background: rgba(255, 255, 255, 0.03); }
+[data-qx="more-number"] { color: var(--qx-accent); font: 400 12px / 1.6 var(--qx-mono); }
+[data-qx="more-title"] { margin-block: 6px 8px; font: 600 17px / 1.4 var(--qx-display); letter-spacing: -0.02em; }
+[data-qx="more-text"] { color: #B6C1E2; font-size: 15px; line-height: 1.6; }
 table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; }
 th, td { padding: 11px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: left; vertical-align: top; font-weight: 400; overflow-wrap: anywhere; }
 th:first-child, td:first-child { padding-left: 0; width: 44%; }
@@ -450,6 +460,7 @@ footer > * + * { margin-top: 10px; }
   [data-qx="mix-part"] { font-size: 10px; letter-spacing: 0.04em; }
   [data-layout="mix"] { padding-top: 52px; }
   summary { min-height: 48px; justify-content: space-between; width: 100%; }
+  [data-layout="guided-panels"] { grid-template-columns: minmax(0, 1fr); }
   table { font-size: 12px; }
   th, td { padding: 9px 4px; }
   [data-qx="maths-head"] { font-size: 10px; letter-spacing: 0.04em; }

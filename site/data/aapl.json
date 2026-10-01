@@ -717,6 +717,134 @@
   "data_as_of": "2026-09",
   "data_as_of_text": "Data to the end of Sep 2026",
   "generated_on": "2026-10-01",
+  "guided": {
+    "steps": [
+      {
+        "card": "bumpy",
+        "everyday": "Two roads to the same town, one flat, one hilly. Volatility measures the hills, not where the road ends up.",
+        "more": [
+          {
+            "text": "One number for each month: how much a holding changed in pounds from one month-end to the next, with any income added back, from the end of Sep 2007 to the end of Sep 2026.",
+            "title": "What goes in"
+          },
+          {
+            "text": "Volatility measures how far those monthly changes typically sat from their average, rises and falls alike. Bigger swings either way give a higher figure.",
+            "title": "How spread out they were"
+          },
+          {
+            "text": "The monthly spread is scaled to a yearly figure by multiplying it by the square root of 12. It is the usual convention, so investments can be compared on the same footing.",
+            "title": "Why \"a year\""
+          },
+          {
+            "text": "Over the months both cover, from the end of Jan 2010 to the end of Sep 2026: 25.6%, against 11.7% for the developed-world tracker.",
+            "title": "Next to the tracker"
+          },
+          {
+            "text": "It treats a rise and a fall of the same size alike, and it says nothing about next month. A calm stretch can end suddenly.",
+            "title": "What it can't tell you"
+          }
+        ]
+      },
+      {
+        "card": "worst",
+        "everyday": "The deepest dip on a walk, measured from the highest point you'd reached so far.",
+        "more": [
+          {
+            "text": "12 months, from the end of Dec 2007 to the end of Dec 2008.",
+            "title": "From high to low"
+          },
+          {
+            "text": "£10,000 invested at that high would have been worth £5,850 at the low, £4,150 less. That applies only to money put in at the high.",
+            "title": "In money"
+          },
+          {
+            "text": "It was back at that high by the end of Aug 2009: 8 months after the low, 20 months after the high.",
+            "title": "Getting back"
+          },
+          {
+            "text": "A fall that recovered within the same month doesn't show, so the worst moment may have been deeper.",
+            "title": "What month-ends hide"
+          }
+        ]
+      },
+      {
+        "card": "panic",
+        "everyday": "Three storms, and how it came out of each one, start to finish.",
+        "more": [
+          {
+            "text": "Global financial crisis: down 2.1%. Covid crash: down 12.3%. 2022 rate shock: up 2.2%. In pounds, from the start to the end of each period.",
+            "title": "Three named periods"
+          },
+          {
+            "text": "Over the global financial crisis it was down 31.5% in dollars, and the dollar rose 43.0% against the pound, so in pounds it was down 2.1%. Step 5 shows how the two parts combine.",
+            "title": "Why the dollar matters here"
+          },
+          {
+            "text": "Prices may have fallen further in between and partly recovered before the period ended.",
+            "title": "What start-to-end hides"
+          }
+        ]
+      },
+      {
+        "card": "next",
+        "everyday": "Two friends' moods: near 1, when one is up the other usually is too; near 0, one's mood tells you nothing about the other's.",
+        "more": [
+          {
+            "text": "1 would mean always moving in step, 0 no pattern, and −1 always opposite. It measures how consistently the monthly moves lined up, not how big they were.",
+            "title": "What the number means"
+          },
+          {
+            "text": "Over each 36-month stretch it ranged from 0.13 (the 36 months to the end of Mar 2013) to 0.74 (to the end of Nov 2023).",
+            "title": "It moves around"
+          },
+          {
+            "text": "90% in the tracker and 10% in this investment, reset every December: 14.3% a year against 12.5% for the tracker alone, with volatility of 12.1% against 11.7%. An illustration, not a recommendation, before fees, trading costs and tax.",
+            "title": "A 90/10 illustration"
+          },
+          {
+            "text": "A low figure does not mean it protects a portfolio: correlation says nothing about how big the moves were.",
+            "title": "Not protection"
+          },
+          {
+            "text": "The tracker already holds these shares, so the 10% adds to a holding it already has.",
+            "title": "You may already hold it"
+          }
+        ]
+      },
+      {
+        "card": "pound",
+        "everyday": "Buying something abroad: the price can change, and so can the exchange rate. You feel both.",
+        "more": [
+          {
+            "text": "What it did in dollars, and what the dollar did against the pound. A UK holder gets both.",
+            "title": "Two parts"
+          },
+          {
+            "text": "Over the whole period: up 7,155.3% in dollars, the dollar rose 54.3% against the pound, so up 11,096.6% in pounds. The two parts multiply rather than add, so they never simply add up.",
+            "title": "How they combine"
+          },
+          {
+            "text": "When the pound rises against the dollar, a dollar holding loses some of its gain for a UK holder.",
+            "title": "It cuts both ways"
+          }
+        ]
+      },
+      {
+        "card": "limits",
+        "everyday": "A rear-view mirror: it shows clearly where you've been, not what's round the next bend.",
+        "more": [
+          {
+            "text": "Past results in pounds, measured at month-ends, before platform fees, trading costs and tax.",
+            "title": "The basis"
+          },
+          {
+            "text": "Past behaviour does not predict future results. Nothing here says what to do.",
+            "title": "Not a forecast"
+          }
+        ]
+      }
+    ]
+  },
   "headline": {
     "claims": [
       "worst.fall",
