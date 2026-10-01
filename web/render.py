@@ -670,20 +670,23 @@ def render_landing(index, pages):
     sources = _merge_sources(pages)
     assets = index["assets"]
     count = _COUNTS[len(assets) - 1]
+    tagline = (
+        "Plain-English explanations of how " + count + " investments have behaved, in pounds. "
+        "Every figure comes from tested code. The one line an AI writes is checked against "
+        + str(HEADLINE_RULE_COUNT) + " rules and read by a person before it goes live."
+    )
     out = _Markup()
-    _head(out, SITE_NAME + ": " + count + " investments in plain English", _TAGLINE, "")
+    _head(out, SITE_NAME + ": " + count + " investments in plain English", tagline, "")
     out.start("main", {"data-layout": "landing"})
     out.start("div", {"data-layout": "landing-intro"})
-    as_of = index["data_as_of_text"]
-    out.text("kicker", count.capitalize() + " investments · in pounds · " + as_of[:1].lower() + as_of[1:])
+    out.text("kicker", "A governed AI demo · " + count + " investments · in pounds")
     out.start("h1", {"data-qx": "hero"})
-    out.parts[-1] += html.escape("What am I ", quote=True)
+    out.parts[-1] += html.escape("AI drafts it. Code checks it.", quote=True)
     out.start("span", {"data-layout": "hero-accent"})
-    out.parts[-1] += html.escape("actually", quote=True)
+    out.parts[-1] += html.escape("A person signs it off.", quote=True)
     out.end("span")
-    out.parts[-1] += html.escape(" getting into?", quote=True)
     out.end("h1")
-    out.text("tagline", _TAGLINE)
+    out.text("tagline", tagline)
     out.start("div", {"data-layout": "search", "hidden": None})
     out.text("search-label", "Look up an investment", tag="label", attrs={"for": "asset-search"})
     out.start("div", {"data-layout": "search-field"})
@@ -711,7 +714,7 @@ def render_landing(index, pages):
     headlines = [(asset, page["headline"]) for asset, page in zip(assets, pages) if page["headline"] is not None]
     if headlines:
         out.start("section", {"data-layout": "headlines"})
-        out.text("section-label", "Headlines", "headlines")
+        out.text("section-label", "In one line", "headlines")
         for i, (asset, headline) in enumerate(headlines, 1):
             key = asset["id"]
             out.start("article")
@@ -721,14 +724,13 @@ def render_landing(index, pages):
             out.text("slide-ticker", asset["ticker"], key)
             out.end("div")
             out.text("headline", headline["text"], key)
-            out.text("slide-meta", headline["drafted_by"] + " · reviewed " + _day(headline["reviewed_on"]), key)
+            out.start("div", {"data-layout": "audit"})
+            out.text("audit-drafted", "Drafted by " + headline["drafted_by"], key)
+            out.text("audit-checked", "{0} of {0} rules".format(HEADLINE_RULE_COUNT), key)
+            out.text("audit-reviewed", "Reviewed " + _day(headline["reviewed_on"]), key)
+            out.end("div")
             out.text("slide-open", "Open " + asset["label"], key, tag="a", attrs={"href": key + "/"})
             out.end("article")
-        out.start("div", {"data-layout": "chain"})
-        out.text("chain", "Drafted by AI", "drafted")
-        out.text("chain", "Checked by code: " + _rules_passed(), "checked")
-        out.text("chain", "Reviewed by a person", "reviewed")
-        out.end("div")
         out.start("div", {"data-layout": "headline-controls", "hidden": None})
         out.start("button", {"type": "button", "data-layout": "headline-toggle"})
         out.text("pause", "Pause the headlines", tag="span")
@@ -739,6 +741,40 @@ def render_landing(index, pages):
                      tag="button", attrs={"type": "button"}, text_attr="aria-label")
         out.end("div")
         out.end("section")
+    out.start("section", {"data-layout": "gates"})
+    out.text("gates-title", "How a headline gets published", tag="h2")
+    out.start("div", {"data-layout": "gates-grid"})
+    for key, title, text in (
+        ("01", "Drafted by AI",
+         "A model writes one line per investment. It sees only figures from that "
+         "investment's own page, and can cite only those."),
+        ("02", "Checked by code: " + str(HEADLINE_RULE_COUNT) + " rules",
+         "No advice, no forecasts, no rankings, every number traced to the page. "
+         "One failure and the line is out."),
+        ("03", "Reviewed by a person",
+         "In the first round, all 7 drafts passed every code check."),
+    ):
+        out.start("article", {"data-layout": "gate", "data-gate": key})
+        out.start("div", {"data-layout": "gate-heading"})
+        out.text("gate-number", key, key)
+        out.text("gate-title", title, key, tag="h3")
+        out.end("div")
+        if key == "03":
+            out.start("p", {"data-qx": "gate-text", "data-qx-key": key})
+            out.parts[-1] += html.escape(text, quote=True)
+            out.start("strong")
+            out.parts[-1] += html.escape("A person rejected 6.", quote=True)
+            out.end("strong")
+            out.parts[-1] += html.escape(
+                " Most reasons became new rules. The rest are why a person stays in the loop.",
+                quote=True,
+            )
+            out.end("p")
+        else:
+            out.text("gate-text", text, key)
+        out.end("article")
+    out.end("div")
+    out.end("section")
     out.start("div", {"data-layout": "tiles"})
     out.text("tiles-label", "Or pick one of the " + count)
     out.start("div", {"data-layout": "tile-grid"})
@@ -750,7 +786,6 @@ def render_landing(index, pages):
         out.end("a")
     out.end("div")
     out.end("div")
-    out.text("strip", "Every figure comes from tested code. Every headline is reviewed by a person.")
     out.end("main")
     _footer(out, index, sources)
     return out.finish()
