@@ -6,7 +6,7 @@ import math
 import re
 
 
-SITE_NAME = "Quant explainer"
+SITE_NAME = "Quant Eyes"
 HEADLINE_RULE_COUNT = 16
 
 _MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
@@ -282,6 +282,8 @@ def _head(out, title, description, prefix):
     out.text("og-description", description, tag="meta", attrs={"property": "og:description"}, text_attr="content")
     out.start("meta", {"property": "og:type", "content": "website"})
     out.start("link", {"rel": "stylesheet", "href": prefix + "assets/site.css"})
+    out.start("link", {"rel": "icon", "type": "image/svg+xml",
+                       "href": prefix + "assets/brand/favicon.svg"})
     out.start("script", {"src": prefix + "assets/site.js", "defer": None})
     out.end("script")
     out.end("head")
