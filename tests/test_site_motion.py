@@ -118,6 +118,7 @@ class SiteMotionTests(unittest.TestCase):
                 parent = nav["ancestors"][-1]
                 siblings = [element for element in reader.elements
                             if element["ancestors"] and element["ancestors"][-1] is parent]
+                self.assertEqual(siblings.pop(0)["attrs"].get("data-layout"), "guided-hint")
                 self.assertIs(siblings[0], nav)
                 self.assertEqual(siblings[1]["tag"], "section")
                 self.assertEqual(siblings[1]["attrs"]["id"], page["cards"][0]["id"])

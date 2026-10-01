@@ -453,6 +453,12 @@ def _guided_controls(out, cards):
         "bumpy": "Bumpy", "worst": "Worst fall", "panic": "Panics",
         "next": "Next to tracker", "pound": "The pound", "limits": "Limits",
     }
+    out.start("div", {"data-layout": "guided-hint", "hidden": None})
+    out.text("guided-hint-open", "Try guided mode: one question at a time", tag="button",
+             attrs={"type": "button"})
+    out.text("guided-hint-close", "Close the hint", tag="button",
+             attrs={"type": "button"}, text_attr="aria-label")
+    out.end("div")
     out.start("nav", {"data-layout": "guided-controls", "hidden": None})
     out.start("div", {"data-layout": "guided-mode"})
     out.text("mode-guided", "Guided", tag="button",
@@ -993,7 +999,7 @@ def render_landing(index, pages, reviews=None):
         out.end("div")
         if reviews is not None:
             out.start("div", {"data-layout": "hint", "hidden": None})
-            out.text("hint-open", "See how this line was checked", tag="button",
+            out.text("hint-open", "See the full story behind this line", tag="button",
                      attrs={"type": "button"})
             out.text("hint-close", "Close the hint", tag="button",
                      attrs={"type": "button"}, text_attr="aria-label")
