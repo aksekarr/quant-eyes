@@ -808,7 +808,8 @@ def _trail_drawers(out, index, pages, reviews):
             for item in review["assets"][key]:
                 round_key = review_key + "." + str(item["round"])
                 out.text("trail-round", "Round {} · {}".format(
-                    item["round"], verdicts[item["verdict"]]), round_key)
+                    item["round"], verdicts[item["verdict"]]), round_key,
+                    attrs={"data-verdict": item["verdict"]})
                 out.text("trail-draft", item["text"], round_key)
                 if item["reason"] is not None:
                     out.text("trail-reason", item["reason"], round_key)

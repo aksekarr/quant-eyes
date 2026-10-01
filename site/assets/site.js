@@ -15,6 +15,9 @@
   var observer;
   var pending = new Map();
   var stopHeadlines = function () {};
+  var pauseHeadlines = function () { return false; };
+  var resumeHeadlines = function () {};
+  var trailOpen = false;
   var motionClasses = ["qx-grow", "qx-drain", "qx-timeline", "qx-correlation", "qx-sweep", "qx-chain"];
 
   function all(selector, root) {
@@ -224,6 +227,12 @@
       display();
     }
     stopHeadlines = stop;
+    pauseHeadlines = function () {
+      var wasPlaying = playing;
+      stop();
+      return wasPlaying;
+    };
+    resumeHeadlines = function (wasPlaying) { if (wasPlaying) start(); };
     function tick(time) {
       if (!playing || reduced.matches) { stop(); return; }
       if (previous !== undefined) elapsed += time - previous;
@@ -238,20 +247,23 @@
       request = frame(tick);
     }
     function start() {
-      if (reduced.matches || playing) return;
+      if (reduced.matches || playing || trailOpen) return;
       previous = undefined;
       playing = true;
       display();
       request = frame(tick);
     }
     function interact() { interacted = true; stop(); }
+    // A drawer temporarily pauses the pass; other card interactions still stop it.
+    function opensTrail(event) { return event.target.closest("[data-trail]") !== null; }
     listen(card, "pointerdown", function (event) {
+      if (opensTrail(event)) return;
       toggleWasPlaying = toggle.contains(event.target) ? playing : null;
       interact();
     });
-    listen(card, "focusin", interact);
+    listen(card, "focusin", function (event) { if (!opensTrail(event)) interact(); });
     listen(card, "click", function (event) {
-      if (!toggle.contains(event.target)) interact();
+      if (!opensTrail(event) && !toggle.contains(event.target)) interact();
     });
     listen(toggle, "click", function () {
       var resume = toggleWasPlaying === null ? !playing : !toggleWasPlaying;
@@ -267,6 +279,101 @@
     // Share the card's visibility trigger with its border sweep.
     var sweep = pending.get(card);
     onceVisible(card, function () { if (sweep) sweep(); if (!interacted) start(); });
+  }
+
+  function setupTrails() {
+    var drawers = all('[role="dialog"][id^="trail-"]');
+    if (!drawers.length) return;
+    var backdrop = drawers[0].parentElement;
+    var background = all("body > header, body > main, body > footer").map(function (node) {
+      return { node: node, inert: node.hasAttribute("inert") };
+    });
+    var siteName = document.querySelector('[data-qx="site-name"]');
+    var active = null;
+    var opener = null;
+    var wasPlaying = false;
+
+    function fromHash() {
+      return drawers.find(function (drawer) { return window.location.hash === "#" + drawer.id; });
+    }
+    function close() {
+      if (!active) return;
+      var closing = active;
+      var returnTo = opener || siteName;
+      active.removeEventListener("keydown", keydown);
+      active.hidden = true;
+      backdrop.hidden = true;
+      active = null;
+      background.forEach(function (record) {
+        if (!record.inert) record.node.removeAttribute("inert");
+      });
+      document.documentElement.classList.remove("qx-trail-open");
+      if (window.location.hash === "#" + closing.id) {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+      }
+      if (returnTo) returnTo.focus({ preventScroll: true });
+      trailOpen = false;
+      resumeHeadlines(wasPlaying);
+      wasPlaying = false;
+      opener = null;
+    }
+    var keydown = guard(function (event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        close();
+      } else if (event.key === "Tab") {
+        var focusable = all('a[href], button, input, select, textarea, summary, [tabindex]', active)
+          .filter(function (node) {
+            return !node.disabled && node.tabIndex >= 0 && !node.closest("[hidden], [inert]")
+              && node.getClientRects().length > 0;
+          });
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+    function open(drawer, source) {
+      if (!active) {
+        wasPlaying = pauseHeadlines();
+        trailOpen = true;
+      } else {
+        active.removeEventListener("keydown", keydown);
+      }
+      active = drawer;
+      opener = source || null;
+      drawers.forEach(function (item) { item.hidden = item !== drawer; });
+      backdrop.hidden = false;
+      background.forEach(function (record) { record.node.setAttribute("inert", ""); });
+      document.documentElement.classList.add("qx-trail-open");
+      window.history.replaceState(window.history.state, "", "#" + drawer.id);
+      drawer.scrollTop = 0;
+      drawer.addEventListener("keydown", keydown);
+      drawer.querySelector('[data-qx="trail-close"]').focus({ preventScroll: true });
+    }
+    all("[data-trail]").forEach(function (button) {
+      var drawer = drawers.find(function (item) { return item.id === "trail-" + button.getAttribute("data-trail"); });
+      if (drawer) listen(button, "click", function () { open(drawer, button); });
+    });
+    drawers.forEach(function (drawer) {
+      listen(drawer.querySelector('[data-qx="trail-close"]'), "click", close);
+    });
+    listen(backdrop, "click", function (event) { if (event.target === backdrop) close(); });
+    listen(window, "hashchange", function () { var drawer = fromHash(); if (drawer) open(drawer); });
+    disposers.push(function () {
+      if (active) active.removeEventListener("keydown", keydown);
+    });
+    function openLinked() { var linked = fromHash(); if (linked) open(linked); }
+    if (document.readyState === "complete") openLinked();
+    else listen(window, "load", function () {
+      // Safari restores document focus at load; focus the linked drawer after that.
+      frame(openLinked);
+    });
   }
 
   function setupAccordions() {
@@ -342,8 +449,8 @@
   }
 
   guard(function () {
-    var attributes = ["class", "style", "hidden", "aria-expanded", "aria-disabled", "aria-current", "aria-pressed"];
-    originals = all("body, body *").map(function (node) {
+    var attributes = ["class", "style", "hidden", "inert", "aria-expanded", "aria-disabled", "aria-current", "aria-pressed"];
+    originals = all("html, body, body *").map(function (node) {
       return { node: node, attributes: attributes.map(function (name) { return [name, node.getAttribute(name)]; }) };
     });
     reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -353,6 +460,7 @@
     setupMotion();
     setupSearch();
     setupHeadlines();
+    setupTrails();
     setupRail();
     setupSpotlights();
     listen(reduced, "change", function () {
