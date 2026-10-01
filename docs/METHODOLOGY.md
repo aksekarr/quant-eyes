@@ -1938,6 +1938,14 @@ YYYY>` = the index's `data_as_of`; `{label}` = the index label):
    Redrafted, not used}`; `trail-draft`: its text; `trail-reason`: its reason, if not
    `null`; `trail-control`: `Now: {control}`, if not `null`.
 
+**Nudges (Task 10h).** Each drawer ends with a link, role `trail-guided`, key the asset
+id, `href` `<asset id>/#guided`: `Try guided mode on {label}`. And, only with reviews and
+only when the headlines section is shown, at the end of that section an element with
+`data-layout="hint"` and the `hidden` attribute holding a button with `hint-open`: `See
+how this line was checked`, and an empty button, role `hint-close`,
+`data-qx-attr="aria-label"`, `aria-label` `Close the hint`. Section 16.7's landing links
+also allow `<asset id>/#guided`.
+
 `tests/golden/audit_trail.json` holds the cases (renders with their full read-back and
 the `data-trail` values in document order, and the check's errors). Every rendered case
 passes section 16.7, which allows `role`, `aria-modal`, `aria-labelledby`,

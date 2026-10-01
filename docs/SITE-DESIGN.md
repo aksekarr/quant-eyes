@@ -194,6 +194,26 @@ and styles only; every word is already in the page (METHODOLOGY 18.2).
   `tabindex`, `aria-disabled`, `aria-pressed`, `aria-current` and use
   `history.replaceState` and `location.hash` as here and in the audit trail.
 
+## Nudges (Task 10h)
+
+- **Hint:** about 1.2s after the landing page loads (and only if no drawer is open from the
+  address), the script shows the hint: a small pill anchored just below the current
+  slide's audit row, pointing up at it with a small CSS caret, in the page's look (card
+  gradient, 1px `rgba(134, 204, 255, 0.35)` border, the accent glow, mono 12px uppercase
+  label like `audit-open`, the `arrow-right` mask). `hint-open` opens the current slide's
+  audit trail exactly as its audit row does; `hint-close` is a 32px circle with a CSS X.
+  It hides for good (this page view) on its own close, on opening any drawer, on any
+  click elsewhere, on scroll past 200px, and on any key press. It never covers the audit
+  row, Open button or controls; at 639px and below it sits full width under the audit row.
+  It must not move focus or steal it, and is not announced as an alert.
+- **Motion** (only under `prefers-reduced-motion: no-preference`): the hint rises 8px and
+  fades in over 300ms with the same easing as the page's other motion, plus one soft
+  accent glow pulse (the existing chain light-up style), once. No looping, no bounce.
+  With reduced motion it simply appears.
+- **Drawer link:** `trail-guided` sits at the end of each drawer as a full-width
+  accent-outlined button (like the Explain further pill) with the `arrow-right` mask.
+- No storage: the hint shows once per page view.
+
 ## Icons
 
 Decorative only, drawn with CSS masks from `site/assets/icons/` (`mask`/`-webkit-mask`

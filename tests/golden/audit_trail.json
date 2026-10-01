@@ -2208,6 +2208,18 @@
      null
     ],
     [
+     "hint-open",
+     "",
+     "See how this line was checked",
+     null
+    ],
+    [
+     "hint-close",
+     "",
+     "Close the hint",
+     null
+    ],
+    [
      "gates-title",
      "",
      "How a headline gets published",
@@ -2556,6 +2568,12 @@
      null
     ],
     [
+     "trail-guided",
+     "usa",
+     "Try guided mode on US share",
+     null
+    ],
+    [
      "trail-label",
      "gbf",
      "Audit trail",
@@ -2742,6 +2760,12 @@
      null
     ],
     [
+     "trail-guided",
+     "gbf",
+     "Try guided mode on UK fund",
+     null
+    ],
+    [
      "trail-label",
      "cry",
      "Audit trail",
@@ -2811,6 +2835,12 @@
      "trail-control",
      "cry.2026-08.1",
      "Now: Still a person's call.",
+     null
+    ],
+    [
+     "trail-guided",
+     "cry",
+     "Try guided mode on Test coin",
      null
     ],
     [
@@ -3149,6 +3179,18 @@
      null
     ],
     [
+     "hint-open",
+     "",
+     "See how this line was checked",
+     null
+    ],
+    [
+     "hint-close",
+     "",
+     "Close the hint",
+     null
+    ],
+    [
      "gates-title",
      "",
      "How a headline gets published",
@@ -3497,6 +3539,12 @@
      null
     ],
     [
+     "trail-guided",
+     "usa",
+     "Try guided mode on US share",
+     null
+    ],
+    [
      "trail-label",
      "gbf",
      "Audit trail",
@@ -3683,6 +3731,12 @@
      null
     ],
     [
+     "trail-guided",
+     "gbf",
+     "Try guided mode on UK fund",
+     null
+    ],
+    [
      "trail-label",
      "cry",
      "Audit trail",
@@ -3728,6 +3782,12 @@
      "trail-review",
      "cry.2026-08",
      "Aug 2026 refresh · reviewed by A Reviewer, 30 Sep 2026 · data to the end of Aug 2026",
+     null
+    ],
+    [
+     "trail-guided",
+     "cry",
+     "Try guided mode on Test coin",
      null
     ],
     [
@@ -4104,6 +4164,18 @@
      null
     ],
     [
+     "hint-open",
+     "",
+     "See how this line was checked",
+     null
+    ],
+    [
+     "hint-close",
+     "",
+     "Close the hint",
+     null
+    ],
+    [
      "gates-title",
      "",
      "How a headline gets published",
@@ -4434,6 +4506,12 @@
      null
     ],
     [
+     "trail-guided",
+     "usa",
+     "Try guided mode on US share",
+     null
+    ],
+    [
      "trail-label",
      "gbf",
      "Audit trail",
@@ -4638,6 +4716,12 @@
      null
     ],
     [
+     "trail-guided",
+     "gbf",
+     "Try guided mode on UK fund",
+     null
+    ],
+    [
      "trail-label",
      "cry",
      "Audit trail",
@@ -4701,6 +4785,12 @@
      "trail-reason",
      "cry.2026-08.1",
      "Prompt changed.",
+     null
+    ],
+    [
+     "trail-guided",
+     "cry",
+     "Try guided mode on Test coin",
      null
     ],
     [
@@ -5068,6 +5158,18 @@
      null
     ],
     [
+     "hint-open",
+     "",
+     "See how this line was checked",
+     null
+    ],
+    [
+     "hint-close",
+     "",
+     "Close the hint",
+     null
+    ],
+    [
      "gates-title",
      "",
      "How a headline gets published",
@@ -5416,6 +5518,12 @@
      null
     ],
     [
+     "trail-guided",
+     "usa",
+     "Try guided mode on Q&A <b>\"US\"</b> share's",
+     null
+    ],
+    [
      "trail-label",
      "gbf",
      "Audit trail",
@@ -5602,6 +5710,12 @@
      null
     ],
     [
+     "trail-guided",
+     "gbf",
+     "Try guided mode on UK fund",
+     null
+    ],
+    [
      "trail-label",
      "cry",
      "Audit trail",
@@ -5671,6 +5785,12 @@
      "trail-control",
      "cry.2026-08.1",
      "Now: Still a person's call.",
+     null
+    ],
+    [
+     "trail-guided",
+     "cry",
+     "Try guided mode on Test coin",
      null
     ],
     [
@@ -6014,6 +6134,18 @@
      "segment",
      "gbf",
      "Show the headline for UK fund",
+     null
+    ],
+    [
+     "hint-open",
+     "",
+     "See how this line was checked",
+     null
+    ],
+    [
+     "hint-close",
+     "",
+     "Close the hint",
      null
     ],
     [
@@ -6365,6 +6497,12 @@
      null
     ],
     [
+     "trail-guided",
+     "usa",
+     "Try guided mode on US share",
+     null
+    ],
+    [
      "trail-label",
      "gbf",
      "Audit trail",
@@ -6551,6 +6689,12 @@
      null
     ],
     [
+     "trail-guided",
+     "gbf",
+     "Try guided mode on UK fund",
+     null
+    ],
+    [
      "trail-label",
      "cry",
      "Audit trail",
@@ -6620,6 +6764,12 @@
      "trail-control",
      "cry.2026-08.1",
      "Now: Still a person's call.",
+     null
+    ],
+    [
+     "trail-guided",
+     "cry",
+     "Try guided mode on Test coin",
      null
     ],
     [
