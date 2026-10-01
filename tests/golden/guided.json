@@ -9474,6 +9474,18 @@
      null
     ],
     [
+     "guided-hint-open",
+     "",
+     "Try guided mode: one question at a time",
+     null
+    ],
+    [
+     "guided-hint-close",
+     "",
+     "Close the hint",
+     null
+    ],
+    [
      "mode-guided",
      "",
      "Guided",
@@ -11245,6 +11257,18 @@
      null
     ],
     [
+     "guided-hint-open",
+     "",
+     "Try guided mode: one question at a time",
+     null
+    ],
+    [
+     "guided-hint-close",
+     "",
+     "Close the hint",
+     null
+    ],
+    [
      "mode-guided",
      "",
      "Guided",
@@ -12875,6 +12899,18 @@
      "benchmark-name",
      "",
      "Test Tracker ETF · TRK",
+     null
+    ],
+    [
+     "guided-hint-open",
+     "",
+     "Try guided mode: one question at a time",
+     null
+    ],
+    [
+     "guided-hint-close",
+     "",
+     "Close the hint",
      null
     ],
     [

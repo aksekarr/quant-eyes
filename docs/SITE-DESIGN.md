@@ -196,16 +196,20 @@ and styles only; every word is already in the page (METHODOLOGY 18.2).
 
 ## Nudges (Task 10h)
 
-- **Hint:** about 1.2s after the landing page loads (and only if no drawer is open from the
-  address), the script shows the hint: a small pill anchored just below the current
-  slide's audit row, pointing up at it with a small CSS caret, in the page's look (card
-  gradient, 1px `rgba(134, 204, 255, 0.35)` border, the accent glow, mono 12px uppercase
-  label like `audit-open`, the `arrow-right` mask). `hint-open` opens the current slide's
-  audit trail exactly as its audit row does; `hint-close` is a 32px circle with a CSS X.
-  It hides for good (this page view) on its own close, on opening any drawer, on any
-  click elsewhere, on scroll past 200px, and on any key press. It never covers the audit
-  row, Open button or controls; at 639px and below it sits full width under the audit row.
-  It must not move focus or steal it, and is not announced as an alert.
+- **Landing hint (Task 10i replaces 10h's placement):** about 1.2s after the landing page
+  loads (not when a drawer is open from the address), a callout pops out OUTSIDE the
+  headline card, beside its left edge on wide screens (just above the card, full width, at
+  1023px and below), with a CSS caret pointing at the card. `hint-open` goes where the
+  current slide's "Open …" link goes (that asset's page). Card-gradient pill, 1px
+  `rgba(134, 204, 255, 0.35)` border, accent glow, mono 12px uppercase label, `arrow-right`
+  mask; `hint-close` a 32px circle with a CSS X. It never covers the card's text or
+  controls.
+- **Asset-page hint (Task 10i):** on pages with guided mode, in full page mode only, about
+  1.2s after load (not when the address asks for guided mode), the same callout appears
+  beside the Guided / Full page toggle with its caret pointing at the toggle.
+  `guided-hint-open` switches to guided mode at step 1, exactly as `Guided` does.
+- Both hints hide for good (that page view) on their own close, on any other click, on
+  scroll past 200px and on any key press; never move or steal focus; are not alerts.
 - **Motion** (only under `prefers-reduced-motion: no-preference`): the hint rises 8px and
   fades in over 300ms with the same easing as the page's other motion, plus one soft
   accent glow pulse (the existing chain light-up style), once. No looping, no bounce.

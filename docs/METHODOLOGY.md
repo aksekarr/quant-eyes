@@ -1942,7 +1942,7 @@ YYYY>` = the index's `data_as_of`; `{label}` = the index label):
 id, `href` `<asset id>/#guided`: `Try guided mode on {label}`. And, only with reviews and
 only when the headlines section is shown, at the end of that section an element with
 `data-layout="hint"` and the `hidden` attribute holding a button with `hint-open`: `See
-how this line was checked`, and an empty button, role `hint-close`,
+the full story behind this line`, and an empty button, role `hint-close`,
 `data-qx-attr="aria-label"`, `aria-label` `Close the hint`. Section 16.7's landing links
 also allow `<asset id>/#guided`.
 
@@ -2157,8 +2157,11 @@ card id: the step's line; then for each panel *k* (1, 2, …), keys `<card id>.<
 `more-number`: *k* as two digits (`01`), `more-title` (an `<h3>`): its title, `more-text`:
 its text. `<details>`, `<summary>` and `<h3>` are already allowed by section 16.7.
 
-**Guided mode controls (Task 11b).** With `guided`, the page also has, immediately
-before the first card's section, a `<nav>` with the `hidden` attribute (the script shows
+**Guided mode controls (Task 11b; hint Task 10i).** With `guided`, the page also has,
+immediately before the first card's section, an element with `data-layout="guided-hint"`
+and the `hidden` attribute holding a button with `guided-hint-open`: `Try guided mode:
+one question at a time`, and an empty button, role `guided-hint-close`,
+`data-qx-attr="aria-label"`, `aria-label` `Close the hint`; then a `<nav>` with the `hidden` attribute (the script shows
 it) holding, in order: a button with `aria-pressed="false"` holding `mode-guided`:
 `Guided`; a button with `aria-pressed="true"` holding `mode-full`: `Full page`; a button
 holding `step-back`: `Back`; then for each step in order an empty button, role
