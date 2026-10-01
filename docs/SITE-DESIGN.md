@@ -166,6 +166,34 @@ border `rgba(255, 255, 255, 0.10)`, background `rgba(255, 255, 255, 0.03)`, padd
 `#B6C1E2`. One column at 639px and below. Closed by default on every page; no script
 needed. Guided mode (Task 11b) reuses these sections.
 
+## Guided mode (Task 11b)
+
+As on the design canvas (artboards GuidedDesk and GuidedPhone, approved 1 Oct 2026). Script
+and styles only; every word is already in the page (METHODOLOGY 18.2).
+
+- The full page stays the default and the no-script page. The script shows the guided
+  `<nav>`; `Guided` / `Full page` switch modes (update `aria-pressed`). The choice is
+  remembered only in the address: guided mode sets `#guided` (and `#guided-<card id>` for
+  the current step) with `history.replaceState`; loading with either opens guided mode
+  there. No storage.
+- Guided mode shows one card section at a time (the others get `hidden`), the headline
+  card and rail are hidden, and the `<nav>` sits directly under the current card: Back,
+  the track of step nodes joined by a line (current node filled accent with glow, visited
+  nodes dim accent, labels under nodes on wide screens, labels hidden at 639px and below
+  with the current one shown), Next. Back is `aria-disabled` on the first step, Next on
+  the last. Clicking a node jumps there. Moving to a step closes that card's
+  `Explain further`, scrolls the card's top into view and moves focus to its title
+  (`tabindex="-1"`).
+- In guided mode each card's `Explain further` summary becomes the centred pill from the
+  board, under the track; its panels open below.
+- Keyboard: Left/Right arrows move between steps when focus is on the track. Everything is
+  reachable by Tab; touch targets at least 44px.
+- Motion only under `prefers-reduced-motion: no-preference`: the new card fades/rises in
+  once (300ms). Full page mode is exactly today's page.
+- The script rules (Motion and interaction) still hold; it may also set `hidden`,
+  `tabindex`, `aria-disabled`, `aria-pressed`, `aria-current` and use
+  `history.replaceState` and `location.hash` as here and in the audit trail.
+
 ## Icons
 
 Decorative only, drawn with CSS masks from `site/assets/icons/` (`mask`/`-webkit-mask`

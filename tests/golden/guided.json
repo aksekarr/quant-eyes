@@ -726,6 +726,134 @@
    "data_as_of": "2026-09",
    "data_as_of_text": "Data to the end of Sep 2026",
    "generated_on": "2026-10-01",
+   "guided": {
+    "steps": [
+     {
+      "card": "bumpy",
+      "everyday": "Two roads to the same town, one flat, one hilly. Volatility measures the hills, not where the road ends up.",
+      "more": [
+       {
+        "text": "One number for each month: how much a holding changed in pounds from one month-end to the next, with any income added back, from the end of Sep 2007 to the end of Sep 2026.",
+        "title": "What goes in"
+       },
+       {
+        "text": "Volatility measures how far those monthly changes typically sat from their average, rises and falls alike. Bigger swings either way give a higher figure.",
+        "title": "How spread out they were"
+       },
+       {
+        "text": "The monthly spread is scaled to a yearly figure by multiplying it by the square root of 12. It is the usual convention, so investments can be compared on the same footing.",
+        "title": "Why \"a year\""
+       },
+       {
+        "text": "Over the months both cover, from the end of Jan 2010 to the end of Sep 2026: 21.3%, against 11.7% for the developed-world tracker.",
+        "title": "Next to the tracker"
+       },
+       {
+        "text": "It treats a rise and a fall of the same size alike, and it says nothing about next month. A calm stretch can end suddenly.",
+        "title": "What it can't tell you"
+       }
+      ]
+     },
+     {
+      "card": "worst",
+      "everyday": "The deepest dip on a walk, measured from the highest point you'd reached so far.",
+      "more": [
+       {
+        "text": "14 months, from the end of Dec 2007 to the end of Feb 2009.",
+        "title": "From high to low"
+       },
+       {
+        "text": "£10,000 invested at that high would have been worth £6,450 at the low, £3,550 less. That applies only to money put in at the high.",
+        "title": "In money"
+       },
+       {
+        "text": "It was back at that high by the end of Nov 2009: 9 months after the low, 23 months after the high.",
+        "title": "Getting back"
+       },
+       {
+        "text": "A fall that recovered within the same month doesn't show, so the worst moment may have been deeper.",
+        "title": "What month-ends hide"
+       }
+      ]
+     },
+     {
+      "card": "panic",
+      "everyday": "Three storms, and how it came out of each one, start to finish.",
+      "more": [
+       {
+        "text": "Global financial crisis: down 8.3%. Covid crash: down 1.1%. 2022 rate shock: down 18.1%. In pounds, from the start to the end of each period.",
+        "title": "Three named periods"
+       },
+       {
+        "text": "Over the global financial crisis it was down 35.8% in dollars, and the dollar rose 43.0% against the pound, so in pounds it was down 8.3%. Step 5 shows how the two parts combine.",
+        "title": "Why the dollar matters here"
+       },
+       {
+        "text": "Prices may have fallen further in between and partly recovered before the period ended.",
+        "title": "What start-to-end hides"
+       }
+      ]
+     },
+     {
+      "card": "next",
+      "everyday": "Two friends' moods: near 1, when one is up the other usually is too; near 0, one's mood tells you nothing about the other's.",
+      "more": [
+       {
+        "text": "1 would mean always moving in step, 0 no pattern, and −1 always opposite. It measures how consistently the monthly moves lined up, not how big they were.",
+        "title": "What the number means"
+       },
+       {
+        "text": "Over each 36-month stretch it ranged from 0.07 (the 36 months to the end of May 2015) to 0.79 (to the end of Jun 2019).",
+        "title": "It moves around"
+       },
+       {
+        "text": "90% in the tracker and 10% in this investment, reset every December: 13.6% a year against 12.5% for the tracker alone, with volatility of 11.8% against 11.7%. An illustration, not a recommendation, before fees, trading costs and tax.",
+        "title": "A 90/10 illustration"
+       },
+       {
+        "text": "A low figure does not mean it protects a portfolio: correlation says nothing about how big the moves were.",
+        "title": "Not protection"
+       },
+       {
+        "text": "The tracker already holds these shares, so the 10% adds to a holding it already has.",
+        "title": "You may already hold it"
+       }
+      ]
+     },
+     {
+      "card": "pound",
+      "everyday": "Buying something abroad: the price can change, and so can the exchange rate. You feel both.",
+      "more": [
+       {
+        "text": "What it did in dollars, and what the dollar did against the pound. A UK holder gets both.",
+        "title": "Two parts"
+       },
+       {
+        "text": "Over the whole period: up 2,351.7% in dollars, the dollar rose 54.3% against the pound, so up 3,683.6% in pounds. The two parts multiply rather than add, so they never simply add up.",
+        "title": "How they combine"
+       },
+       {
+        "text": "When the pound rises against the dollar, a dollar holding loses some of its gain for a UK holder.",
+        "title": "It cuts both ways"
+       }
+      ]
+     },
+     {
+      "card": "limits",
+      "everyday": "A rear-view mirror: it shows clearly where you've been, not what's round the next bend.",
+      "more": [
+       {
+        "text": "Past results in pounds, measured at month-ends, before platform fees, trading costs and tax.",
+        "title": "The basis"
+       },
+       {
+        "text": "Past behaviour does not predict future results. Nothing here says what to do.",
+        "title": "Not a forecast"
+       }
+      ]
+     }
+    ]
+   },
    "headline": null,
    "instrument": {
     "id": "msft",
@@ -1485,6 +1613,134 @@
    "data_as_of": "2026-09",
    "data_as_of_text": "Data to the end of Sep 2026",
    "generated_on": "2026-10-01",
+   "guided": {
+    "steps": [
+     {
+      "card": "bumpy",
+      "everyday": "Two roads to the same town, one flat, one hilly. Volatility measures the hills, not where the road ends up.",
+      "more": [
+       {
+        "text": "One number for each month: how much a holding changed in pounds from one month-end to the next, with any income added back, from the end of Sep 2007 to the end of Sep 2026.",
+        "title": "What goes in"
+       },
+       {
+        "text": "Volatility measures how far those monthly changes typically sat from their average, rises and falls alike. Bigger swings either way give a higher figure.",
+        "title": "How spread out they were"
+       },
+       {
+        "text": "The monthly spread is scaled to a yearly figure by multiplying it by the square root of 12. It is the usual convention, so investments can be compared on the same footing.",
+        "title": "Why \"a year\""
+       },
+       {
+        "text": "Over the months both cover, from the end of Jan 2010 to the end of Sep 2026: 25.6%, against 11.7% for the developed-world tracker.",
+        "title": "Next to the tracker"
+       },
+       {
+        "text": "It treats a rise and a fall of the same size alike, and it says nothing about next month. A calm stretch can end suddenly.",
+        "title": "What it can't tell you"
+       }
+      ]
+     },
+     {
+      "card": "worst",
+      "everyday": "The deepest dip on a walk, measured from the highest point you'd reached so far.",
+      "more": [
+       {
+        "text": "12 months, from the end of Dec 2007 to the end of Dec 2008.",
+        "title": "From high to low"
+       },
+       {
+        "text": "£10,000 invested at that high would have been worth £5,850 at the low, £4,150 less. That applies only to money put in at the high.",
+        "title": "In money"
+       },
+       {
+        "text": "It was back at that high by the end of Aug 2009: 8 months after the low, 20 months after the high.",
+        "title": "Getting back"
+       },
+       {
+        "text": "A fall that recovered within the same month doesn't show, so the worst moment may have been deeper.",
+        "title": "What month-ends hide"
+       }
+      ]
+     },
+     {
+      "card": "panic",
+      "everyday": "Three storms, and how it came out of each one, start to finish.",
+      "more": [
+       {
+        "text": "Global financial crisis: down 2.1%. Covid crash: down 12.3%. 2022 rate shock: up 2.2%. In pounds, from the start to the end of each period.",
+        "title": "Three named periods"
+       },
+       {
+        "text": "Over the global financial crisis it was down 31.5% in dollars, and the dollar rose 43.0% against the pound, so in pounds it was down 2.1%. Step 5 shows how the two parts combine.",
+        "title": "Why the dollar matters here"
+       },
+       {
+        "text": "Prices may have fallen further in between and partly recovered before the period ended.",
+        "title": "What start-to-end hides"
+       }
+      ]
+     },
+     {
+      "card": "next",
+      "everyday": "Two friends' moods: near 1, when one is up the other usually is too; near 0, one's mood tells you nothing about the other's.",
+      "more": [
+       {
+        "text": "1 would mean always moving in step, 0 no pattern, and −1 always opposite. It measures how consistently the monthly moves lined up, not how big they were.",
+        "title": "What the number means"
+       },
+       {
+        "text": "Over each 36-month stretch it ranged from 0.13 (the 36 months to the end of Mar 2013) to 0.74 (to the end of Nov 2023).",
+        "title": "It moves around"
+       },
+       {
+        "text": "90% in the tracker and 10% in this investment, reset every December: 14.3% a year against 12.5% for the tracker alone, with volatility of 12.1% against 11.7%. An illustration, not a recommendation, before fees, trading costs and tax.",
+        "title": "A 90/10 illustration"
+       },
+       {
+        "text": "A low figure does not mean it protects a portfolio: correlation says nothing about how big the moves were.",
+        "title": "Not protection"
+       },
+       {
+        "text": "The tracker already holds these shares, so the 10% adds to a holding it already has.",
+        "title": "You may already hold it"
+       }
+      ]
+     },
+     {
+      "card": "pound",
+      "everyday": "Buying something abroad: the price can change, and so can the exchange rate. You feel both.",
+      "more": [
+       {
+        "text": "What it did in dollars, and what the dollar did against the pound. A UK holder gets both.",
+        "title": "Two parts"
+       },
+       {
+        "text": "Over the whole period: up 7,155.3% in dollars, the dollar rose 54.3% against the pound, so up 11,096.6% in pounds. The two parts multiply rather than add, so they never simply add up.",
+        "title": "How they combine"
+       },
+       {
+        "text": "When the pound rises against the dollar, a dollar holding loses some of its gain for a UK holder.",
+        "title": "It cuts both ways"
+       }
+      ]
+     },
+     {
+      "card": "limits",
+      "everyday": "A rear-view mirror: it shows clearly where you've been, not what's round the next bend.",
+      "more": [
+       {
+        "text": "Past results in pounds, measured at month-ends, before platform fees, trading costs and tax.",
+        "title": "The basis"
+       },
+       {
+        "text": "Past behaviour does not predict future results. Nothing here says what to do.",
+        "title": "Not a forecast"
+       }
+      ]
+     }
+    ]
+   },
    "headline": {
     "claims": [
      "worst.fall",
@@ -2252,6 +2508,134 @@
    "data_as_of": "2026-09",
    "data_as_of_text": "Data to the end of Sep 2026",
    "generated_on": "2026-10-01",
+   "guided": {
+    "steps": [
+     {
+      "card": "bumpy",
+      "everyday": "Two roads to the same town, one flat, one hilly. Volatility measures the hills, not where the road ends up.",
+      "more": [
+       {
+        "text": "One number for each month: how much a holding changed in pounds from one month-end to the next, with any income added back, from the end of Sep 2007 to the end of Sep 2026.",
+        "title": "What goes in"
+       },
+       {
+        "text": "Volatility measures how far those monthly changes typically sat from their average, rises and falls alike. Bigger swings either way give a higher figure.",
+        "title": "How spread out they were"
+       },
+       {
+        "text": "The monthly spread is scaled to a yearly figure by multiplying it by the square root of 12. It is the usual convention, so investments can be compared on the same footing.",
+        "title": "Why \"a year\""
+       },
+       {
+        "text": "Over the months both cover, from the end of Jan 2010 to the end of Sep 2026: 43.0%, against 11.7% for the developed-world tracker.",
+        "title": "Next to the tracker"
+       },
+       {
+        "text": "It treats a rise and a fall of the same size alike, and it says nothing about next month. A calm stretch can end suddenly.",
+        "title": "What it can't tell you"
+       }
+      ]
+     },
+     {
+      "card": "worst",
+      "everyday": "The deepest dip on a walk, measured from the highest point you'd reached so far.",
+      "more": [
+       {
+        "text": "14 months, from the end of Sep 2007 to the end of Nov 2008.",
+        "title": "From high to low"
+       },
+       {
+        "text": "£10,000 invested at that high would have been worth £2,750 at the low, £7,250 less. That applies only to money put in at the high.",
+        "title": "In money"
+       },
+       {
+        "text": "It was back at that high by the end of Oct 2015: 83 months after the low, 97 months after the high.",
+        "title": "Getting back"
+       },
+       {
+        "text": "A fall that recovered within the same month doesn't show, so the worst moment may have been deeper.",
+        "title": "What month-ends hide"
+       }
+      ]
+     },
+     {
+      "card": "panic",
+      "everyday": "Three storms, and how it came out of each one, start to finish.",
+      "more": [
+       {
+        "text": "Global financial crisis: down 61.1%. Covid crash: up 18.8%. 2022 rate shock: down 45.9%. In pounds, from the start to the end of each period.",
+        "title": "Three named periods"
+       },
+       {
+        "text": "Over the global financial crisis it was down 72.8% in dollars, and the dollar rose 43.0% against the pound, so in pounds it was down 61.1%. Step 5 shows how the two parts combine.",
+        "title": "Why the dollar matters here"
+       },
+       {
+        "text": "Prices may have fallen further in between and partly recovered before the period ended.",
+        "title": "What start-to-end hides"
+       }
+      ]
+     },
+     {
+      "card": "next",
+      "everyday": "Two friends' moods: near 1, when one is up the other usually is too; near 0, one's mood tells you nothing about the other's.",
+      "more": [
+       {
+        "text": "1 would mean always moving in step, 0 no pattern, and −1 always opposite. It measures how consistently the monthly moves lined up, not how big they were.",
+        "title": "What the number means"
+       },
+       {
+        "text": "Over each 36-month stretch it ranged from 0.21 (the 36 months to the end of Dec 2013) to 0.67 (to the end of Apr 2024).",
+        "title": "It moves around"
+       },
+       {
+        "text": "90% in the tracker and 10% in this investment, reset every December: 17.5% a year against 12.5% for the tracker alone, with volatility of 13.5% against 11.7%. An illustration, not a recommendation, before fees, trading costs and tax.",
+        "title": "A 90/10 illustration"
+       },
+       {
+        "text": "A low figure does not mean it protects a portfolio: correlation says nothing about how big the moves were.",
+        "title": "Not protection"
+       },
+       {
+        "text": "The tracker already holds these shares, so the 10% adds to a holding it already has.",
+        "title": "You may already hold it"
+       }
+      ]
+     },
+     {
+      "card": "pound",
+      "everyday": "Buying something abroad: the price can change, and so can the exchange rate. You feel both.",
+      "more": [
+       {
+        "text": "What it did in dollars, and what the dollar did against the pound. A UK holder gets both.",
+        "title": "Two parts"
+       },
+       {
+        "text": "Over the whole period: up 27,454.4% in dollars, the dollar rose 54.3% against the pound, so up 42,422.9% in pounds. The two parts multiply rather than add, so they never simply add up.",
+        "title": "How they combine"
+       },
+       {
+        "text": "When the pound rises against the dollar, a dollar holding loses some of its gain for a UK holder.",
+        "title": "It cuts both ways"
+       }
+      ]
+     },
+     {
+      "card": "limits",
+      "everyday": "A rear-view mirror: it shows clearly where you've been, not what's round the next bend.",
+      "more": [
+       {
+        "text": "Past results in pounds, measured at month-ends, before platform fees, trading costs and tax.",
+        "title": "The basis"
+       },
+       {
+        "text": "Past behaviour does not predict future results. Nothing here says what to do.",
+        "title": "Not a forecast"
+       }
+      ]
+     }
+    ]
+   },
    "headline": {
     "claims": [
      "worst.fall",
@@ -2784,6 +3168,126 @@
    "data_as_of": "2026-09",
    "data_as_of_text": "Data to the end of Sep 2026",
    "generated_on": "2026-10-01",
+   "guided": {
+    "steps": [
+     {
+      "card": "bumpy",
+      "everyday": "Two roads to the same town, one flat, one hilly. Volatility measures the hills, not where the road ends up.",
+      "more": [
+       {
+        "text": "One number for each month: how much a holding changed in pounds from one month-end to the next, with any income added back, from the end of May 2011 to the end of Sep 2026.",
+        "title": "What goes in"
+       },
+       {
+        "text": "Volatility measures how far those monthly changes typically sat from their average, rises and falls alike. Bigger swings either way give a higher figure.",
+        "title": "How spread out they were"
+       },
+       {
+        "text": "The monthly spread is scaled to a yearly figure by multiplying it by the square root of 12. It is the usual convention, so investments can be compared on the same footing.",
+        "title": "Why \"a year\""
+       },
+       {
+        "text": "Over the months both cover, from the end of May 2011 to the end of Sep 2026: 16.9%, against 11.4% for the developed-world tracker.",
+        "title": "Next to the tracker"
+       },
+       {
+        "text": "It treats a rise and a fall of the same size alike, and it says nothing about next month. A calm stretch can end suddenly.",
+        "title": "What it can't tell you"
+       }
+      ]
+     },
+     {
+      "card": "worst",
+      "everyday": "The deepest dip on a walk, measured from the highest point you'd reached so far.",
+      "more": [
+       {
+        "text": "47 months, from the end of Aug 2011 to the end of Jul 2015.",
+        "title": "From high to low"
+       },
+       {
+        "text": "£10,000 invested at that high would have been worth £6,180 at the low, £3,820 less. That applies only to money put in at the high.",
+        "title": "In money"
+       },
+       {
+        "text": "It was back at that high by the end of Jul 2019: 48 months after the low, 95 months after the high.",
+        "title": "Getting back"
+       },
+       {
+        "text": "A fall that recovered within the same month doesn't show, so the worst moment may have been deeper.",
+        "title": "What month-ends hide"
+       }
+      ]
+     },
+     {
+      "card": "panic",
+      "everyday": "Three storms, and how it came out of each one, start to finish.",
+      "more": [
+       {
+        "text": "Global financial crisis: not covered. Covid crash: up 7.5%. 2022 rate shock: up 5.5%. In pounds, from the start to the end of each period.",
+        "title": "Three named periods"
+       },
+       {
+        "text": "It is priced in pounds, but what it holds is priced in dollars, so the exchange rate is already inside these figures.",
+        "title": "Priced in pounds, holding dollars"
+       },
+       {
+        "text": "Prices may have fallen further in between and partly recovered before the period ended.",
+        "title": "What start-to-end hides"
+       }
+      ]
+     },
+     {
+      "card": "next",
+      "everyday": "Two friends' moods: near 1, when one is up the other usually is too; near 0, one's mood tells you nothing about the other's.",
+      "more": [
+       {
+        "text": "1 would mean always moving in step, 0 no pattern, and −1 always opposite. It measures how consistently the monthly moves lined up, not how big they were.",
+        "title": "What the number means"
+       },
+       {
+        "text": "Over each 36-month stretch it ranged from −0.29 (the 36 months to the end of Oct 2023) to 0.38 (to the end of Sep 2018).",
+        "title": "It moves around"
+       },
+       {
+        "text": "90% in the tracker and 10% in this investment, reset every December: 12.1% a year against 12.4% for the tracker alone, with volatility of 10.4% against 11.4%. An illustration, not a recommendation, before fees, trading costs and tax.",
+        "title": "A 90/10 illustration"
+       },
+       {
+        "text": "A low figure does not mean it protects a portfolio: correlation says nothing about how big the moves were.",
+        "title": "Not protection"
+       }
+      ]
+     },
+     {
+      "card": "pound",
+      "everyday": "Buying something abroad: the price can change, and so can the exchange rate. You feel both.",
+      "more": [
+       {
+        "text": "It is priced in pounds, but what it holds is priced in dollars, so when the dollar moves against the pound, its price in pounds moves too.",
+        "title": "Hidden in the price"
+       },
+       {
+        "text": "With only a price in pounds, the part that came from the exchange rate can't be separated out.",
+        "title": "Why it isn't split out"
+       }
+      ]
+     },
+     {
+      "card": "limits",
+      "everyday": "A rear-view mirror: it shows clearly where you've been, not what's round the next bend.",
+      "more": [
+       {
+        "text": "Past results in pounds, measured at month-ends, before platform fees, trading costs and tax.",
+        "title": "The basis"
+       },
+       {
+        "text": "Past behaviour does not predict future results. Nothing here says what to do.",
+        "title": "Not a forecast"
+       }
+      ]
+     }
+    ]
+   },
    "headline": {
     "claims": [
      "bumpy.volatility",
@@ -3341,6 +3845,122 @@
    "data_as_of": "2026-09",
    "data_as_of_text": "Data to the end of Sep 2026",
    "generated_on": "2026-10-01",
+   "guided": {
+    "steps": [
+     {
+      "card": "bumpy",
+      "everyday": "Two roads to the same town, one flat, one hilly. Volatility measures the hills, not where the road ends up.",
+      "more": [
+       {
+        "text": "One number for each month: how much a holding changed in pounds from one month-end to the next, with any income added back, from the end of Jan 2007 to the end of Sep 2026.",
+        "title": "What goes in"
+       },
+       {
+        "text": "Volatility measures how far those monthly changes typically sat from their average, rises and falls alike. Bigger swings either way give a higher figure.",
+        "title": "How spread out they were"
+       },
+       {
+        "text": "The monthly spread is scaled to a yearly figure by multiplying it by the square root of 12. It is the usual convention, so investments can be compared on the same footing.",
+        "title": "Why \"a year\""
+       },
+       {
+        "text": "Over the months both cover, from the end of Jan 2010 to the end of Sep 2026: 7.3%, against 11.7% for the developed-world tracker.",
+        "title": "Next to the tracker"
+       },
+       {
+        "text": "It treats a rise and a fall of the same size alike, and it says nothing about next month. A calm stretch can end suddenly.",
+        "title": "What it can't tell you"
+       }
+      ]
+     },
+     {
+      "card": "worst",
+      "everyday": "The deepest dip on a walk, measured from the highest point you'd reached so far.",
+      "more": [
+       {
+        "text": "41 months, from the end of May 2020 to the end of Oct 2023.",
+        "title": "From high to low"
+       },
+       {
+        "text": "£10,000 invested at that high would have been worth £6,810 at the low, £3,190 less. That applies only to money put in at the high.",
+        "title": "In money"
+       },
+       {
+        "text": "It had not recovered by the end of Sep 2026: still 26.8% below its high, 76 months after it.",
+        "title": "Still below the high"
+       },
+       {
+        "text": "A fall that recovered within the same month doesn't show, so the worst moment may have been deeper.",
+        "title": "What month-ends hide"
+       }
+      ]
+     },
+     {
+      "card": "panic",
+      "everyday": "Three storms, and how it came out of each one, start to finish.",
+      "more": [
+       {
+        "text": "Global financial crisis: up 16.3%. Covid crash: up 3.0%. 2022 rate shock: down 22.8%. In pounds, from the start to the end of each period.",
+        "title": "Three named periods"
+       },
+       {
+        "text": "It is priced in pounds, so these figures have no separate exchange-rate part.",
+        "title": "Priced in pounds"
+       },
+       {
+        "text": "Prices may have fallen further in between and partly recovered before the period ended.",
+        "title": "What start-to-end hides"
+       }
+      ]
+     },
+     {
+      "card": "next",
+      "everyday": "Two friends' moods: near 1, when one is up the other usually is too; near 0, one's mood tells you nothing about the other's.",
+      "more": [
+       {
+        "text": "1 would mean always moving in step, 0 no pattern, and −1 always opposite. It measures how consistently the monthly moves lined up, not how big they were.",
+        "title": "What the number means"
+       },
+       {
+        "text": "Over each 36-month stretch it ranged from −0.55 (the 36 months to the end of Jan 2013) to 0.58 (to the end of Jun 2024).",
+        "title": "It moves around"
+       },
+       {
+        "text": "90% in the tracker and 10% in this investment, reset every December: 11.5% a year against 12.5% for the tracker alone, with volatility of 10.6% against 11.7%. An illustration, not a recommendation, before fees, trading costs and tax.",
+        "title": "A 90/10 illustration"
+       },
+       {
+        "text": "A low figure does not mean it protects a portfolio: correlation says nothing about how big the moves were.",
+        "title": "Not protection"
+       }
+      ]
+     },
+     {
+      "card": "pound",
+      "everyday": "Shopping at home: there is no exchange rate between you and the price.",
+      "more": [
+       {
+        "text": "It is priced in pounds, so a UK holder's figures have no separate exchange-rate part.",
+        "title": "Nothing to split"
+       }
+      ]
+     },
+     {
+      "card": "limits",
+      "everyday": "A rear-view mirror: it shows clearly where you've been, not what's round the next bend.",
+      "more": [
+       {
+        "text": "Past results in pounds, measured at month-ends, before platform fees, trading costs and tax.",
+        "title": "The basis"
+       },
+       {
+        "text": "Past behaviour does not predict future results. Nothing here says what to do.",
+        "title": "Not a forecast"
+       }
+      ]
+     }
+    ]
+   },
    "headline": {
     "claims": [
      "worst.fall",
@@ -3902,6 +4522,126 @@
    "data_as_of": "2026-09",
    "data_as_of_text": "Data to the end of Sep 2026",
    "generated_on": "2026-10-01",
+   "guided": {
+    "steps": [
+     {
+      "card": "bumpy",
+      "everyday": "Two roads to the same town, one flat, one hilly. Volatility measures the hills, not where the road ends up.",
+      "more": [
+       {
+        "text": "One number for each month: how much a holding changed in pounds from one month-end to the next, with any income added back, from the end of Feb 2005 to the end of Sep 2026.",
+        "title": "What goes in"
+       },
+       {
+        "text": "Volatility measures how far those monthly changes typically sat from their average, rises and falls alike. Bigger swings either way give a higher figure.",
+        "title": "How spread out they were"
+       },
+       {
+        "text": "The monthly spread is scaled to a yearly figure by multiplying it by the square root of 12. It is the usual convention, so investments can be compared on the same footing.",
+        "title": "Why \"a year\""
+       },
+       {
+        "text": "Over the months both cover, from the end of Jan 2010 to the end of Sep 2026: 19.9%, against 11.7% for the developed-world tracker.",
+        "title": "Next to the tracker"
+       },
+       {
+        "text": "It treats a rise and a fall of the same size alike, and it says nothing about next month. A calm stretch can end suddenly.",
+        "title": "What it can't tell you"
+       }
+      ]
+     },
+     {
+      "card": "worst",
+      "everyday": "The deepest dip on a walk, measured from the highest point you'd reached so far.",
+      "more": [
+       {
+        "text": "19 months, from the end of Aug 2006 to the end of Mar 2008.",
+        "title": "From high to low"
+       },
+       {
+        "text": "£10,000 invested at that high would have been worth £5,900 at the low, £4,100 less. That applies only to money put in at the high.",
+        "title": "In money"
+       },
+       {
+        "text": "It was back at that high by the end of Mar 2010: 24 months after the low, 43 months after the high.",
+        "title": "Getting back"
+       },
+       {
+        "text": "A fall that recovered within the same month doesn't show, so the worst moment may have been deeper.",
+        "title": "What month-ends hide"
+       }
+      ]
+     },
+     {
+      "card": "panic",
+      "everyday": "Three storms, and how it came out of each one, start to finish.",
+      "more": [
+       {
+        "text": "Global financial crisis: up 8.7%. Covid crash: down 0.8%. 2022 rate shock: up 21.0%. In pounds, from the start to the end of each period.",
+        "title": "Three named periods"
+       },
+       {
+        "text": "It is priced in pounds, so these figures have no separate exchange-rate part.",
+        "title": "Priced in pounds"
+       },
+       {
+        "text": "Prices may have fallen further in between and partly recovered before the period ended.",
+        "title": "What start-to-end hides"
+       }
+      ]
+     },
+     {
+      "card": "next",
+      "everyday": "Two friends' moods: near 1, when one is up the other usually is too; near 0, one's mood tells you nothing about the other's.",
+      "more": [
+       {
+        "text": "1 would mean always moving in step, 0 no pattern, and −1 always opposite. It measures how consistently the monthly moves lined up, not how big they were.",
+        "title": "What the number means"
+       },
+       {
+        "text": "Over each 36-month stretch it ranged from 0.00 (the 36 months to the end of Dec 2024) to 0.54 (to the end of Jun 2017).",
+        "title": "It moves around"
+       },
+       {
+        "text": "90% in the tracker and 10% in this investment, reset every December: 12.7% a year against 12.5% for the tracker alone, with volatility of 11.1% against 11.7%. An illustration, not a recommendation, before fees, trading costs and tax.",
+        "title": "A 90/10 illustration"
+       },
+       {
+        "text": "A low figure does not mean it protects a portfolio: correlation says nothing about how big the moves were.",
+        "title": "Not protection"
+       },
+       {
+        "text": "The tracker already holds these shares, so the 10% adds to a holding it already has.",
+        "title": "You may already hold it"
+       }
+      ]
+     },
+     {
+      "card": "pound",
+      "everyday": "Shopping at home: there is no exchange rate between you and the price.",
+      "more": [
+       {
+        "text": "It is priced in pounds, so a UK holder's figures have no separate exchange-rate part.",
+        "title": "Nothing to split"
+       }
+      ]
+     },
+     {
+      "card": "limits",
+      "everyday": "A rear-view mirror: it shows clearly where you've been, not what's round the next bend.",
+      "more": [
+       {
+        "text": "Past results in pounds, measured at month-ends, before platform fees, trading costs and tax.",
+        "title": "The basis"
+       },
+       {
+        "text": "Past behaviour does not predict future results. Nothing here says what to do.",
+        "title": "Not a forecast"
+       }
+      ]
+     }
+    ]
+   },
    "headline": {
     "claims": [
      "worst.fall",
@@ -4578,6 +5318,130 @@
    "data_as_of": "2026-09",
    "data_as_of_text": "Data to the end of Sep 2026",
    "generated_on": "2026-10-01",
+   "guided": {
+    "steps": [
+     {
+      "card": "bumpy",
+      "everyday": "Two roads to the same town, one flat, one hilly. Volatility measures the hills, not where the road ends up.",
+      "more": [
+       {
+        "text": "One number for each month: how much a holding changed in pounds from one month-end to the next, with any income added back, from the end of Dec 2014 to the end of Sep 2026.",
+        "title": "What goes in"
+       },
+       {
+        "text": "Volatility measures how far those monthly changes typically sat from their average, rises and falls alike. Bigger swings either way give a higher figure.",
+        "title": "How spread out they were"
+       },
+       {
+        "text": "The monthly spread is scaled to a yearly figure by multiplying it by the square root of 12. It is the usual convention, so investments can be compared on the same footing.",
+        "title": "Why \"a year\""
+       },
+       {
+        "text": "Over the months both cover, from the end of Dec 2014 to the end of Sep 2026: 72.2%, against 11.7% for the developed-world tracker.",
+        "title": "Next to the tracker"
+       },
+       {
+        "text": "It treats a rise and a fall of the same size alike, and it says nothing about next month. A calm stretch can end suddenly.",
+        "title": "What it can't tell you"
+       }
+      ]
+     },
+     {
+      "card": "worst",
+      "everyday": "The deepest dip on a walk, measured from the highest point you'd reached so far.",
+      "more": [
+       {
+        "text": "13 months, from the end of Dec 2017 to the end of Jan 2019.",
+        "title": "From high to low"
+       },
+       {
+        "text": "£10,000 invested at that high would have been worth £2,580 at the low, £7,420 less. That applies only to money put in at the high.",
+        "title": "In money"
+       },
+       {
+        "text": "It was back at that high by the end of Oct 2020: 21 months after the low, 34 months after the high.",
+        "title": "Getting back"
+       },
+       {
+        "text": "A fall that recovered within the same month doesn't show, so the worst moment may have been deeper.",
+        "title": "What month-ends hide"
+       }
+      ]
+     },
+     {
+      "card": "panic",
+      "everyday": "Three storms, and how it came out of each one, start to finish.",
+      "more": [
+       {
+        "text": "Global financial crisis: not covered. Covid crash: down 27.0%. 2022 rate shock: down 47.7%. In pounds, from the start to the end of each period.",
+        "title": "Three named periods"
+       },
+       {
+        "text": "Over the Covid crash it was down 31.4% in dollars, and the dollar rose 6.5% against the pound, so in pounds it was down 27.0%. Step 5 shows how the two parts combine.",
+        "title": "Why the dollar matters here"
+       },
+       {
+        "text": "Prices may have fallen further in between and partly recovered before the period ended.",
+        "title": "What start-to-end hides"
+       }
+      ]
+     },
+     {
+      "card": "next",
+      "everyday": "Two friends' moods: near 1, when one is up the other usually is too; near 0, one's mood tells you nothing about the other's.",
+      "more": [
+       {
+        "text": "1 would mean always moving in step, 0 no pattern, and −1 always opposite. It measures how consistently the monthly moves lined up, not how big they were.",
+        "title": "What the number means"
+       },
+       {
+        "text": "Over each 36-month stretch it ranged from 0.24 (the 36 months to the end of Dec 2021) to 0.60 (to the end of Feb 2025).",
+        "title": "It moves around"
+       },
+       {
+        "text": "90% in the tracker and 10% in this investment, reset every December: 24.8% a year against 12.8% for the tracker alone, with volatility of 18.4% against 11.7%. An illustration, not a recommendation, before fees, trading costs and tax.",
+        "title": "A 90/10 illustration"
+       },
+       {
+        "text": "A low figure does not mean it protects a portfolio: correlation says nothing about how big the moves were.",
+        "title": "Not protection"
+       }
+      ]
+     },
+     {
+      "card": "pound",
+      "everyday": "Buying something abroad: the price can change, and so can the exchange rate. You feel both.",
+      "more": [
+       {
+        "text": "What it did in dollars, and what the dollar did against the pound. A UK holder gets both.",
+        "title": "Two parts"
+       },
+       {
+        "text": "Over the whole period: up 26,595.8% in dollars, the dollar rose 17.4% against the pound, so up 31,244.5% in pounds. The two parts multiply rather than add, so they never simply add up.",
+        "title": "How they combine"
+       },
+       {
+        "text": "When the pound rises against the dollar, a dollar holding loses some of its gain for a UK holder.",
+        "title": "It cuts both ways"
+       }
+      ]
+     },
+     {
+      "card": "limits",
+      "everyday": "A rear-view mirror: it shows clearly where you've been, not what's round the next bend.",
+      "more": [
+       {
+        "text": "Past results in pounds, measured at month-ends, before platform fees, trading costs and tax.",
+        "title": "The basis"
+       },
+       {
+        "text": "Past behaviour does not predict future results. Nothing here says what to do.",
+        "title": "Not a forecast"
+       }
+      ]
+     }
+    ]
+   },
    "headline": {
     "claims": [
      "bumpy.volatility",
@@ -8610,6 +9474,102 @@
      null
     ],
     [
+     "mode-guided",
+     "",
+     "Guided",
+     null
+    ],
+    [
+     "mode-full",
+     "",
+     "Full page",
+     null
+    ],
+    [
+     "step-back",
+     "",
+     "Back",
+     null
+    ],
+    [
+     "step-node",
+     "bumpy",
+     "Step 1: How bumpy is the ride?",
+     null
+    ],
+    [
+     "step-label",
+     "bumpy",
+     "Bumpy",
+     null
+    ],
+    [
+     "step-node",
+     "worst",
+     "Step 2: What's the worst it's been?",
+     null
+    ],
+    [
+     "step-label",
+     "worst",
+     "Worst fall",
+     null
+    ],
+    [
+     "step-node",
+     "panic",
+     "Step 3: What happened when markets panicked?",
+     null
+    ],
+    [
+     "step-label",
+     "panic",
+     "Panics",
+     null
+    ],
+    [
+     "step-node",
+     "next",
+     "Step 4: What does it do next to the tracker?",
+     null
+    ],
+    [
+     "step-label",
+     "next",
+     "Next to tracker",
+     null
+    ],
+    [
+     "step-node",
+     "pound",
+     "Step 5: How much of it was the pound?",
+     null
+    ],
+    [
+     "step-label",
+     "pound",
+     "The pound",
+     null
+    ],
+    [
+     "step-node",
+     "limits",
+     "Step 6: What these numbers don't capture",
+     null
+    ],
+    [
+     "step-label",
+     "limits",
+     "Limits",
+     null
+    ],
+    [
+     "step-next",
+     "",
+     "Next",
+     null
+    ],
+    [
      "card-number",
      "bumpy",
      "01",
@@ -10285,6 +11245,102 @@
      null
     ],
     [
+     "mode-guided",
+     "",
+     "Guided",
+     null
+    ],
+    [
+     "mode-full",
+     "",
+     "Full page",
+     null
+    ],
+    [
+     "step-back",
+     "",
+     "Back",
+     null
+    ],
+    [
+     "step-node",
+     "bumpy",
+     "Step 1: How bumpy is the ride?",
+     null
+    ],
+    [
+     "step-label",
+     "bumpy",
+     "Bumpy",
+     null
+    ],
+    [
+     "step-node",
+     "worst",
+     "Step 2: What's the worst it's been?",
+     null
+    ],
+    [
+     "step-label",
+     "worst",
+     "Worst fall",
+     null
+    ],
+    [
+     "step-node",
+     "panic",
+     "Step 3: What happened when markets panicked?",
+     null
+    ],
+    [
+     "step-label",
+     "panic",
+     "Panics",
+     null
+    ],
+    [
+     "step-node",
+     "next",
+     "Step 4: What does it do next to the tracker?",
+     null
+    ],
+    [
+     "step-label",
+     "next",
+     "Next to tracker",
+     null
+    ],
+    [
+     "step-node",
+     "pound",
+     "Step 5: How much of it was the pound?",
+     null
+    ],
+    [
+     "step-label",
+     "pound",
+     "The pound",
+     null
+    ],
+    [
+     "step-node",
+     "limits",
+     "Step 6: What these numbers don't capture",
+     null
+    ],
+    [
+     "step-label",
+     "limits",
+     "Limits",
+     null
+    ],
+    [
+     "step-next",
+     "",
+     "Next",
+     null
+    ],
+    [
      "card-number",
      "bumpy",
      "01",
@@ -11819,6 +12875,102 @@
      "benchmark-name",
      "",
      "Test Tracker ETF · TRK",
+     null
+    ],
+    [
+     "mode-guided",
+     "",
+     "Guided",
+     null
+    ],
+    [
+     "mode-full",
+     "",
+     "Full page",
+     null
+    ],
+    [
+     "step-back",
+     "",
+     "Back",
+     null
+    ],
+    [
+     "step-node",
+     "bumpy",
+     "Step 1: How bumpy is the ride?",
+     null
+    ],
+    [
+     "step-label",
+     "bumpy",
+     "Bumpy",
+     null
+    ],
+    [
+     "step-node",
+     "worst",
+     "Step 2: What's the worst it's been?",
+     null
+    ],
+    [
+     "step-label",
+     "worst",
+     "Worst fall",
+     null
+    ],
+    [
+     "step-node",
+     "panic",
+     "Step 3: What happened when markets panicked?",
+     null
+    ],
+    [
+     "step-label",
+     "panic",
+     "Panics",
+     null
+    ],
+    [
+     "step-node",
+     "next",
+     "Step 4: What does it do next to the tracker?",
+     null
+    ],
+    [
+     "step-label",
+     "next",
+     "Next to tracker",
+     null
+    ],
+    [
+     "step-node",
+     "pound",
+     "Step 5: How much of it was the pound?",
+     null
+    ],
+    [
+     "step-label",
+     "pound",
+     "The pound",
+     null
+    ],
+    [
+     "step-node",
+     "limits",
+     "Step 6: What these numbers don't capture",
+     null
+    ],
+    [
+     "step-label",
+     "limits",
+     "Limits",
+     null
+    ],
+    [
+     "step-next",
+     "",
+     "Next",
      null
     ],
     [

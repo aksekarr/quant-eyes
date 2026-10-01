@@ -2145,5 +2145,16 @@ card id: the step's line; then for each panel *k* (1, 2, …), keys `<card id>.<
 `more-number`: *k* as two digits (`01`), `more-title` (an `<h3>`): its title, `more-text`:
 its text. `<details>`, `<summary>` and `<h3>` are already allowed by section 16.7.
 
+**Guided mode controls (Task 11b).** With `guided`, the page also has, immediately
+before the first card's section, a `<nav>` with the `hidden` attribute (the script shows
+it) holding, in order: a button with `aria-pressed="false"` holding `mode-guided`:
+`Guided`; a button with `aria-pressed="true"` holding `mode-full`: `Full page`; a button
+holding `step-back`: `Back`; then for each step in order an empty button, role
+`step-node`, key the card id, `data-step` the card id, `data-qx-attr="aria-label"`, whose
+`aria-label` is `Step {k}: {card title}`, followed by `step-label`, key the card id: the
+short label (`bumpy` `Bumpy`, `worst` `Worst fall`, `panic` `Panics`, `next` `Next to
+tracker`, `pound` `The pound`, `limits` `Limits`); then a button holding `step-next`:
+`Next`.
+
 `tests/golden/guided.json` holds the cases: `build_guided` on the seven published Sep 2026
 pages and on edited ones, and `render_page` with guided steps.
