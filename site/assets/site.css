@@ -198,6 +198,7 @@ main[data-layout="landing"] { padding-top: 60px; display: grid; grid-template-co
 [data-layout="search-field"]::before { color: var(--qx-label); }
 [data-layout="search-field"]:focus-within { border-color: var(--qx-accent); box-shadow: 0 0 0 4px rgba(134, 204, 255, 0.16), 0 0 40px -8px var(--qx-glow); }
 input[type="search"] { min-width: 0; width: 100%; min-height: 44px; border: 0; background: transparent; }
+input[type="search"]:focus-visible { outline: none; }
 input::placeholder { color: var(--qx-muted); opacity: 1; }
 [data-layout="search"] ul { list-style: none; margin: 10px 0 0; padding: 8px; }
 [data-layout="search"] li > a { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 52px; padding: 12px; text-decoration: none; }
