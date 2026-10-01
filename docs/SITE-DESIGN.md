@@ -96,6 +96,63 @@ fixed by METHODOLOGY 16.5; this is the look.
   landing-only `chain` placement; keep everything the asset pages use.
 - No new colours outside this list and the existing palette; no red or green.
 
+## Audit trail drawer (Task 10d-2)
+
+The drawers and openers are built by `render_landing` (METHODOLOGY 16.9). This task makes
+them work and look as on the design canvas (artboard ProofDrawer). Script and styles only.
+
+**Look.**
+- The drawers' outer container (the element with `hidden` that holds them) becomes the
+  backdrop when open: fixed to the viewport, full size, `rgba(3, 6, 18, 0.72)`, above
+  everything else.
+- The open drawer is a panel fixed to the right edge, full height, width
+  `min(520px, 100vw)`, background `#0B1230` with a 1px left border
+  `rgba(255, 255, 255, 0.10)` and the existing card glow; padding 28px 28px 40px; it
+  scrolls inside itself (`overflow-y: auto`, `overscroll-behavior: contain`). At 639px and
+  below it is the full screen width, padding 20px.
+- `trail-label` as a small mono label; `trail-title` in Sora 24px 600; `trail-close` a
+  44px square button in the top right corner with an X drawn in CSS (two 18px bars on
+  `::before`/`::after`, rotated 45 degrees, `currentColor`; no new icon file).
+- `trail-status` as a small mono label; `trail-headline` in a block like the landing
+  headline card (Sora 20px). The three steps as a numbered list with the accent numbers;
+  the 16 `trail-rule` items as a two-column list (one column at 639px and below), each
+  with the `shield-check` mask in the accent colour. `trail-none` in the secondary colour.
+- `trail-earlier` as a small mono label above the rounds; `trail-note` muted. Each
+  `trail-review` as a mono label; each round a card (radius 14px, border
+  `rgba(255, 255, 255, 0.10)`): `trail-round` mono, `trail-draft` in body text 16px,
+  `trail-reason` secondary 14px, `trail-control` 14px semibold in `#DCE3F7`. A rejected
+  round's draft has a 1px line through it in `rgba(238, 242, 255, 0.45)`
+  (`text-decoration: line-through`), chosen from the round's `Rejected` text by a
+  `data-verdict` attribute that `render_landing` may add to the round's wrapper
+  (`approved`, `rejected`, `redrafted`; markup only, no new text).
+- The openers: the audit row stays as styled in 10c, now as a button (keep its look,
+  `cursor: pointer`, the hover lift from the existing interaction rules, a visible focus
+  ring), with `audit-open` pushed to the right as a small mono label with the
+  `arrow-right` mask. `gate-open` as a small mono accent label under gate 03's text.
+
+**Behaviour** (`site/assets/site.js`):
+- Clicking an opener (`[data-trail]`) opens the drawer `#trail-<value>`: remove `hidden`
+  from the container and that drawer (every other drawer stays hidden), set `inert` on
+  `body > header`, `main` and `footer`, stop the page scrolling behind
+  (`overflow: hidden` on `html` via a class), move focus to the drawer's `trail-close`.
+- Closing: the close button, `Escape`, or a click on the backdrop outside the panel.
+  Hide the drawer and the container, remove `inert` and the scroll lock, return focus to
+  the opener that opened it (or to the site name when it was opened from the address).
+- While open, `Tab` and `Shift+Tab` cycle within the drawer.
+- The headline carousel pauses while a drawer is open and resumes on close only if it was
+  playing before.
+- **Links:** on load, and on `hashchange`, if the address ends `#trail-<id>` and that
+  drawer exists, open it. Opening sets the address to `#trail-<id>` and closing removes
+  the hash, both with `history.replaceState` (no new Back-button entries). Any other hash
+  is left alone.
+- Motion, only under `prefers-reduced-motion: no-preference`: the backdrop fades in and
+  the panel slides in from the right over 240ms, once; closing is immediate. With reduced
+  motion it simply appears.
+- Without JavaScript the drawers stay hidden and the page reads as before.
+- The script rules above still hold. In addition it may set and remove `inert`, call
+  `history.replaceState`, read `location.hash` and listen for `hashchange` and `keydown`
+  (on the open drawer only). It never changes any `data-qx` text.
+
 ## Icons
 
 Decorative only, drawn with CSS masks from `site/assets/icons/` (`mask`/`-webkit-mask`
