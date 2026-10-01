@@ -1,66 +1,59 @@
 {
-  "data_as_of": "2026-08",
+  "data_as_of": "2026-09",
   "headlines": {
-    "msft": {
-      "text": "Microsoft fell 35.5% in pounds from Dec 2007 to Feb 2009, leaving £10,000 invested at the high worth £6,450 at the low.",
-      "claims": [
-        "worst.fall",
-        "worst.ten_thousand_left"
-      ],
-      "drafted_by": "gpt-6.1-sol",
-      "reviewed_on": "2026-09-30"
-    },
     "aapl": {
-      "text": "Apple fell 41.5% in pounds from Dec 2007 to Dec 2008.",
-      "claims": [
-        "worst.fall"
-      ],
-      "drafted_by": "gpt-6.1-sol",
-      "reviewed_on": "2026-09-30"
-    },
-    "nvda": {
-      "text": "Nvidia’s value in pounds fell 72.5% from Sep 2007 to Nov 2008, and its annual volatility was 46.1%.",
-      "claims": [
-        "worst.fall",
-        "bumpy.volatility"
-      ],
-      "drafted_by": "gpt-6.1-sol",
-      "reviewed_on": "2026-09-30"
-    },
-    "sgln": {
-      "text": "The physical gold fund fell 38.2% in pounds from Aug 2011 to Jul 2015.",
-      "claims": [
-        "worst.fall"
-      ],
-      "drafted_by": "gpt-6.1-sol",
-      "reviewed_on": "2026-09-30"
-    },
-    "iglt": {
-      "text": "The fund fell 31.9% from May 2020 to Oct 2023 and remained 25.9% below its high at the end of Aug 2026.",
-      "claims": [
-        "worst.fall",
-        "worst.below_high_at_end"
-      ],
-      "drafted_by": "gpt-6.1-sol",
-      "reviewed_on": "2026-09-30"
-    },
-    "azn": {
-      "text": "AstraZeneca fell 41.0% from Aug 2006 to Mar 2008, spending 43 months below its previous high before recovering.",
+      "text": "Apple fell 41.5% in pounds from Dec 2007 to Dec 2008 and regained its previous high 20 months after that peak.",
       "claims": [
         "worst.fall",
         "worst.months_underwater"
       ],
       "drafted_by": "gpt-6.1-sol",
-      "reviewed_on": "2026-09-30"
+      "reviewed_on": "2026-10-01"
+    },
+    "nvda": {
+      "text": "Nvidia fell 72.5% in pounds from Sep 2007 to Nov 2008, leaving £10,000 invested at the high worth £2,750 at the low.",
+      "claims": [
+        "worst.fall",
+        "worst.ten_thousand_left"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "reviewed_on": "2026-10-01"
+    },
+    "iglt": {
+      "text": "The UK government bond fund fell 31.9% from May 2020 to Oct 2023 and remained 26.8% below that high in Sep 2026.",
+      "claims": [
+        "worst.fall",
+        "worst.below_high_at_end"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "reviewed_on": "2026-10-01"
+    },
+    "azn": {
+      "text": "AstraZeneca fell 41.0% from Aug 2006 to Mar 2008 and regained its previous high 43 months after the fall began.",
+      "claims": [
+        "worst.fall",
+        "worst.months_underwater"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "reviewed_on": "2026-10-01"
     },
     "btc": {
-      "text": "Bitcoin’s volatility was 72.5% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019.",
+      "text": "Bitcoin’s volatility was 72.2% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019.",
       "claims": [
         "bumpy.volatility",
         "worst.fall"
       ],
       "drafted_by": "gpt-6.1-sol",
-      "reviewed_on": "2026-09-30"
+      "reviewed_on": "2026-10-01"
+    },
+    "sgln": {
+      "text": "Physical gold ETC had annual volatility of 16.9% and fell 38.2% in pounds from Aug 2011 to Jul 2015.",
+      "claims": [
+        "bumpy.volatility",
+        "worst.fall"
+      ],
+      "drafted_by": "gpt-6.1-sol",
+      "reviewed_on": "2026-10-01"
     }
   }
 }
