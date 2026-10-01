@@ -75,8 +75,8 @@ As on the design canvas (artboard ProofLanding, approved 30 Sept 2026). Words an
 fixed by METHODOLOGY 16.5; this is the look.
 
 - **Top:** the same two columns as now: intro (kicker, hero, tagline, search) on the left,
-  the "In one line" headline card on the right. The hero keeps the gradient on its last
-  sentence, `A person signs it off.` (wrap it in a `span`, as `hero-accent` does now).
+  the "In one line" headline card on the right. The hero (`What am I actually getting into?`, Task 10g) has the
+  gradient on `actually` only (a `span` with `data-layout="hero-accent"`).
 - **Audit row** (inside each slide, under the headline): one rounded chip row, min-height
   48px, padding 10px 14px, radius 14px, border `rgba(134, 204, 255, 0.30)`, background
   `rgba(134, 204, 255, 0.07)`, 14px semibold `#DCE3F7`. Three steps, each with its icon

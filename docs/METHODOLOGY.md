@@ -1711,10 +1711,11 @@ goes live.` (Asset pages keep their own description, section 16.4.) Then, in thi
 
 1. `kicker`: `A governed AI demo · in pounds` (the stylesheet
    sets it in capitals; the text is as written here).
-2. `hero`, the page's only `<h1>`: `AI drafts it. Code checks it. A person signs it off.`
+2. `hero`, the page's only `<h1>`: `What am I actually getting into?` (Task 10g, Avi 1 Oct:
+   a question, so the gates below are not repeated in the heading).
 3. `tagline`: the landing tagline.
 4. The search: in an element with the `hidden` attribute (JavaScript shows it):
-   `search-label`, a `<label>` for the input: `What am I actually getting into?`;
+   `search-label`, a `<label>` for the input: `Look up an investment`;
    `search-hint`, a search input whose `placeholder` is the text: `Try {first asset's
    label} or {first asset's ticker}`; then for each asset in order, a list item with the
    `hidden` attribute holding a link to `{id}/` with `result-label`, `result-ticker` and
