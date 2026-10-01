@@ -51,3 +51,11 @@ the volatility method text; browsers draw that one character from a system font.
 
 Files copied onto Avi's Mac by Claude's file bridge carry an embedded content-credentials
 (`<metadata>`) block in the SVGs; it doesn't change how they draw.
+
+## Logo, mark and favicon (Quant Eyes)
+- Asset: logotype "Quant Eyes": an angular Q (ring, pupil in #86CCFF as the only accent, flat-cut 45° tail) followed by "uant Eyes" as outlines of Sora 700; the Q alone as the mark; the Q on a #0B1436 rounded square as the favicon
+- Source: Original, drawn by Claude, 30 Sept 2026 (logotype v2 option 1 on the design canvas); letter shapes outlined from Sora 700 (see "Display and figures font")
+- Licence: original work for this project; the outlined Sora glyphs are under the SIL Open Font License 1.1, which permits this; attribution: none
+- File: `site/assets/brand/logo.svg`, `site/assets/brand/mark.svg`, `site/assets/brand/favicon.svg` (content-credentials block removed)
+- Used in: the site header and the browser tab (from Task 10b); replaces the "Site mark" entry above when 10b lands
+- Chosen: 2026-09-30

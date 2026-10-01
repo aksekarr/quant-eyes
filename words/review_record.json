@@ -1,0 +1,274 @@
+{
+  "reviews": [
+    {
+      "id": "2026-09",
+      "title": "Sep 2026 refresh",
+      "reviewed_on": "2026-10-01",
+      "data_as_of": "2026-09",
+      "reviewer": "Avi Ravisekara",
+      "assets": {
+        "msft": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "Microsoft fell 35.5% in pounds from Dec 2007 to Feb 2009, leaving £10,000 invested at the high worth £6,450.",
+            "reason": "\"Worth £6,450\" without \"at the low\" reads as what it is worth today.",
+            "control": "Still a person's call. A rule is planned."
+          },
+          {
+            "round": 2,
+            "verdict": "rejected",
+            "text": "Microsoft fell 35.5% in pounds from Dec 2007 to Feb 2009, leaving £10,000 invested at the high worth £6,450.",
+            "reason": "The same slip again.",
+            "control": "Still a person's call. A rule is planned."
+          },
+          {
+            "round": 3,
+            "verdict": "rejected",
+            "text": "Microsoft’s volatility was 22.6% a year in pounds, and its value fell 35.5% from Dec 2007 to Feb 2009.",
+            "reason": "\"In pounds\" covers only the volatility, and \"its value fell\" reads as the company's value in dollars.",
+            "control": "Still a person's call. A rule is planned. Microsoft has no headline this month."
+          }
+        ],
+        "aapl": [
+          {
+            "round": 1,
+            "verdict": "approved",
+            "text": "Apple fell 41.5% in pounds from Dec 2007 to Dec 2008 and regained its previous high 20 months after that peak.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "nvda": [
+          {
+            "round": 1,
+            "verdict": "approved",
+            "text": "Nvidia fell 72.5% in pounds from Sep 2007 to Nov 2008, leaving £10,000 invested at the high worth £2,750 at the low.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "sgln": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "Physical gold ETC fell 38.2% in pounds from Aug 2011 to Jul 2015, but gained 7.5% during the Covid crash.",
+            "reason": "Sets a short rise against a four-year fall.",
+            "control": "Still a person's call."
+          },
+          {
+            "round": 2,
+            "verdict": "approved",
+            "text": "Physical gold ETC had annual volatility of 16.9% and fell 38.2% in pounds from Aug 2011 to Jul 2015.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "iglt": [
+          {
+            "round": 1,
+            "verdict": "approved",
+            "text": "The UK government bond fund fell 31.9% from May 2020 to Oct 2023 and remained 26.8% below that high in Sep 2026.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "azn": [
+          {
+            "round": 1,
+            "verdict": "approved",
+            "text": "AstraZeneca fell 41.0% from Aug 2006 to Mar 2008 and regained its previous high 43 months after the fall began.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "btc": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "Bitcoin had a bumpy ride in pounds, with 72.2% annual volatility and a 74.2% fall from Dec 2017 to Jan 2019.",
+            "reason": "\"Bumpy ride\" is a judgement, not a figure.",
+            "control": "Still a person's call."
+          },
+          {
+            "round": 2,
+            "verdict": "approved",
+            "text": "Bitcoin’s volatility was 72.2% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019.",
+            "reason": null,
+            "control": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "launch",
+      "title": "Launch review",
+      "reviewed_on": "2026-09-30",
+      "data_as_of": "2026-08",
+      "reviewer": "Avi Ravisekara",
+      "assets": {
+        "msft": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "Microsoft’s largest fall was 35.5%, and it recovered to its previous high 9 months after the low.",
+            "reason": "\"Largest\" claims all of history, but these figures in pounds start in Aug 2007. Counting from the low is the flattering measure.",
+            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+          },
+          {
+            "round": 2,
+            "verdict": "rejected",
+            "text": "Microsoft shares fell 35.5% from Dec 2007 to Feb 2009, leaving £10,000 invested at the high worth £6,450 at the low.",
+            "reason": "The fall is in pounds and doesn't say so. Over the financial crisis Microsoft was down 35.8% in dollars but 8.3% in pounds.",
+            "control": "Rule 16."
+          },
+          {
+            "round": 3,
+            "verdict": "approved",
+            "text": "Microsoft fell 35.5% in pounds from Dec 2007 to Feb 2009, leaving £10,000 invested at the high worth £6,450 at the low.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "aapl": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "Apple’s largest fall was 41.5%, and it recovered to its previous high 8 months after the low.",
+            "reason": "Same two slips as Microsoft: a ranking word, and recovery counted from the low.",
+            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+          },
+          {
+            "round": 2,
+            "verdict": "rejected",
+            "text": "Apple’s value fell 41.5% from Dec 2007 to Dec 2008, leaving £10,000 invested at the high worth £5,850 at the low.",
+            "reason": "In pounds without saying so, and \"Apple's value\" reads as the company's value in dollars.",
+            "control": "Rule 16."
+          },
+          {
+            "round": 3,
+            "verdict": "approved",
+            "text": "Apple fell 41.5% in pounds from Dec 2007 to Dec 2008.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "nvda": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "Nvidia fell 72.5% in its largest decline and regained its previous high 83 months after the low.",
+            "reason": "A ranking word, and recovery counted from the low. From the high it took 97 months.",
+            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+          },
+          {
+            "round": 2,
+            "verdict": "rejected",
+            "text": "Nvidia’s ride was bumpy, with annual volatility of 46.1%, and it fell 72.5% from Sep 2007 to Nov 2008.",
+            "reason": "In pounds without saying so, and \"bumpy\" is a judgement, not a figure.",
+            "control": "Rule 16 for the pounds. \"Bumpy\" is still a person's call."
+          },
+          {
+            "round": 3,
+            "verdict": "approved",
+            "text": "Nvidia’s value in pounds fell 72.5% from Sep 2007 to Nov 2008, and its annual volatility was 46.1%.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "sgln": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "The physical gold fund’s largest fall was 38.2%, and it took 95 months to regain its previous high.",
+            "reason": "A ranking word: the fund's history starts in May 2011. Its recovery was counted from the high, which is the right measure.",
+            "control": "Rule 12."
+          },
+          {
+            "round": 2,
+            "verdict": "rejected",
+            "text": "The physical gold fund fell 38.2% from Aug 2011 to Jul 2015, but rose 7.5% from Jan 2020 to Mar 2020.",
+            "reason": "Sets a two-month rise against a four-year fall, and doesn't say the two months were the Covid crash.",
+            "control": "Still a person's call. No rule can judge what flatters."
+          },
+          {
+            "round": 3,
+            "verdict": "approved",
+            "text": "The physical gold fund fell 38.2% in pounds from Aug 2011 to Jul 2015.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "iglt": [
+          {
+            "round": 1,
+            "verdict": "redrafted",
+            "text": "The UK government bond fund fell 31.9% from its high and remained 25.9% below that high at the end of Aug 2026.",
+            "reason": "Honest as written. Redrafted only because the prompt changed for the other six.",
+            "control": null
+          },
+          {
+            "round": 2,
+            "verdict": "redrafted",
+            "text": "The UK government bond fund fell 31.9% from May 2020 to Oct 2023 and remained 25.9% below its high in Aug 2026.",
+            "reason": "Honest. Redrafted again when the prompt changed.",
+            "control": null
+          },
+          {
+            "round": 3,
+            "verdict": "approved",
+            "text": "The fund fell 31.9% from May 2020 to Oct 2023 and remained 25.9% below its high at the end of Aug 2026.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "azn": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "AstraZeneca’s largest fall was 41.0%, and it recovered to its previous high 24 months after the low.",
+            "reason": "A ranking word (its history starts in Feb 2005), and recovery counted from the low.",
+            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+          },
+          {
+            "round": 2,
+            "verdict": "rejected",
+            "text": "AstraZeneca had a bumpy ride, with annual volatility of 20.5% and a 41.0% fall from Aug 2006 to Mar 2008.",
+            "reason": "\"Bumpy ride\" is a judgement, not a figure.",
+            "control": "Still a person's call."
+          },
+          {
+            "round": 3,
+            "verdict": "approved",
+            "text": "AstraZeneca fell 41.0% from Aug 2006 to Mar 2008, spending 43 months below its previous high before recovering.",
+            "reason": null,
+            "control": null
+          }
+        ],
+        "btc": [
+          {
+            "round": 1,
+            "verdict": "rejected",
+            "text": "Bitcoin’s largest fall was 74.2%, and it recovered 21 months after reaching its low.",
+            "reason": "\"Largest\" claims all of history, but these figures start in Dec 2014, and bitcoin fell further before that. Recovery was counted from the low.",
+            "control": "Ranking words now fail rule 12, and the figure counted from the low is never offered."
+          },
+          {
+            "round": 2,
+            "verdict": "rejected",
+            "text": "Bitcoin had volatility of 72.5% a year and fell 74.2% from Dec 2017 to Jan 2019.",
+            "reason": "Both figures are in pounds and it doesn't say so.",
+            "control": "Rule 16."
+          },
+          {
+            "round": 3,
+            "verdict": "approved",
+            "text": "Bitcoin’s volatility was 72.5% a year in pounds, and it fell 74.2% from Dec 2017 to Jan 2019.",
+            "reason": null,
+            "control": null
+          }
+        ]
+      }
+    }
+  ]
+}
