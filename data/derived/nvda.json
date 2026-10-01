@@ -19,9 +19,9 @@
     },
     "label": "Developed-world tracker"
   },
-  "data_as_of": "2026-08",
+  "data_as_of": "2026-09",
   "document_version": "1",
-  "generated_on": "2026-09-29",
+  "generated_on": "2026-10-01",
   "instrument": {
     "id": "nvda",
     "identity": {
@@ -45,11 +45,11 @@
     "asset_currency": "USD",
     "currency": {
       "full_history": {
-        "currency_return": 0.48889052926847265,
-        "end": "2026-08",
-        "gbp_return": 419.92783887787493,
-        "local_return": 281.71241612685037,
-        "start": "2007-08"
+        "currency_return": 0.5432340746324915,
+        "end": "2026-09",
+        "gbp_return": 424.2293859326215,
+        "local_return": 274.54432144967143,
+        "start": "2007-09"
       },
       "stress_windows": [
         {
@@ -83,23 +83,23 @@
     },
     "method_version": "1.0",
     "own": {
-      "annualised_return": 0.374409638353145,
-      "end": "2026-08",
+      "annualised_return": 0.37514531360192027,
+      "end": "2026-09",
       "holding_periods": {
         "1_year": {
           "best": 3.2613278654846027,
           "best_annualised": 3.2613278654846027,
           "best_end": "2017-01",
           "best_start": "2016-01",
-          "first_start": "2007-08",
+          "first_start": "2007-09",
           "horizon_months": 12,
-          "last_end": "2026-08",
+          "last_end": "2026-09",
           "median": 0.35835713988927953,
           "median_annualised": 0.35835713988927953,
           "non_overlapping_periods": 19,
           "periods": 217,
-          "periods_lost_money": 48,
-          "share_lost_money": 0.22119815668202766,
+          "periods_lost_money": 47,
+          "share_lost_money": 0.21658986175115208,
           "worst": -0.6829207718069992,
           "worst_annualised": -0.6829207718069992,
           "worst_end": "2008-11",
@@ -110,34 +110,34 @@
           "best_annualised": 1.470257004676029,
           "best_end": "2018-08",
           "best_start": "2015-08",
-          "first_start": "2007-08",
+          "first_start": "2007-09",
           "horizon_months": 36,
-          "last_end": "2026-08",
-          "median": 2.166251692637321,
-          "median_annualised": 0.46841387106107235,
+          "last_end": "2026-09",
+          "median": 2.251058748136967,
+          "median_annualised": 0.4814088648016164,
           "non_overlapping_periods": 6,
           "periods": 193,
-          "periods_lost_money": 19,
-          "share_lost_money": 0.09844559585492228,
-          "worst": -0.6407650577983405,
-          "worst_annualised": -0.28912562779132367,
-          "worst_end": "2010-08",
-          "worst_start": "2007-08"
+          "periods_lost_money": 18,
+          "share_lost_money": 0.09326424870466321,
+          "worst": -0.5799588042764166,
+          "worst_annualised": -0.2510882771963524,
+          "worst_end": "2010-09",
+          "worst_start": "2007-09"
         },
         "5_years": {
           "best": 31.26450041350055,
           "best_annualised": 1.0032953777464182,
           "best_end": "2024-05",
           "best_start": "2019-05",
-          "first_start": "2007-08",
+          "first_start": "2007-09",
           "horizon_months": 60,
-          "last_end": "2026-08",
-          "median": 10.101574966923739,
-          "median_annualised": 0.6183666460286188,
+          "last_end": "2026-09",
+          "median": 10.245447371042607,
+          "median_annualised": 0.6225397584335195,
           "non_overlapping_periods": 3,
           "periods": 169,
-          "periods_lost_money": 11,
-          "share_lost_money": 0.0650887573964497,
+          "periods_lost_money": 10,
+          "share_lost_money": 0.05917159763313609,
           "worst": -0.5632737878288425,
           "worst_annualised": -0.1526909369108571,
           "worst_end": "2012-10",
@@ -158,7 +158,7 @@
         "trough_month": "2008-11"
       },
       "months": 228,
-      "start": "2007-08",
+      "start": "2007-09",
       "stress_windows": [
         {
           "covered": true,
@@ -182,13 +182,13 @@
           "window": "rate_shock"
         }
       ],
-      "total_return": 419.92783887787493,
-      "volatility": 0.46091589362583274
+      "total_return": 424.2293859326215,
+      "volatility": 0.46093647837522805
     },
     "side_by_side": {
       "asset": {
-        "annualised_return": 0.48930639243511,
-        "end": "2026-08",
+        "annualised_return": 0.4913480222546578,
+        "end": "2026-09",
         "holding_periods": {
           "1_year": {
             "best": 3.2613278654846027,
@@ -197,13 +197,13 @@
             "best_start": "2016-01",
             "first_start": "2010-01",
             "horizon_months": 12,
-            "last_end": "2026-08",
-            "median": 0.4629908976110044,
-            "median_annualised": 0.4629908976110044,
+            "last_end": "2026-09",
+            "median": 0.45626068681080834,
+            "median_annualised": 0.45626068681080834,
             "non_overlapping_periods": 16,
-            "periods": 188,
+            "periods": 189,
             "periods_lost_money": 32,
-            "share_lost_money": 0.1702127659574468,
+            "share_lost_money": 0.1693121693121693,
             "worst": -0.4440856863594972,
             "worst_annualised": -0.4440856863594972,
             "worst_end": "2022-12",
@@ -216,13 +216,13 @@
             "best_start": "2015-08",
             "first_start": "2010-01",
             "horizon_months": 36,
-            "last_end": "2026-08",
-            "median": 2.885437295622032,
-            "median_annualised": 0.5720960113892645,
+            "last_end": "2026-09",
+            "median": 2.9022390693396147,
+            "median_annualised": 0.5743620924664476,
             "non_overlapping_periods": 5,
-            "periods": 164,
+            "periods": 165,
             "periods_lost_money": 9,
-            "share_lost_money": 0.054878048780487805,
+            "share_lost_money": 0.05454545454545454,
             "worst": -0.34242262897986275,
             "worst_annualised": -0.13040783151641078,
             "worst_end": "2014-01",
@@ -235,11 +235,11 @@
             "best_start": "2019-05",
             "first_start": "2010-01",
             "horizon_months": 60,
-            "last_end": "2026-08",
-            "median": 12.313936638459367,
-            "median_annualised": 0.6782676713378694,
+            "last_end": "2026-09",
+            "median": 12.295259901162877,
+            "median_annualised": 0.6777968176001676,
             "non_overlapping_periods": 3,
-            "periods": 140,
+            "periods": 141,
             "periods_lost_money": 0,
             "share_lost_money": 0.0,
             "worst": 0.29352678661717646,
@@ -261,7 +261,7 @@
           "ten_thousand_lost": 5569.903994129337,
           "trough_month": "2022-09"
         },
-        "months": 199,
+        "months": 200,
         "start": "2010-01",
         "stress_windows": [
           {
@@ -286,13 +286,13 @@
             "window": "rate_shock"
           }
         ],
-        "total_return": 738.0132450835002,
-        "volatility": 0.43105175466756523
+        "total_return": 780.5978874706207,
+        "volatility": 0.4299863806976304
       },
       "blend_90_10": {
         "asset_weight": 0.1,
         "blend": {
-          "annualised_return": 0.17529607135184055,
+          "annualised_return": 0.17522540245343898,
           "largest_fall": {
             "drawdown_at_end": 0.0,
             "max_drawdown": -0.17547012614527213,
@@ -306,15 +306,15 @@
             "ten_thousand_lost": 1754.7012614527214,
             "trough_month": "2011-09"
           },
-          "total_return": 13.56383668944921,
-          "volatility": 0.13496639027772867
+          "total_return": 13.746405397679474,
+          "volatility": 0.1346275467183722
         },
-        "end": "2026-08",
-        "months": 199,
+        "end": "2026-09",
+        "months": 200,
         "rebalance": "december",
         "start": "2010-01",
         "tracker": {
-          "annualised_return": 0.12496012001148693,
+          "annualised_return": 0.12478827443163132,
           "largest_fall": {
             "drawdown_at_end": 0.0,
             "max_drawdown": -0.1495307612095933,
@@ -328,21 +328,21 @@
             "ten_thousand_lost": 1495.3076120959329,
             "trough_month": "2020-03"
           },
-          "total_return": 6.047320476416853,
-          "volatility": 0.11706624239203986
+          "total_return": 6.098713880073493,
+          "volatility": 0.1167742594804436
         }
       },
-      "correlation": 0.4737344427285409,
+      "correlation": 0.4736413710535832,
       "rolling_correlation_36": {
         "highest": 0.6655971728463359,
         "highest_end": "2024-04",
         "lowest": 0.20950097047744096,
         "lowest_end": "2013-12",
-        "windows": 164
+        "windows": 165
       },
       "tracker": {
-        "annualised_return": 0.12496012001148693,
-        "end": "2026-08",
+        "annualised_return": 0.12478827443163132,
+        "end": "2026-09",
         "holding_periods": {
           "1_year": {
             "best": 0.3707699852869053,
@@ -351,13 +351,13 @@
             "best_start": "2020-03",
             "first_start": "2010-01",
             "horizon_months": 12,
-            "last_end": "2026-08",
-            "median": 0.1223532066159676,
-            "median_annualised": 0.1223532066159676,
+            "last_end": "2026-09",
+            "median": 0.12238345961217423,
+            "median_annualised": 0.12238345961217423,
             "non_overlapping_periods": 16,
-            "periods": 188,
+            "periods": 189,
             "periods_lost_money": 22,
-            "share_lost_money": 0.11702127659574468,
+            "share_lost_money": 0.1164021164021164,
             "worst": -0.08333333333333337,
             "worst_annualised": -0.08333333333333337,
             "worst_end": "2022-12",
@@ -370,11 +370,11 @@
             "best_start": "2015-09",
             "first_start": "2010-01",
             "horizon_months": 36,
-            "last_end": "2026-08",
-            "median": 0.42317109387418084,
-            "median_annualised": 0.12482641828808494,
+            "last_end": "2026-09",
+            "median": 0.42604556273376404,
+            "median_annualised": 0.12558371360647014,
             "non_overlapping_periods": 5,
-            "periods": 164,
+            "periods": 165,
             "periods_lost_money": 0,
             "share_lost_money": 0.0,
             "worst": 0.08385382059800661,
@@ -389,11 +389,11 @@
             "best_start": "2012-05",
             "first_start": "2010-01",
             "horizon_months": 60,
-            "last_end": "2026-08",
-            "median": 0.7866003419733939,
-            "median_annualised": 0.12306652501641446,
+            "last_end": "2026-09",
+            "median": 0.7866555113992888,
+            "median_annualised": 0.12307346097562033,
             "non_overlapping_periods": 3,
-            "periods": 140,
+            "periods": 141,
             "periods_lost_money": 0,
             "share_lost_money": 0.0,
             "worst": 0.4251266818102395,
@@ -415,7 +415,7 @@
           "ten_thousand_lost": 1495.3076120959329,
           "trough_month": "2020-03"
         },
-        "months": 199,
+        "months": 200,
         "start": "2010-01",
         "stress_windows": [
           {
@@ -440,8 +440,8 @@
             "window": "rate_shock"
           }
         ],
-        "total_return": 6.047320476416853,
-        "volatility": 0.11706624239203986
+        "total_return": 6.098713880073493,
+        "volatility": 0.1167742594804436
       }
     }
   },
