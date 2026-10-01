@@ -1562,7 +1562,9 @@ asset page) with role `site-name` and the text `SITE_NAME`; then role `not-advic
 ### 16.4 An asset page: `render_page(page, index)`
 
 The title is `{label}, in pounds · {SITE_NAME}`; the description is the headline's text
-if the page has a headline, otherwise the tagline (section 16.5). `{label}` is the
+if the page has a headline, otherwise the asset-page tagline: `How one more investment has
+behaved, and what it did next to a developed-world tracker. In plain English, in pounds.`
+(the landing page has its own tagline, section 16.5). `{label}` is the
 instrument's label and "the tracker's label" is the benchmark's. Then, in this order:
 
 1. `back`, a link to `../`: `All investments` (Task 10f: the site never states how many
